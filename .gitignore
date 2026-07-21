@@ -1,0 +1,10 @@
+/.vs/
+/build/
+/out/
+/CMakeUserPresets.json
+*.user
+*.autosave
+*.pdb
+*.ilk
+*.obj
+.DS_Store

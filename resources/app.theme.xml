@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<shell>
+  <theme>
+    <style class="AppPalette">
+      <hint name="is-dark-skin" value="0"/>
+      <color name="fill-base" value="#FFFFFFFF"/>
+      <color name="fill-hover" value="#F0F0F0FF"/>
+      <color name="fill-down" value="#E0E0E0FF"/>
+      <color name="text-primary" value="#0D0D0DE5"/>
+      <color name="line-regular" value="#0D0D0D26"/>
+    </style>
+    <style class="DemoButton">
+      <color name="background" value="AppPalette::fill-base"/>
+      <color name="background-hover" value="AppPalette::fill-hover"/>
+      <color name="background-down" value="AppPalette::fill-down"/>
+      <color name="background-disabled" value="#F5F5F5FF"/>
+      <color name="text" value="AppPalette::text-primary"/>
+      <color name="text-disabled" value="#0D0D0D66"/>
+      <color name="border" value="AppPalette::line-regular"/>
+      <hint name="borderRadius" value="6"/>
+      <hint name="borderWidth" value="1"/>
+    </style>
+  </theme>
+  <theme relatedName="*dark" baseRelated="*">
+    <style class="AppPalette">
+      <hint name="is-dark-skin" value="1"/>
+      <color name="fill-base" value="#2D2D2DFF"/>
+      <color name="fill-hover" value="#3A3A3AFF"/>
+      <color name="fill-down" value="#242424FF"/>
+      <color name="text-primary" value="#F5F5F5E5"/>
+      <color name="line-regular" value="#F5F5F526"/>
+    </style>
+    <style class="DemoButton">
+      <color name="background-disabled" value="#3A3A3AFF"/>
+      <color name="text-disabled" value="#F5F5F566"/>
+    </style>
+  </theme>
+</shell>

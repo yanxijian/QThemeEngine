@@ -1,0 +1,120 @@
+# MultiProcessShell — from Desktop clang-format.md (Microsoft base + overrides)
+# Indent: Tab width 4; access modifiers flush; namespaces indented.
+
+BasedOnStyle: Microsoft
+Language: Cpp
+Standard: Latest
+
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+ContinuationIndentWidth: 4
+AccessModifierOffset: -4
+NamespaceIndentation: All
+IndentCaseLabels: false
+IndentPPDirectives: None
+
+ColumnLimit: 120
+ReflowComments: false
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+# Do not insert a blank line right after `namespace {` / before `}`.
+WrapNamespaceBodyWithEmptyLines: Never
+
+# Braces: break after type/function/control; else/catch on their own lines.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+# No short one-liners.
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+
+# Parameters: pack on one line when within ColumnLimit; wrap only when needed.
+AlignAfterOpenBracket: Align
+BinPackArguments: true
+BinPackParameters: true
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# Constructor initializers: one per line, colon/commas leading.
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerIndentWidth: 4
+PackConstructorInitializers: Never
+AllowAllConstructorInitializersOnNextLine: false
+
+# Operator chains: align operands; break before non-assignment ops when wrapping.
+AlignOperands: Align
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+
+SpaceBeforeParens: ControlStatements
+SpaceBeforeCpp11BracedList: false
+SpaceInEmptyParentheses: false
+SpacesInAngles: Never
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: true
+
+AlignConsecutiveAssignments: None
+AlignConsecutiveBitFields: None
+AlignConsecutiveDeclarations: None
+AlignConsecutiveMacros: None
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeIsMainRegex: '([-_](test|unittest))?$'
+IncludeCategories:
+  # "project.hpp"
+  - Regex: '^".*"$'
+    Priority: 1
+    SortPriority: 1
+  # Qt
+  - Regex: '^<Q(t|[A-Za-z]).*>$'
+    Priority: 2
+    SortPriority: 2
+  # Approximate C++ standard / C library headers (lowercase)
+  - Regex: '^<[a-z_].*>$'
+    Priority: 3
+    SortPriority: 3
+  # Everything else (windows.h, etc.)
+  - Regex: '^<.*>$'
+    Priority: 4
+    SortPriority: 4
+
+FixNamespaceComments: true
+CompactNamespaces: false
+InsertBraces: false
+RemoveBracesLLVM: false
+
+# CRLF (clang-format 16+)
+LineEnding: CRLF
