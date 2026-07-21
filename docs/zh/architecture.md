@@ -77,12 +77,13 @@ QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
 
 ### 4.1 两层
 
-1. **Token（语义）**  
-   例：`palette.canvas`、`palette.text.primary`、`palette.accent`、`size.radius.md`、`size.space.sm`、`size.control.height`。
+1. **Token（语义）**（Store：`color("palette", role)` / `metric("button", role)`）  
+   例：`palette`/`window`、`palette`/`base`、`palette`/`text`、`palette`/`accent`、`palette`/`canvas`、`palette`/`stroke`。  
+   度量目前落在控件族上（如 `button`/`radius`、`button`/`padding`、`button`/`height`）；尚未单独使用 `size.*` 命名空间。
 
 2. **Control Role（控件 × 部件 × 状态）**  
-   例：`button.bg`、`button.bg.hover`、`button.fg`、`button.border`、`button.radius`、`button.padding`  
-   `edit.bg`、`edit.border.focus`、`check.indicator`、`scroll.handle`。
+   例：`button`/`bg`、`button`/`bg.hover`、`button`/`fg`、`button`/`border`、`button`/`border.focus`  
+   `edit`/`bg`、`edit`/`border.focus`、`check`/`bg.checked`、`tab`/`indicator`、`scroll`/`handle`。
 
 Style 内映射示例：
 
@@ -99,9 +100,67 @@ PM_ButtonMargin                      →  metric("button", "padding")
 - `QThemeStyle` 统一乘 `dpiScale`（由 Engine 根据 `QWindow`/`QScreen` 或应用策略给出）。  
 - 颜色不缩放。
 
-### 4.3 亮 / 暗
+### 4.3 亮 / 暗 / 高对比度（Fluent 主题族）
 
-同一 Role 名；两套 Token 包（如 `light` / `dark`）。`Engine::switchSkin` 替换 Store 并刷新 Style。
+同一 Role 名；多套 **Theme Pack**（`fluent.light` / `fluent.dark` / `fluent.hc`）。`Engine::switchSkin` / `setColorScheme` 替换 Store 并刷新 Style。
+
+历史别名：`light` → `fluent.light`，`dark` → `fluent.dark`。
+
+### 4.4 Theme Pack 契约
+
+Pack 是可注册的主题数据单元（内置 qrc 或用户文件），加载后展开为 `ThemeStore`。
+
+**JSON 是内置 Fluent Pack 的唯一数据源**（`resources/themes/fluent/*.json` → qrc）。C++ 侧只做加载 / 注册 / merge，**禁止**再维护一套 `fluentLight()` / `fluentDark()` / `fluentHighContrast()` 全量 Token 双轨。
+
+| 字段 | 说明 |
+|------|------|
+| `id` | 唯一 id，如 `fluent.light`、`user.brand` |
+| `base` | 可选；先加载基包再 merge 覆盖（用户派生 Pack） |
+| `colors` | `group → role → #RRGGBB(AA)` |
+| `metrics` | `group → role → int`（逻辑像素） |
+
+**稳定语义 Token（跨皮同名，与 JSON/`ThemeStore` 一致）**：`palette.window` / `base` / `text` / `accent` / `accent.text` / `stroke` / `highlight` / `canvas` / `surface` …  
+**控件 Role**：`button.*` / `edit.*` / `check.*` / `tab.*` / `scroll.*`（含 `.hover` / `.pressed` / `.focus` / `.disabled` 等后缀）  
+**度量 Role**：`button.radius` / `button.padding` / `check.indicator` / `scroll.thickness` 等（不是独立的 `size.*` 组）。
+
+校验：缺必需 Token 时 `Engine` 报错并保持旧 Store；缺可选 Role 时 Style 回退基类。
+
+### 4.5 Accent 与 ColorScheme（Engine 策略，非第二套 Style）
+
+```text
+setColorScheme(Light|Dark|HighContrast|System)
+  → 选定 Pack id → 构建 Store → 若 Accent=System 则 AccentResolver 补丁 → 刷新
+
+setAccent(QColor | System)
+  → 不换 Pack id；补丁 palette.accent / highlight / *.border.focus 等衍生色 → 刷新
+```
+
+`AccentResolver`：优先读平台强调色（Qt palette Highlight / 风格提示），失败则用 Pack 默认 `palette.accent`。Windows 上另读 `SPI_GETHIGHCONTRAST`（`systemHighContrast()`）。
+
+**OS 外观监听（`Engine::apply` 后安装）**：
+- `QGuiApplication::paletteChanged` → 跟随系统 Accent；`ColorScheme::System` 时重解析 Pack（含 HC）。
+- `QStyleHints::colorSchemeChanged` → `ColorScheme::System` 时在 light/dark/hc 间切换。
+- `setFollowOsHighContrast(true)`（默认）：System 下 OS HC 开则选用 `fluent.hc`。
+
+### 4.6 用户自定义（同管道）
+
+| 档位 | 能力 |
+|------|------|
+| A. Token 覆写 | merge 局部 colors/metrics 到当前 Store |
+| B. 派生 Pack | JSON `base` + overrides，`registerPack` |
+| C. 完整 Pack | 与内置同级 `registerPack` + `switchSkin` |
+
+禁止用 QSS 作为自定义通道。
+
+**Engine API（Fluent 阶段）**：
+
+```text
+registerPack(path|qrc) → bool
+switchSkin(id)
+setAccent(QColor) / setAccentFollowSystem(bool)
+setColorScheme(ColorScheme)
+currentSkin() / colorScheme() / accent()
+```
 
 ---
 
@@ -131,6 +190,8 @@ switchSkin(name)
 
 缓存（刷子、图标着色）必须绑定 **Store 世代（generation）**，换肤后失效。
 
+批量改 Token 时用 `ThemeStore::beginUpdate()` / `endUpdate()`，只 bump 一次 generation（Accent 补丁、JSON overlay 加载已按此批量）。
+
 ---
 
 ## 7. 工程目录（目标形态）
@@ -154,6 +215,7 @@ CMake 选项建议：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGE
 | 里程碑 | 交付 | 验收 |
 |--------|------|------|
 | **M0** | Store API + 可编程 seed + Engine::apply + QThemeStyle 骨架 | **已交付**：无 QSS；原生 QPushButton 随 seed 换色 |
+| **M0.5** | Fluent Pack 族 + Accent/HC 策略 + Pack 注册/merge + T0 绘制扩展 | **已交付**：单一 QThemeStyle + 多 Pack |
 | **M1** | Format 加载 `.theme.xml` + light/dark Golden | TC 色表；换肤信号 |
 | **M2** | Button / Edit / Check 族覆盖 | 覆盖矩阵对应行变绿 |
 | **M3** | 度量全面主题化 + DPI | padding/radius/height 可配 |
@@ -176,6 +238,7 @@ CMake 选项建议：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGE
 | 文档 | 角色 |
 |------|------|
 | [architecture.md](architecture.md) | **本文：产品主路径** |
-| [coverage-matrix.md](coverage-matrix.md) | 控件覆盖矩阵 |
+| [coverage-matrix.md](coverage-matrix.md) | 控件覆盖矩阵（实现进度） |
+| [qt-widgets-inventory.md](qt-widgets-inventory.md) | Qt Widgets 控件清单与主题优先级 |
 | [theme-engine-spec.md](theme-engine-spec.md) | 格式 / Token / 加载细节与历史 L0 |
 | [../en/architecture.md](../en/architecture.md) | English architecture summary |

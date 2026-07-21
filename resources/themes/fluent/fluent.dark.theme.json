@@ -1,0 +1,75 @@
+{
+  "id": "fluent.dark",
+  "displayName": "Fluent Dark",
+  "sharedMetrics": ":/theme/fluent/fluent.shared.metrics.json",
+  "colors": {
+    "palette": {
+      "window": "#202020",
+      "windowText": "#FFFFFF",
+      "base": "#2C2C2C",
+      "text": "#FFFFFF",
+      "button": "#2C2C2C",
+      "buttonText": "#FFFFFF",
+      "highlight": "#60CDFF",
+      "highlightedText": "#000000",
+      "mid": "#3F3F3F",
+      "light": "#4A4A4A",
+      "dark": "#1A1A1A",
+      "accent": "#60CDFF",
+      "accent.text": "#000000",
+      "stroke": "#3F3F3F",
+      "canvas": "#202020",
+      "surface": "#2C2C2C"
+    },
+    "button": {
+      "bg": "#2C2C2C",
+      "bg.hover": "#323232",
+      "bg.pressed": "#1F1F1F",
+      "bg.disabled": "#282828",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#777777",
+      "border": "#3F3F3F",
+      "border.focus": "#60CDFF"
+    },
+    "edit": {
+      "bg": "#2C2C2C",
+      "bg.disabled": "#252525",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#777777",
+      "border": "#3F3F3F",
+      "border.focus": "#60CDFF",
+      "border.hover": "#6B6B6B"
+    },
+    "check": {
+      "bg": "#2C2C2C",
+      "bg.checked": "#60CDFF",
+      "bg.hover": "#323232",
+      "border": "#6B6B6B",
+      "border.checked": "#60CDFF",
+      "indicator": "#000000",
+      "fg": "#FFFFFF"
+    },
+    "tab": {
+      "bg": "#202020",
+      "bg.selected": "#2C2C2C",
+      "bg.hover": "#282828",
+      "fg": "#B0B0B0",
+      "fg.selected": "#FFFFFF",
+      "border": "#3F3F3F",
+      "indicator": "#60CDFF"
+    },
+    "scroll": {
+      "groove": "#202020",
+      "handle": "#6B6B6B",
+      "handle.hover": "#8A8A8A",
+      "handle.pressed": "#A0A0A0"
+    },
+    "DemoButton": {
+      "background": "#2C2C2C",
+      "background.hover": "#323232",
+      "background.pressed": "#1F1F1F",
+      "text": "#FFFFFF",
+      "border": "#3F3F3F"
+    }
+  }
+}

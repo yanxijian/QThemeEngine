@@ -1,0 +1,25 @@
+{
+  "id": "user.sample",
+  "displayName": "User Sample (derived from Fluent Light)",
+  "base": "fluent.light",
+  "colors": {
+    "palette": {
+      "accent": "#D83B01",
+      "highlight": "#D83B01"
+    },
+    "button": {
+      "border.focus": "#D83B01",
+      "bg": "#FFF4F0"
+    },
+    "edit": {
+      "border.focus": "#D83B01"
+    },
+    "check": {
+      "bg.checked": "#D83B01",
+      "border.checked": "#D83B01"
+    },
+    "tab": {
+      "indicator": "#D83B01"
+    }
+  }
+}

@@ -1,5 +1,9 @@
+#include "qtheme/accent.hpp"
 #include "qtheme/color_util.hpp"
+#include "qtheme/engine.hpp"
+#include "qtheme/pack.hpp"
 #include "qtheme/store.hpp"
+#include "qtheme/types.hpp"
 #include "theme/themeloader.hpp"
 
 #include <QCoreApplication>
@@ -10,8 +14,17 @@ class ThemeSmokeTest : public QObject
 	Q_OBJECT
 private slots:
 	void colorLiteral_rrggbbaa();
-	void store_seedLightHasButtonRoles();
-	void store_seedDarkDiffersFromLight();
+	void store_fluentLightHasRequiredTokens();
+	void store_fluentDarkDiffersFromLight();
+	void store_fluentHcHasZeroRadius();
+	void store_beginUpdateBatchesGeneration();
+	void pack_materializeLightFromJson();
+	void pack_userSampleDerivesFromLight();
+	void accent_patchUpdatesHighlight();
+	void accent_systemHighContrastApi();
+	void engine_switchFluentSkins();
+	void engine_userPackKeepsColorScheme();
+	void engine_setColorSchemeSystemPreserved();
 	void setupXml_deferredToM1();
 };
 
@@ -25,18 +38,17 @@ void ThemeSmokeTest::colorLiteral_rrggbbaa()
 	QCOMPARE(c.alpha(), 0xE5);
 }
 
-void ThemeSmokeTest::store_seedLightHasButtonRoles()
+void ThemeSmokeTest::store_fluentLightHasRequiredTokens()
 {
-	const qtheme::ThemeStore s = qtheme::ThemeStore::seedLight();
+	qtheme::ThemeStore s;
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), &s));
+	QVERIFY(s.missingRequiredColors().isEmpty());
 	QVERIFY(s.hasColor(QStringLiteral("button"), QStringLiteral("bg")));
-	QVERIFY(s.hasColor(QStringLiteral("button"), QStringLiteral("bg.hover")));
-	const auto bg = s.color(QStringLiteral("button"), QStringLiteral("bg"));
-	QVERIFY(bg.ok);
-	QCOMPARE(bg.value, QColor(QStringLiteral("#E8E8E8")));
-	QCOMPARE(s.metric(QStringLiteral("button"), QStringLiteral("radius"), -1), 6);
+	QVERIFY(s.hasColor(QStringLiteral("palette"), QStringLiteral("accent")));
+	QCOMPARE(s.metric(QStringLiteral("button"), QStringLiteral("radius"), -1), 4);
 }
 
-void ThemeSmokeTest::store_seedDarkDiffersFromLight()
+void ThemeSmokeTest::store_fluentDarkDiffersFromLight()
 {
 	const auto light = qtheme::ThemeStore::seedLight();
 	const auto dark = qtheme::ThemeStore::seedDark();
@@ -46,12 +58,117 @@ void ThemeSmokeTest::store_seedDarkDiffersFromLight()
 	QVERIFY(lb.value != db.value);
 }
 
+void ThemeSmokeTest::store_fluentHcHasZeroRadius()
+{
+	qtheme::ThemeStore hc;
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), &hc));
+	QCOMPARE(hc.metric(QStringLiteral("button"), QStringLiteral("radius"), -1), 0);
+	QVERIFY(hc.hasColor(QStringLiteral("palette"), QStringLiteral("accent")));
+}
+
+void ThemeSmokeTest::store_beginUpdateBatchesGeneration()
+{
+	qtheme::ThemeStore s;
+	const auto g0 = s.generation();
+	s.beginUpdate();
+	s.setColor(QStringLiteral("palette"), QStringLiteral("accent"), QColor(Qt::red));
+	s.setColor(QStringLiteral("palette"), QStringLiteral("highlight"), QColor(Qt::blue));
+	s.setMetric(QStringLiteral("button"), QStringLiteral("radius"), 2);
+	QCOMPARE(s.generation(), g0);
+	s.endUpdate();
+	QCOMPARE(s.generation(), g0 + 1);
+}
+
+void ThemeSmokeTest::pack_materializeLightFromJson()
+{
+	qtheme::PackRegistry reg;
+	QVERIFY(reg.registerBuiltinFluentPacks());
+	qtheme::ThemeStore store;
+	qtheme::Error err = qtheme::Error::None;
+	QVERIFY(reg.materialize(QString::fromUtf8(qtheme::kPackFluentLight), &store, &err));
+	QCOMPARE(static_cast<int>(err), static_cast<int>(qtheme::Error::None));
+	QVERIFY(store.missingRequiredColors().isEmpty());
+}
+
+void ThemeSmokeTest::pack_userSampleDerivesFromLight()
+{
+	qtheme::PackRegistry reg;
+	QVERIFY(reg.registerBuiltinFluentPacks());
+	qtheme::ThemeStore store;
+	QVERIFY(reg.materialize(QStringLiteral("user.sample"), &store, nullptr));
+	const auto accent = store.color(QStringLiteral("palette"), QStringLiteral("accent"));
+	QVERIFY(accent.ok);
+	QCOMPARE(accent.value, QColor(QStringLiteral("#D83B01")));
+	QVERIFY(store.hasColor(QStringLiteral("button"), QStringLiteral("bg")));
+}
+
+void ThemeSmokeTest::accent_patchUpdatesHighlight()
+{
+	qtheme::ThemeStore store = qtheme::ThemeStore::seedLight();
+	const auto g0 = store.generation();
+	const QColor accent(QStringLiteral("#AA00AA"));
+	qtheme::AccentResolver::applyAccentPatch(&store, accent);
+	QCOMPARE(store.color(QStringLiteral("palette"), QStringLiteral("highlight")).value, accent);
+	QCOMPARE(store.color(QStringLiteral("button"), QStringLiteral("border.focus")).value, accent);
+	// Accent patch is one generation bump (batched), not one per role.
+	QCOMPARE(store.generation(), g0 + 1);
+}
+
+void ThemeSmokeTest::accent_systemHighContrastApi()
+{
+	// API must be callable; value is OS-dependent.
+	(void)qtheme::AccentResolver::systemHighContrast();
+	QVERIFY(true);
+}
+
+void ThemeSmokeTest::engine_switchFluentSkins()
+{
+	qtheme::Engine engine;
+	QVERIFY(engine.switchSkin(QStringLiteral("fluent.dark")));
+	QCOMPARE(engine.currentSkin(), QString::fromUtf8(qtheme::kPackFluentDark));
+	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
+	QVERIFY(engine.switchSkin(QStringLiteral("fluent.hc")));
+	QCOMPARE(engine.currentSkin(), QString::fromUtf8(qtheme::kPackFluentHc));
+	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::HighContrast));
+	QVERIFY(engine.setAccent(QColor(QStringLiteral("#112233"))));
+	QCOMPARE(engine.accent(), QColor(QStringLiteral("#112233")));
+	QVERIFY(engine.store()->color(QStringLiteral("palette"), QStringLiteral("accent")).value
+			== QColor(QStringLiteral("#112233")));
+}
+
+void ThemeSmokeTest::engine_userPackKeepsColorScheme()
+{
+	qtheme::Engine engine;
+	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::Dark));
+	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
+	QVERIFY(engine.switchSkin(QStringLiteral("user.sample")));
+	QCOMPARE(engine.currentSkin(), QStringLiteral("user.sample"));
+	// Derived/user packs must not clobber the prior ColorScheme intent.
+	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
+}
+
+void ThemeSmokeTest::engine_setColorSchemeSystemPreserved()
+{
+	qtheme::Engine engine;
+	int schemeEmits = 0;
+	QObject::connect(&engine, &qtheme::Engine::colorSchemeChanged, &engine,
+					 [&schemeEmits]
+					 {
+						 ++schemeEmits;
+					 });
+	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::System));
+	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::System));
+	QCOMPARE(schemeEmits, 1);
+	// Idempotent: same scheme + resolved pack should not re-emit.
+	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::System));
+	QCOMPARE(schemeEmits, 1);
+}
+
 void ThemeSmokeTest::setupXml_deferredToM1()
 {
 	theme::ThemeLoader loader;
 	theme::ThemeError err = theme::ThemeError::None;
 	const bool ok = loader.setupXml(QStringLiteral(":/theme/app.theme.xml"), QStringLiteral("light"), {}, &err);
-	// Format loader is M1; M0 uses programmatic ThemeStore seeds.
 	QVERIFY(!ok);
 }
 

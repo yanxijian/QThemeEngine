@@ -7,7 +7,7 @@
 
 namespace qtheme {
 
-/// Theme-table-driven style. Proxies Fusion (or base) where roles are not covered yet.
+/// Theme-table-driven style (Fluent-inspired metrics/drawing via ThemeStore).
 class QThemeStyle final : public QProxyStyle
 {
 	Q_OBJECT
@@ -17,8 +17,12 @@ public:
 	void setStore(std::shared_ptr<ThemeStore> store);
 	[[nodiscard]] std::shared_ptr<ThemeStore> store() const { return store_; }
 
+	void drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter,
+					   const QWidget* widget = nullptr) const override;
 	void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter,
 					 const QWidget* widget = nullptr) const override;
+	void drawComplexControl(ComplexControl control, const QStyleOptionComplex* option, QPainter* painter,
+							const QWidget* widget = nullptr) const override;
 	int pixelMetric(PixelMetric metric, const QStyleOption* option = nullptr,
 					const QWidget* widget = nullptr) const override;
 	QPalette standardPalette() const override;

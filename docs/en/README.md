@@ -4,15 +4,17 @@ Industrial Qt Widgets theming: **ThemeStore + custom `QThemeStyle`**, replacing 
 
 Canonical architecture (Chinese): [../zh/architecture.md](../zh/architecture.md)  
 English summary: [architecture.md](architecture.md)  
-Coverage matrix: [../zh/coverage-matrix.md](../zh/coverage-matrix.md)
+Coverage matrix: [../zh/coverage-matrix.md](../zh/coverage-matrix.md)  
+Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md) · [qt-widgets-inventory.md](qt-widgets-inventory.md)
 
 ## Status
 
 | Milestone | Focus | Status |
 |-----------|--------|--------|
 | **M0** | Store seeds + `Engine::apply` + QThemeStyle; native `QPushButton` recolors without QSS | **Done** |
+| **M0.5** | Fluent packs (light/dark/hc) + Accent/ColorScheme + pack merge + T0 drawing | **Done** |
 | M1 | Load `.theme.xml` | Scaffold (`ThemeLoader::setupXml` TODO) |
-| M2+ | Expand coverage matrix | Not started |
+| M2+ | Expand coverage matrix | In progress |
 
 ## Build
 

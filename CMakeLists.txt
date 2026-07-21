@@ -21,6 +21,7 @@ option(QTE_BUILD_EXAMPLES "Build example apps" ON)
 option(QTE_BUILD_WIDGETS "Build owner-drawn sample widgets" ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 COMPONENTS PrintSupport OpenGLWidgets QUIET)
 if(QTE_BUILD_TESTS)
   find_package(Qt6 REQUIRED COMPONENTS Test)
 endif()
@@ -28,6 +29,8 @@ endif()
 set(QTE_ENGINE_SOURCES
   src/qtheme/color_util.cpp
   src/qtheme/store.cpp
+  src/qtheme/pack.cpp
+  src/qtheme/accent.cpp
   src/qtheme/style.cpp
   src/qtheme/engine.cpp
   src/qtheme/api.cpp
@@ -39,6 +42,8 @@ set(QTE_ENGINE_SOURCES
   resources/theme.qrc
   include/qtheme/types.hpp
   include/qtheme/store.hpp
+  include/qtheme/pack.hpp
+  include/qtheme/accent.hpp
   include/qtheme/style.hpp
   include/qtheme/engine.hpp
   include/qtheme/api.hpp
@@ -72,8 +77,47 @@ endif()
 target_link_libraries(qtheme_engine PUBLIC Qt6::Widgets)
 
 if(QTE_BUILD_EXAMPLES)
-  add_executable(qtheme_demo examples/native_controls/main.cpp)
+  add_executable(qtheme_demo
+    examples/native_controls/main.cpp
+    examples/native_controls/gallery.cpp
+    examples/native_controls/gallery.hpp
+  )
   target_link_libraries(qtheme_demo PRIVATE qtheme_engine)
+  if(TARGET Qt6::OpenGLWidgets)
+    target_link_libraries(qtheme_demo PRIVATE Qt6::OpenGLWidgets)
+    target_compile_definitions(qtheme_demo PRIVATE QTE_HAS_OPENGLWIDGETS=1)
+  endif()
+  if(TARGET Qt6::PrintSupport)
+    target_link_libraries(qtheme_demo PRIVATE Qt6::PrintSupport)
+    target_compile_definitions(qtheme_demo PRIVATE QTE_HAS_PRINTSUPPORT=1)
+  endif()
+  if(WIN32)
+    set_target_properties(qtheme_demo PROPERTIES WIN32_EXECUTABLE TRUE)
+  endif()
+
+  # Deploy Qt (+ CRT) beside the demo so double-click works without PATH.
+  if(NOT WINDEPLOYQT_EXECUTABLE)
+    find_program(WINDEPLOYQT_EXECUTABLE
+      NAMES windeployqt windeployqt.exe
+      HINTS
+        "$ENV{QTDIR}/bin"
+        "${Qt6_DIR}/../../../bin"
+      DOC "Qt windeployqt tool"
+    )
+  endif()
+  if(WIN32 AND WINDEPLOYQT_EXECUTABLE)
+    add_custom_command(TARGET qtheme_demo POST_BUILD
+      COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+              --release
+              --no-translations
+              --compiler-runtime
+              "$<TARGET_FILE:qtheme_demo>"
+      COMMENT "windeployqt: deploy Qt runtime beside qtheme_demo"
+      VERBATIM
+    )
+  elseif(WIN32)
+    message(WARNING "windeployqt not found; qtheme_demo needs QTDIR/bin on PATH to run")
+  endif()
 endif()
 
 if(QTE_BUILD_TESTS)

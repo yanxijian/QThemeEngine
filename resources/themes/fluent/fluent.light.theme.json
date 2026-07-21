@@ -1,0 +1,75 @@
+{
+  "id": "fluent.light",
+  "displayName": "Fluent Light",
+  "sharedMetrics": ":/theme/fluent/fluent.shared.metrics.json",
+  "colors": {
+    "palette": {
+      "window": "#F3F3F3",
+      "windowText": "#1A1A1A",
+      "base": "#FFFFFF",
+      "text": "#1A1A1A",
+      "button": "#FFFFFF",
+      "buttonText": "#1A1A1A",
+      "highlight": "#0078D4",
+      "highlightedText": "#FFFFFF",
+      "mid": "#E0E0E0",
+      "light": "#FFFFFF",
+      "dark": "#8A8A8A",
+      "accent": "#0078D4",
+      "accent.text": "#FFFFFF",
+      "stroke": "#D1D1D1",
+      "canvas": "#F3F3F3",
+      "surface": "#FFFFFF"
+    },
+    "button": {
+      "bg": "#FFFFFF",
+      "bg.hover": "#F5F5F5",
+      "bg.pressed": "#EBEBEB",
+      "bg.disabled": "#F9F9F9",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
+      "border": "#D1D1D1",
+      "border.focus": "#0078D4"
+    },
+    "edit": {
+      "bg": "#FFFFFF",
+      "bg.disabled": "#F5F5F5",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
+      "border": "#D1D1D1",
+      "border.focus": "#0078D4",
+      "border.hover": "#8A8A8A"
+    },
+    "check": {
+      "bg": "#FFFFFF",
+      "bg.checked": "#0078D4",
+      "bg.hover": "#F5F5F5",
+      "border": "#8A8A8A",
+      "border.checked": "#0078D4",
+      "indicator": "#FFFFFF",
+      "fg": "#1A1A1A"
+    },
+    "tab": {
+      "bg": "#F3F3F3",
+      "bg.selected": "#FFFFFF",
+      "bg.hover": "#EAEAEA",
+      "fg": "#5C5C5C",
+      "fg.selected": "#1A1A1A",
+      "border": "#E0E0E0",
+      "indicator": "#0078D4"
+    },
+    "scroll": {
+      "groove": "#F3F3F3",
+      "handle": "#C8C8C8",
+      "handle.hover": "#A8A8A8",
+      "handle.pressed": "#888888"
+    },
+    "DemoButton": {
+      "background": "#FFFFFF",
+      "background.hover": "#F5F5F5",
+      "background.pressed": "#EBEBEB",
+      "text": "#1A1A1A",
+      "border": "#D1D1D1"
+    }
+  }
+}

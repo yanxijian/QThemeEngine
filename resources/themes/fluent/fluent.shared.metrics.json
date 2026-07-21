@@ -1,0 +1,10 @@
+{
+  "metrics": {
+    "button": { "radius": 4, "padding": 10, "height": 32 },
+    "edit": { "radius": 4, "padding": 6 },
+    "check": { "indicator": 18, "radius": 3 },
+    "tab": { "radius": 4, "height": 32 },
+    "scroll": { "thickness": 10, "radius": 4 },
+    "DemoButton": { "borderRadius": 4 }
+  }
+}

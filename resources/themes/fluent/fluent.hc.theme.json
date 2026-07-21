@@ -1,0 +1,83 @@
+{
+  "id": "fluent.hc",
+  "displayName": "Fluent High Contrast",
+  "sharedMetrics": ":/theme/fluent/fluent.shared.metrics.json",
+  "colors": {
+    "palette": {
+      "window": "#000000",
+      "windowText": "#FFFFFF",
+      "base": "#000000",
+      "text": "#FFFFFF",
+      "button": "#000000",
+      "buttonText": "#FFFFFF",
+      "highlight": "#FFFF00",
+      "highlightedText": "#000000",
+      "mid": "#FFFFFF",
+      "light": "#FFFFFF",
+      "dark": "#000000",
+      "accent": "#FFFF00",
+      "accent.text": "#000000",
+      "stroke": "#FFFFFF",
+      "canvas": "#000000",
+      "surface": "#000000"
+    },
+    "button": {
+      "bg": "#000000",
+      "bg.hover": "#1A1A1A",
+      "bg.pressed": "#333333",
+      "bg.disabled": "#000000",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "border": "#FFFFFF",
+      "border.focus": "#FFFF00"
+    },
+    "edit": {
+      "bg": "#000000",
+      "bg.disabled": "#000000",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "border": "#FFFFFF",
+      "border.focus": "#FFFF00",
+      "border.hover": "#FFFFFF"
+    },
+    "check": {
+      "bg": "#000000",
+      "bg.checked": "#FFFF00",
+      "bg.hover": "#1A1A1A",
+      "border": "#FFFFFF",
+      "border.checked": "#FFFF00",
+      "indicator": "#000000",
+      "fg": "#FFFFFF"
+    },
+    "tab": {
+      "bg": "#000000",
+      "bg.selected": "#000000",
+      "bg.hover": "#1A1A1A",
+      "fg": "#FFFFFF",
+      "fg.selected": "#FFFF00",
+      "border": "#FFFFFF",
+      "indicator": "#FFFF00"
+    },
+    "scroll": {
+      "groove": "#000000",
+      "handle": "#FFFFFF",
+      "handle.hover": "#FFFF00",
+      "handle.pressed": "#FFFF00"
+    },
+    "DemoButton": {
+      "background": "#000000",
+      "background.hover": "#1A1A1A",
+      "background.pressed": "#333333",
+      "text": "#FFFFFF",
+      "border": "#FFFFFF"
+    }
+  },
+  "metrics": {
+    "button": { "radius": 0, "padding": 10, "height": 32 },
+    "edit": { "radius": 0, "padding": 6 },
+    "check": { "indicator": 18, "radius": 0 },
+    "tab": { "radius": 0, "height": 32 },
+    "scroll": { "thickness": 12, "radius": 0 },
+    "DemoButton": { "borderRadius": 0 }
+  }
+}

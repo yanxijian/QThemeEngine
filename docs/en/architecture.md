@@ -27,4 +27,5 @@ Theme pack → ThemeStore → QThemeStyle → QApplication::setStyle
 | M1 | Load `.theme.xml` + light/dark |
 | M2+ | Expand [coverage matrix](../zh/coverage-matrix.md) |
 
-Details, principles, and module boundaries: see the Chinese architecture doc.
+Details, principles, Theme Pack / Accent / HC: see the Chinese architecture doc (§4.3–4.6).
+Widget catalog for planning: [qt-widgets-inventory.md](qt-widgets-inventory.md) (Chinese canonical).

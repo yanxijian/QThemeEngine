@@ -1,6 +1,7 @@
 # 控件覆盖矩阵（QThemeStyle）
 
 > 与 [architecture.md](architecture.md) 配套。  
+> **控件全集盘点**（含邻接模块与主题优先级）：[qt-widgets-inventory.md](qt-widgets-inventory.md)  
 > **图例**：`—` 未开始 · `◐` 进行中 / 部分 · `●` 已主题化（查表绘制或度量）· `○` 明确回退基类（可接受）
 
 换肤验收以 **无 QSS + 本表已标 ● 的控件** 为准；未标 ● 的允许 Fusion 默认观感。
@@ -12,18 +13,18 @@
 | 控件族 | 代表类 | 绘制 | 度量 (PM_/size) | Palette | 备注 |
 |--------|--------|------|-----------------|---------|------|
 | 应用级 | `QApplication` | — | — | ● seed | `standardPalette` |
-| 按钮 | `QPushButton` | ◐ M0 | ◐ | ● | 首条绿路径 |
+| 按钮 | `QPushButton` | ◐ Fluent | ◐ | ● | M0.5 Fluent bevel |
 | 工具按钮 | `QToolButton` | — | — | ● | M2 |
-| 勾选 | `QCheckBox` | — | — | ● | M2 |
-| 单选 | `QRadioButton` | — | — | ● | M2 |
-| 单行编辑 | `QLineEdit` | — | — | ● | M2 |
+| 勾选 | `QCheckBox` | ◐ | ◐ | ● | PE_IndicatorCheckBox |
+| 单选 | `QRadioButton` | ◐ | ◐ | ● | PE_IndicatorRadioButton |
+| 单行编辑 | `QLineEdit` | ◐ | — | ● | PE_FrameLineEdit |
 | 数字框 | `QSpinBox` | — | — | ● | M2+ |
 | 下拉 | `QComboBox` | — | — | ● | M2+ |
 | 标签 | `QLabel` | ○ | ○ | ● | 多靠 Palette |
-| 滚动条 | `QScrollBar` | — | — | — | M3 |
+| 滚动条 | `QScrollBar` | ◐ | ◐ | — | CC_ScrollBar |
 | 滑块 | `QSlider` | — | — | — | M3 |
 | 进度 | `QProgressBar` | — | — | — | M3 |
-| 标签页 | `QTabBar`/`QTabWidget` | — | — | — | M4 |
+| 标签页 | `QTabBar`/`QTabWidget` | ◐ | ◐ | — | CE_TabBarTab* |
 | 工具栏 | `QToolBar` | — | — | — | M4 |
 | 菜单 | `QMenu`/`QMenuBar` | — | — | — | M4 |
 | 视图 | `QTreeView`/`QTableView`/`QListView` | — | — | — | M4 |
