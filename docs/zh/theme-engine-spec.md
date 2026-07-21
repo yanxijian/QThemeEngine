@@ -1,5 +1,7 @@
 # 桌面应用主题换肤与样式机制说明
 
+> **English**：暂以中文为主；索引见 [../en/README.md](../en/README.md)  
+> **仓库文档名**：`theme-engine-spec.md`（QThemeEngine 主题引擎规格）  
 > 日期：2026-07
 
 ## 目录

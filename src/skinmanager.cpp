@@ -21,7 +21,7 @@ namespace theme
 
 	bool SkinManager::switchSkin(const QString& name, bool force)
 	{
-		// L0: implement per docs/zh/style.md T2.6
+		// L0: implement per docs/zh/theme-engine-spec.md T2.6
 		Q_UNUSED(force);
 		lastError_ = ThemeError::SkinNotFound;
 		Q_UNUSED(name);

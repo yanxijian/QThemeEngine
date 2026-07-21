@@ -15,7 +15,7 @@ namespace theme
 	bool ThemeLoader::setupXml(const QString& /*filePath*/, const QString& /*relatedSkinName*/,
 							   const QStringList& /*searchPaths*/, ThemeError* err)
 	{
-		// L0: implement per docs/zh/style.md T2.4
+		// L0: implement per docs/zh/theme-engine-spec.md T2.4
 		if (err)
 		{
 			*err = ThemeError::None;

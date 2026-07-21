@@ -2,7 +2,7 @@
 
 Qt Widgets 主题引擎：**主题 XML 查表 + 控件自绘换肤**（不是 StyleSheet）。
 
-与 [MultiProcessShell](https://github.com/yanxijian/MultiProcessShell) 平级、独立复用。规格见 [docs/zh/style.md](docs/zh/style.md)（桌面 `Style.md` 入库版）。
+与 [MultiProcessShell](https://github.com/yanxijian/MultiProcessShell) 平级、独立复用。规格见 [docs/zh/theme-engine-spec.md](docs/zh/theme-engine-spec.md)。
 
 ## 状态
 
@@ -21,7 +21,7 @@ widgets/         DemoButton
 resources/       app.theme.xml（UTF-8 BOM）+ qrc
 app/             L0 演示入口
 tests/           烟测（完整 TC01–TC11 随 Loader 落地）
-docs/zh/style.md 机制 + 实现规格 + L0 可生成规格
+docs/zh/theme-engine-spec.md  机制 + 实现规格 + L0 可生成规格
 ```
 
 ## 构建（Windows）

@@ -2,11 +2,11 @@
 
 Qt Widgets theme engine: **theme XML lookup table + owner-drawn skins** (not StyleSheet).
 
-Sibling to [MultiProcessShell](https://github.com/yanxijian/MultiProcessShell). Spec (Chinese primary): [../zh/style.md](../zh/style.md).
+Sibling to [MultiProcessShell](https://github.com/yanxijian/MultiProcessShell). Spec (Chinese primary): [../zh/theme-engine-spec.md](../zh/theme-engine-spec.md).
 
 ## Status
 
-L0 scaffold is in-tree; `ThemeLoader::setupXml` / `SkinManager::switchSkin` still TODO per style.md T2–T5.
+L0 scaffold is in-tree; `ThemeLoader::setupXml` / `SkinManager::switchSkin` still TODO per theme-engine-spec.md T2–T5.
 
 ## Build
 

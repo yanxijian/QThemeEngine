@@ -9,7 +9,7 @@
 
 namespace theme
 {
-	/// L0 self-painted button (docs/zh/style.md T4). Implementation pending full ThemeLoader.
+	/// L0 self-painted button (docs/zh/theme-engine-spec.md T4). Implementation pending full ThemeLoader.
 	class DemoButton final : public QWidget
 	{
 		Q_OBJECT

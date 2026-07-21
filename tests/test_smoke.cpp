@@ -27,7 +27,7 @@ void ThemeSmokeTest::setupXml_notImplementedYet()
 	theme::ThemeLoader loader;
 	theme::ThemeError err = theme::ThemeError::None;
 	const bool ok = loader.setupXml(QStringLiteral(":/theme/app.theme.xml"), QStringLiteral("light"), {}, &err);
-	// Placeholder until L0 ThemeLoader is implemented (docs/zh/style.md T2–T5).
+	// Placeholder until L0 ThemeLoader is implemented (docs/zh/theme-engine-spec.md T2–T5).
 	QVERIFY(!ok);
 }
 
