@@ -1,16 +1,18 @@
 # QThemeEngine
 
-Qt Widgets theme engine: **theme XML lookup tables + owner-drawn skins** (not StyleSheet).
+Industrial Qt Widgets theming: **ThemeStore + custom `QThemeStyle`**, replacing **QSS** (not generating StyleSheets).
 
-Primary specification (Chinese): [../zh/theme-engine-spec.md](../zh/theme-engine-spec.md).
+Canonical architecture (Chinese): [../zh/architecture.md](../zh/architecture.md)  
+English summary: [architecture.md](architecture.md)  
+Coverage matrix: [../zh/coverage-matrix.md](../zh/coverage-matrix.md)
 
 ## Status
 
-| Layer | Scope | Status |
-|-------|--------|--------|
-| L0 | Format + Loader + ThemeApi + DemoButton + Golden tests | Scaffold in-tree; `ThemeLoader::setupXml` / `SkinManager::switchSkin` still TODO (spec T2–T5) |
-| L1 | Skin packages, extensions, persistence, DPI | Not started |
-| L2 | Icon tinting, fixed surfaces, multi-process sync | Not started |
+| Milestone | Focus | Status |
+|-----------|--------|--------|
+| **M0** | Store seeds + `Engine::apply` + QThemeStyle; native `QPushButton` recolors without QSS | **Done** |
+| M1 | Load `.theme.xml` | Scaffold (`ThemeLoader::setupXml` TODO) |
+| M2+ | Expand coverage matrix | Not started |
 
 ## Build
 

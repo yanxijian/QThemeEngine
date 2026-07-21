@@ -1,7 +1,22 @@
 # 桌面应用主题换肤与样式机制说明
 
 > **English index**：[../en/README.md](../en/README.md)  
-> 日期：2026-07
+> **产品主路径（必读）**：[architecture.md](architecture.md) · [coverage-matrix.md](coverage-matrix.md)  
+> 日期：2026-07（修订：目标升级为 **ThemeStore + QThemeStyle 替代 QSS**）
+
+## 0. 与产品主路径的关系（修订说明）
+
+本文前半（机制、XML、Token）仍可作为 **主题数据与加载语义** 参考；第三部分 T0–T6 描述的是早期「自绘 DemoButton」L0 脚手架。
+
+**当前产品目标**（以 architecture 为准）：
+
+- **禁用 QSS** 作为主题通道；  
+- **主题表驱动自定义 `QStyle`（QThemeStyle）**，用于 Qt 自带控件；  
+- 自绘查表为同一 Store 的支线。
+
+若本文某处仍强调「仅自绘、弱化 QStyle」，以 [architecture.md](architecture.md) 为准。
+
+---
 
 ## 目录
 
