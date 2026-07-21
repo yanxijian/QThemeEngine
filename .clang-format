@@ -1,5 +1,4 @@
-# MultiProcessShell — from Desktop clang-format.md (Microsoft base + overrides)
-# Indent: Tab width 4; access modifiers flush; namespaces indented.
+# QThemeEngine — Microsoft-based clang-format (Tab width 4, access modifiers flush, namespaces indented).
 
 BasedOnStyle: Microsoft
 Language: Cpp

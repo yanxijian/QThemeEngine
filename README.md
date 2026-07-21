@@ -2,7 +2,7 @@
 
 Qt Widgets 主题引擎：**主题 XML 查表 + 控件自绘换肤**（不是 StyleSheet）。
 
-与 [MultiProcessShell](https://github.com/yanxijian/MultiProcessShell) 平级、独立复用。规格见 [docs/zh/theme-engine-spec.md](docs/zh/theme-engine-spec.md)。
+规格文档：[docs/zh/theme-engine-spec.md](docs/zh/theme-engine-spec.md)。
 
 ## 状态
 
@@ -21,7 +21,8 @@ widgets/         DemoButton
 resources/       app.theme.xml（UTF-8 BOM）+ qrc
 app/             L0 演示入口
 tests/           烟测（完整 TC01–TC11 随 Loader 落地）
-docs/zh/theme-engine-spec.md  机制 + 实现规格 + L0 可生成规格
+docs/zh/         主题引擎规格（中文主文档）
+docs/en/         English index
 ```
 
 ## 构建（Windows）
@@ -39,7 +40,7 @@ build\qtheme_demo.exe
 - 禁止对本主题化控件使用 `setStyleSheet`
 - 颜色字面量：`#RRGGBB` / `#RRGGBBAA`（非 Qt `#AARRGGBB`）
 - Token：加载期展开；换肤后 `reexpandAllTokenColors`
-- 根目录 `.clang-format` 与 MultiProcessShell 对齐（可按需再调）
+- 代码风格见根目录 `.clang-format`
 
 ## License
 
