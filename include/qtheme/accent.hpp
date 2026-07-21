@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_ACCENT_H__
+#define __QTHEME_ENGINE_ACCENT_H__
 
 #include <QColor>
 
@@ -22,3 +23,5 @@ void applyAccentPatch(ThemeStore* store, const QColor& accent);
 } // namespace AccentResolver
 
 } // namespace qtheme
+
+#endif  // __QTHEME_ENGINE_ACCENT_H__

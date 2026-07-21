@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_DEMO_GALLERY_H__
+#define __QTHEME_DEMO_GALLERY_H__
 
 #include <QString>
 #include <QWidget>
@@ -25,3 +26,5 @@ void attachDockWidgets(QMainWindow* window);
 [[nodiscard]] bool verifyGallerySession(QApplication* app, QWidget* root, QString* report);
 
 } // namespace gallery
+
+#endif  // __QTHEME_DEMO_GALLERY_H__

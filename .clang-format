@@ -1,4 +1,5 @@
 # QThemeEngine — Microsoft-based clang-format (Tab width 4, access modifiers flush, namespaces indented).
+# Include guards are NOT a clang-format concern — see .cursor/rules/cpp-include-guards.mdc.
 
 BasedOnStyle: Microsoft
 Language: Cpp

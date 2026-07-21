@@ -1,0 +1,36 @@
+---
+description: C++ header include-guard style __TARGET_FILE_H__
+globs: "**/*.{h,hpp,hxx,hh}"
+alwaysApply: false
+---
+
+# Include guards
+
+Do **not** use `#pragma once`. Use:
+
+```text
+__{TARGET}_{FILENAME}_H__
+```
+
+- **TARGET**: CMake 库/可执行目标名，大写（`qtheme_engine` → `QTHEME_ENGINE`，`qtheme_demo` → `QTHEME_DEMO`）
+- **FILENAME**: 文件名 stem 大写（`engine.hpp` → `ENGINE`）；同目标下重名时加父目录（如 `QTHEME_COLOR_UTIL` / `THEME_COLOR_UTIL`）
+- 后缀统一 `_H__`（含 `.hpp`）
+- 形如 `__…_H__`（双下划线前缀/后缀）为本仓库约定
+
+## Examples
+
+```cpp
+// include/qtheme/engine.hpp  (target: qtheme_engine)
+#ifndef __QTHEME_ENGINE_ENGINE_H__
+#define __QTHEME_ENGINE_ENGINE_H__
+// ...
+#endif  // __QTHEME_ENGINE_ENGINE_H__
+
+// examples/native_controls/gallery.hpp  (target: qtheme_demo)
+#ifndef __QTHEME_DEMO_GALLERY_H__
+#define __QTHEME_DEMO_GALLERY_H__
+```
+
+## Enforcement
+
+Not clang-format. Follow this Cursor rule when editing headers.

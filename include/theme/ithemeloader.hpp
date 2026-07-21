@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_ITHEMELOADER_H__
+#define __QTHEME_ENGINE_ITHEMELOADER_H__
 
 #include <QColor>
 #include <QString>
@@ -49,3 +50,5 @@ namespace theme
 		virtual bool hasClass(const QString& className) const = 0;
 	};
 } // namespace theme
+
+#endif  // __QTHEME_ENGINE_ITHEMELOADER_H__

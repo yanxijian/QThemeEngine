@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_THEMELOADER_H__
+#define __QTHEME_ENGINE_THEMELOADER_H__
 
 #include "ithemeloader.hpp"
 
@@ -29,3 +30,5 @@ namespace theme
 		QHash<QString, std::shared_ptr<ThemeStyle>> styleMap_;
 	};
 } // namespace theme
+
+#endif  // __QTHEME_ENGINE_THEMELOADER_H__

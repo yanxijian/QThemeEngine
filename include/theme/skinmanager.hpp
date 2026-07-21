@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_SKINMANAGER_H__
+#define __QTHEME_ENGINE_SKINMANAGER_H__
 
 #include "iskinmanager.hpp"
 #include "themeloader.hpp"
@@ -31,3 +32,5 @@ namespace theme
 		bool inited_ = false;
 	};
 } // namespace theme
+
+#endif  // __QTHEME_ENGINE_SKINMANAGER_H__

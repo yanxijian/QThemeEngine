@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_API_H__
+#define __QTHEME_ENGINE_API_H__
 
 #include "types.hpp"
 
@@ -29,3 +30,5 @@ QString roleWithState(const QString& baseRole, const QStyleOption* option);
 } // namespace api
 
 } // namespace qtheme
+
+#endif  // __QTHEME_ENGINE_API_H__

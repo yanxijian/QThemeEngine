@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_THEMEAPI_H__
+#define __QTHEME_ENGINE_THEMEAPI_H__
 
 #include <QColor>
 #include <QObject>
@@ -25,3 +26,5 @@ namespace theme
 		QString propWithState(const QString& baseProp, const QStyleOption* option);
 	} // namespace ThemeApi
 } // namespace theme
+
+#endif  // __QTHEME_ENGINE_THEMEAPI_H__

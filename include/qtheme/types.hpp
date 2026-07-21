@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_TYPES_H__
+#define __QTHEME_ENGINE_TYPES_H__
 
 #include <QColor>
 #include <QString>
@@ -40,3 +41,5 @@ enum class ColorScheme
 };
 
 } // namespace qtheme
+
+#endif  // __QTHEME_ENGINE_TYPES_H__

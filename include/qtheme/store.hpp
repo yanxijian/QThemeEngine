@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_STORE_H__
+#define __QTHEME_ENGINE_STORE_H__
 
 #include "types.hpp"
 
@@ -57,3 +58,5 @@ private:
 };
 
 } // namespace qtheme
+
+#endif  // __QTHEME_ENGINE_STORE_H__

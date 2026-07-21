@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_ISKINMANAGER_H__
+#define __QTHEME_ENGINE_ISKINMANAGER_H__
 
 #include "ithemeloader.hpp"
 
@@ -24,3 +25,5 @@ namespace theme
 		//   void skinChanged(const QString& previous, const QString& current);
 	};
 } // namespace theme
+
+#endif  // __QTHEME_ENGINE_ISKINMANAGER_H__

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __QTHEME_ENGINE_DEMOBUTTON_H__
+#define __QTHEME_ENGINE_DEMOBUTTON_H__
 
 #include <QEnterEvent>
 #include <QEvent>
@@ -36,3 +37,5 @@ private:
 };
 
 } // namespace qtheme
+
+#endif  // __QTHEME_ENGINE_DEMOBUTTON_H__
