@@ -38,23 +38,31 @@
       "fg.disabled": "#A0A0A0",
       "border": "#D1D1D1",
       "border.focus": "#0078D4",
-      "border.hover": "#8A8A8A"
+      "border.hover": "#8A8A8A",
+      "border.disabled": "#E0E0E0"
     },
     "check": {
       "bg": "#FFFFFF",
       "bg.checked": "#0078D4",
       "bg.hover": "#F5F5F5",
+      "bg.disabled": "#F5F5F5",
+      "bg.checked.disabled": "#C8C8C8",
       "border": "#8A8A8A",
       "border.checked": "#0078D4",
+      "border.disabled": "#C8C8C8",
       "indicator": "#FFFFFF",
-      "fg": "#1A1A1A"
+      "indicator.disabled": "#F0F0F0",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0"
     },
     "tab": {
       "bg": "#F3F3F3",
       "bg.selected": "#FFFFFF",
       "bg.hover": "#EAEAEA",
+      "bg.disabled": "#F3F3F3",
       "fg": "#5C5C5C",
       "fg.selected": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
       "border": "#E0E0E0",
       "indicator": "#0078D4"
     },
@@ -62,7 +70,51 @@
       "groove": "#F3F3F3",
       "handle": "#C8C8C8",
       "handle.hover": "#A8A8A8",
-      "handle.pressed": "#888888"
+      "handle.pressed": "#888888",
+      "handle.disabled": "#E0E0E0",
+      "arrow": "#5C5C5C",
+      "arrow.disabled": "#A0A0A0"
+    },
+    "menu": {
+      "bg": "#F9F9F9",
+      "bg.hover": "#E8E8E8",
+      "bg.disabled": "#F9F9F9",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
+      "fg.selected": "#1A1A1A",
+      "border": "#D1D1D1",
+      "separator": "#E0E0E0",
+      "bar.bg": "#F3F3F3",
+      "bar.bg.hover": "#E8E8E8",
+      "bar.bg.pressed": "#E0E0E0",
+      "bar.fg": "#1A1A1A"
+    },
+    "toolbar": {
+      "bg": "#F3F3F3",
+      "border": "#E0E0E0",
+      "separator": "#D1D1D1",
+      "handle": "#C8C8C8"
+    },
+    "combo": {
+      "bg": "#FFFFFF",
+      "bg.hover": "#F5F5F5",
+      "bg.pressed": "#EBEBEB",
+      "bg.disabled": "#F9F9F9",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
+      "border": "#D1D1D1",
+      "border.focus": "#0078D4",
+      "border.hover": "#8A8A8A",
+      "arrow": "#5C5C5C",
+      "arrow.disabled": "#A0A0A0"
+    },
+    "header": {
+      "bg": "#F3F3F3",
+      "bg.hover": "#EAEAEA",
+      "bg.pressed": "#E0E0E0",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
+      "border": "#E0E0E0"
     },
     "DemoButton": {
       "background": "#FFFFFF",

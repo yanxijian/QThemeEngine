@@ -38,23 +38,31 @@
       "fg.disabled": "#808080",
       "border": "#FFFFFF",
       "border.focus": "#FFFF00",
-      "border.hover": "#FFFFFF"
+      "border.hover": "#FFFFFF",
+      "border.disabled": "#808080"
     },
     "check": {
       "bg": "#000000",
       "bg.checked": "#FFFF00",
       "bg.hover": "#1A1A1A",
+      "bg.disabled": "#000000",
+      "bg.checked.disabled": "#808080",
       "border": "#FFFFFF",
       "border.checked": "#FFFF00",
+      "border.disabled": "#808080",
       "indicator": "#000000",
-      "fg": "#FFFFFF"
+      "indicator.disabled": "#000000",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080"
     },
     "tab": {
       "bg": "#000000",
       "bg.selected": "#000000",
       "bg.hover": "#1A1A1A",
+      "bg.disabled": "#000000",
       "fg": "#FFFFFF",
       "fg.selected": "#FFFF00",
+      "fg.disabled": "#808080",
       "border": "#FFFFFF",
       "indicator": "#FFFF00"
     },
@@ -62,7 +70,51 @@
       "groove": "#000000",
       "handle": "#FFFFFF",
       "handle.hover": "#FFFF00",
-      "handle.pressed": "#FFFF00"
+      "handle.pressed": "#FFFF00",
+      "handle.disabled": "#808080",
+      "arrow": "#FFFFFF",
+      "arrow.disabled": "#808080"
+    },
+    "menu": {
+      "bg": "#000000",
+      "bg.hover": "#1A1A1A",
+      "bg.disabled": "#000000",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "fg.selected": "#FFFF00",
+      "border": "#FFFFFF",
+      "separator": "#FFFFFF",
+      "bar.bg": "#000000",
+      "bar.bg.hover": "#1A1A1A",
+      "bar.bg.pressed": "#333333",
+      "bar.fg": "#FFFFFF"
+    },
+    "toolbar": {
+      "bg": "#000000",
+      "border": "#FFFFFF",
+      "separator": "#FFFFFF",
+      "handle": "#FFFFFF"
+    },
+    "combo": {
+      "bg": "#000000",
+      "bg.hover": "#1A1A1A",
+      "bg.pressed": "#333333",
+      "bg.disabled": "#000000",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "border": "#FFFFFF",
+      "border.focus": "#FFFF00",
+      "border.hover": "#FFFFFF",
+      "arrow": "#FFFFFF",
+      "arrow.disabled": "#808080"
+    },
+    "header": {
+      "bg": "#000000",
+      "bg.hover": "#1A1A1A",
+      "bg.pressed": "#333333",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "border": "#FFFFFF"
     },
     "DemoButton": {
       "background": "#000000",
@@ -78,6 +130,10 @@
     "check": { "indicator": 18, "radius": 0 },
     "tab": { "radius": 0, "height": 32 },
     "scroll": { "thickness": 12, "radius": 0 },
+    "menu": { "radius": 0, "itemHeight": 32 },
+    "toolbar": { "radius": 0 },
+    "combo": { "radius": 0 },
+    "header": { "radius": 0, "height": 32 },
     "DemoButton": { "borderRadius": 0 }
   }
 }

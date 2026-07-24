@@ -20,6 +20,7 @@ private slots:
 	void store_beginUpdateBatchesGeneration();
 	void pack_materializeLightFromJson();
 	void pack_userSampleDerivesFromLight();
+	void pack_t0ChromeTokensPresent();
 	void accent_patchUpdatesHighlight();
 	void accent_systemHighContrastApi();
 	void engine_switchFluentSkins();
@@ -100,6 +101,30 @@ void ThemeSmokeTest::pack_userSampleDerivesFromLight()
 	QVERIFY(accent.ok);
 	QCOMPARE(accent.value, QColor(QStringLiteral("#D83B01")));
 	QVERIFY(store.hasColor(QStringLiteral("button"), QStringLiteral("bg")));
+}
+
+void ThemeSmokeTest::pack_t0ChromeTokensPresent()
+{
+	qtheme::ThemeStore s;
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), &s));
+	QVERIFY(s.hasColor(QStringLiteral("menu"), QStringLiteral("bg")));
+	QVERIFY(s.hasColor(QStringLiteral("menu"), QStringLiteral("bg.hover")));
+	QVERIFY(s.hasColor(QStringLiteral("menu"), QStringLiteral("fg.disabled")));
+	QVERIFY(s.hasColor(QStringLiteral("toolbar"), QStringLiteral("bg")));
+	QVERIFY(s.hasColor(QStringLiteral("combo"), QStringLiteral("bg.hover")));
+	QVERIFY(s.hasColor(QStringLiteral("combo"), QStringLiteral("border.focus")));
+	QVERIFY(s.hasColor(QStringLiteral("header"), QStringLiteral("bg.pressed")));
+	QVERIFY(s.hasColor(QStringLiteral("check"), QStringLiteral("bg.disabled")));
+	QVERIFY(s.hasColor(QStringLiteral("tab"), QStringLiteral("fg.disabled")));
+	QVERIFY(s.hasColor(QStringLiteral("scroll"), QStringLiteral("handle.disabled")));
+
+	qtheme::ThemeStore dark;
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), &dark));
+	QVERIFY(dark.hasColor(QStringLiteral("combo"), QStringLiteral("arrow")));
+	qtheme::ThemeStore hc;
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), &hc));
+	QCOMPARE(hc.metric(QStringLiteral("combo"), QStringLiteral("radius"), -1), 0);
+	QCOMPARE(hc.metric(QStringLiteral("menu"), QStringLiteral("radius"), -1), 0);
 }
 
 void ThemeSmokeTest::accent_patchUpdatesHighlight()

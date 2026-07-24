@@ -5,6 +5,10 @@
     "check": { "indicator": 18, "radius": 3 },
     "tab": { "radius": 4, "height": 32 },
     "scroll": { "thickness": 10, "radius": 4 },
+    "menu": { "radius": 4, "itemHeight": 28, "separatorHeight": 1 },
+    "toolbar": { "radius": 0, "padding": 4 },
+    "combo": { "radius": 4 },
+    "header": { "radius": 0, "height": 28 },
     "DemoButton": { "borderRadius": 4 }
   }
 }
