@@ -2,12 +2,14 @@
 
 #include <QAbstractScrollArea>
 #include <QCalendarWidget>
+#include <QEvent>
 #include <QFrame>
 #include <QMenu>
 #include <QtMath>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPlainTextEdit>
+#include <QRegion>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QStyleFactory>
@@ -26,6 +28,7 @@
 #include <QStyleOptionToolButton>
 #include <QStyleOptionViewItem>
 #include <QTextEdit>
+#include <QVariant>
 
 namespace qtheme {
 
@@ -112,13 +115,35 @@ void polishRoundedPopup(QWidget* widget, int radius)
 	{
 		return;
 	}
-	// Top-level popups are opaque rectangles; rounded PE_* fills leave sharp window corners.
-	// Enable alpha before the native window is created (polish runs first).
-	widget->setAttribute(Qt::WA_TranslucentBackground, true);
-	widget->setAttribute(Qt::WA_NoSystemBackground, true);
+	// WA_TranslucentBackground often clears to black on Windows popups without a true
+	// alpha surface. Clip the HWND to a rounded region instead (opaque paint stays valid).
+	widget->setProperty("qtheme.popupRadius", radius);
 	widget->setAutoFillBackground(false);
-	// Rectangular OS drop shadow does not follow rounded corners.
+	widget->setAttribute(Qt::WA_TranslucentBackground, false);
+	widget->setAttribute(Qt::WA_NoSystemBackground, false);
 	widget->setWindowFlag(Qt::NoDropShadowWindowHint, true);
+}
+
+void applyRoundedPopupMask(QWidget* widget)
+{
+	if (!widget)
+	{
+		return;
+	}
+	const QVariant radiusVar = widget->property("qtheme.popupRadius");
+	if (!radiusVar.isValid())
+	{
+		return;
+	}
+	const int radius = radiusVar.toInt();
+	if (radius <= 0 || widget->width() <= 0 || widget->height() <= 0)
+	{
+		widget->clearMask();
+		return;
+	}
+	QPainterPath path;
+	path.addRoundedRect(QRectF(widget->rect()), radius, radius);
+	widget->setMask(QRegion(path.toFillPolygon().toPolygon()));
 }
 
 } // namespace
@@ -146,20 +171,25 @@ void QThemeStyle::setDpiScale(qreal scale)
 
 void QThemeStyle::polish(QWidget* widget)
 {
+	const bool roundedPopup =
+		widget && m_store
+		&& (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel"));
+	if (roundedPopup)
+	{
+		const QString group = qobject_cast<QMenu*>(widget) ? QStringLiteral("menu")
+															: QStringLiteral("tooltip");
+		polishRoundedPopup(widget, roleMetric(group, QStringLiteral("radius"), 4));
+		if (widget->property("qtheme.popupRadius").isValid())
+		{
+			widget->installEventFilter(this);
+		}
+	}
+
 	QProxyStyle::polish(widget);
-	if (!widget || !m_store)
+
+	if (roundedPopup)
 	{
-		return;
-	}
-	if (qobject_cast<QMenu*>(widget))
-	{
-		polishRoundedPopup(widget, roleMetric(QStringLiteral("menu"), QStringLiteral("radius"), 4));
-		return;
-	}
-	// QTipLabel is private; match by class name used across Qt versions.
-	if (widget->inherits("QTipLabel"))
-	{
-		polishRoundedPopup(widget, roleMetric(QStringLiteral("tooltip"), QStringLiteral("radius"), 4));
+		applyRoundedPopupMask(widget);
 	}
 }
 
@@ -167,10 +197,30 @@ void QThemeStyle::unpolish(QWidget* widget)
 {
 	if (widget && (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel")))
 	{
+		widget->removeEventFilter(this);
+		widget->clearMask();
+		widget->setProperty("qtheme.popupRadius", QVariant());
 		widget->setAttribute(Qt::WA_TranslucentBackground, false);
 		widget->setAttribute(Qt::WA_NoSystemBackground, false);
 	}
 	QProxyStyle::unpolish(widget);
+}
+
+bool QThemeStyle::eventFilter(QObject* watched, QEvent* event)
+{
+	if (event
+		&& (event->type() == QEvent::Resize || event->type() == QEvent::Show
+			|| event->type() == QEvent::PolishRequest))
+	{
+		if (auto* widget = qobject_cast<QWidget*>(watched))
+		{
+			if (widget->property("qtheme.popupRadius").isValid())
+			{
+				applyRoundedPopupMask(widget);
+			}
+		}
+	}
+	return QProxyStyle::eventFilter(watched, event);
 }
 
 QColor QThemeStyle::roleColor(const QString& group, const QString& role, const QColor& fallback) const
