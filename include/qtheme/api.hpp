@@ -8,27 +8,25 @@
 #include <QString>
 #include <QStyleOption>
 
-namespace qtheme {
+namespace qtheme
+{
+	class Engine;
 
-class Engine;
+	/// Thin facade for owner-drawn widgets (secondary path). Reads Engine::defaultEngine().
+	namespace api
+	{
+		void bind(Engine* engine);
+		Engine* engine();
+		QObject* engineObject();
 
-/// Thin facade for owner-drawn widgets (secondary path). Reads Engine::defaultEngine().
-namespace api {
+		QColor color(const QString& group, const QString& role, const QColor& def = QColor());
+		int metric(const QString& group, const QString& role, int def = 0);
 
-void bind(Engine* engine);
-Engine* engine();
-QObject* engineObject();
+		QString className(const QObject* obj);
+		void setClassName(QObject* obj, const QString& name);
 
-QColor color(const QString& group, const QString& role, const QColor& def = QColor());
-int metric(const QString& group, const QString& role, int def = 0);
-
-QString className(const QObject* obj);
-void setClassName(QObject* obj, const QString& name);
-
-QString roleWithState(const QString& baseRole, const QStyleOption* option);
-
-} // namespace api
-
+		QString roleWithState(const QString& baseRole, const QStyleOption* option);
+	} // namespace api
 } // namespace qtheme
 
-#endif  // __QTHEME_ENGINE_API_H__
+#endif // __QTHEME_ENGINE_API_H__

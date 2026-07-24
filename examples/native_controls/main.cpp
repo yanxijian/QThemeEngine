@@ -1,5 +1,4 @@
 #include "gallery.hpp"
-
 #include "qtheme/engine.hpp"
 #include "qtheme/types.hpp"
 
@@ -33,8 +32,8 @@ int main(int argc, char** argv)
 	QPixmap splashPm(420, 180);
 	splashPm.fill(QColor(QStringLiteral("#0078D4")));
 	QSplashScreen splash(splashPm);
-	splash.showMessage(QStringLiteral("QThemeEngine — Fluent packs\nThemeStore + QThemeStyle (no QSS)"),
-					   Qt::AlignCenter | Qt::AlignBottom, Qt::white);
+	splash.showMessage(QStringLiteral("QThemeEngine — Fluent packs\nThemeStore + QThemeStyle (no QSS)"), Qt::AlignCenter | Qt::AlignBottom,
+					   Qt::white);
 	splash.show();
 	app.processEvents();
 
@@ -136,8 +135,7 @@ int main(int argc, char** argv)
 	QObject::connect(actAccentPick, &QAction::triggered, &window,
 					 [&engine, &window]
 					 {
-						 const QColor c = QColorDialog::getColor(engine.accent(), &window,
-																QStringLiteral("Accent color"));
+						 const QColor c = QColorDialog::getColor(engine.accent(), &window, QStringLiteral("Accent color"));
 						 if (c.isValid())
 						 {
 							 engine.setAccent(c);
@@ -197,8 +195,7 @@ int main(int argc, char** argv)
 
 	QString checkReport;
 	const bool checkOk = gallery::verifyGallerySession(&app, &window, &checkReport);
-	window.statusBar()->showMessage(
-		QStringLiteral("Skin: %1 | %2").arg(engine.currentSkin(), checkReport));
+	window.statusBar()->showMessage(QStringLiteral("Skin: %1 | %2").arg(engine.currentSkin(), checkReport));
 	if (!checkOk)
 	{
 		qWarning("gallery self-check failed: %s", qPrintable(checkReport));
@@ -216,8 +213,7 @@ int main(int argc, char** argv)
 		const bool ok = gallery::verifyGallerySession(&app, &window, &report);
 		Q_UNUSED(ok);
 		window.statusBar()->showMessage(
-			QStringLiteral("Skin: %1 | accent: %2 | %3")
-				.arg(engine.currentSkin(), engine.accent().name(), report));
+			QStringLiteral("Skin: %1 | accent: %2 | %3").arg(engine.currentSkin(), engine.accent().name(), report));
 		permanent->setText(engine.currentSkin());
 	};
 

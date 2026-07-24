@@ -27,4 +27,4 @@ namespace theme
 	} // namespace ThemeApi
 } // namespace theme
 
-#endif  // __QTHEME_ENGINE_THEMEAPI_H__
+#endif // __QTHEME_ENGINE_THEMEAPI_H__

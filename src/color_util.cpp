@@ -40,7 +40,7 @@ namespace theme
 
 	bool hasUtf8Bom(const QByteArray& bytes)
 	{
-		return bytes.size() >= 3 && static_cast<unsigned char>(bytes[0]) == 0xEF
-			   && static_cast<unsigned char>(bytes[1]) == 0xBB && static_cast<unsigned char>(bytes[2]) == 0xBF;
+		return bytes.size() >= 3 && static_cast<unsigned char>(bytes[0]) == 0xEF && static_cast<unsigned char>(bytes[1]) == 0xBB
+			   && static_cast<unsigned char>(bytes[2]) == 0xBF;
 	}
 } // namespace theme

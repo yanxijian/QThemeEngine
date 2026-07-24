@@ -4,42 +4,41 @@
 #include <QColor>
 #include <QString>
 
-namespace qtheme {
-
-/// Qt dynamic property for owner-drawn widgets (secondary path).
-inline constexpr char kClassProperty[] = "qtheme.class";
-
-inline constexpr char kPackFluentLight[] = "fluent.light";
-inline constexpr char kPackFluentDark[] = "fluent.dark";
-inline constexpr char kPackFluentHc[] = "fluent.hc";
-
-struct ColorValue
+namespace qtheme
 {
-	QColor value;
-	bool ok = false;
-};
+	/// Qt dynamic property for owner-drawn widgets (secondary path).
+	inline constexpr char kClassProperty[] = "qtheme.class";
 
-enum class Error
-{
-	None = 0,
-	FileNotFound,
-	InvalidEncoding,
-	XmlParseError,
-	JsonParseError,
-	NoMatchingTheme,
-	SkinNotFound,
-	PackInvalid,
-	PackMissingTokens,
-};
+	inline constexpr char kPackFluentLight[] = "fluent.light";
+	inline constexpr char kPackFluentDark[] = "fluent.dark";
+	inline constexpr char kPackFluentHc[] = "fluent.hc";
 
-enum class ColorScheme
-{
-	Light = 0,
-	Dark,
-	HighContrast,
-	System,
-};
+	struct ColorValue
+	{
+		QColor value;
+		bool ok = false;
+	};
 
+	enum class Error
+	{
+		None = 0,
+		FileNotFound,
+		InvalidEncoding,
+		XmlParseError,
+		JsonParseError,
+		NoMatchingTheme,
+		SkinNotFound,
+		PackInvalid,
+		PackMissingTokens,
+	};
+
+	enum class ColorScheme
+	{
+		Light = 0,
+		Dark,
+		HighContrast,
+		System,
+	};
 } // namespace qtheme
 
-#endif  // __QTHEME_ENGINE_TYPES_H__
+#endif // __QTHEME_ENGINE_TYPES_H__

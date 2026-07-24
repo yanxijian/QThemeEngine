@@ -188,12 +188,9 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QCOMPARE(s.metric(QStringLiteral("splitter"), QStringLiteral("width"), -1), 6);
 	QVERIFY(s.hasColor(QStringLiteral("textedit"), QStringLiteral("border.focus")));
 	QVERIFY(s.hasColor(QStringLiteral("edit"), QStringLiteral("fg.placeholder")));
-	QCOMPARE(s.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value,
-			 QColor(QStringLiteral("#616161")));
-	QCOMPARE(s.color(QStringLiteral("combo"), QStringLiteral("fg.placeholder")).value,
-			 QColor(QStringLiteral("#616161")));
-	QCOMPARE(s.color(QStringLiteral("palette"), QStringLiteral("text.tertiary")).value,
-			 QColor(QStringLiteral("#8D8D8D")));
+	QCOMPARE(s.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value, QColor(QStringLiteral("#616161")));
+	QCOMPARE(s.color(QStringLiteral("combo"), QStringLiteral("fg.placeholder")).value, QColor(QStringLiteral("#616161")));
+	QCOMPARE(s.color(QStringLiteral("palette"), QStringLiteral("text.tertiary")).value, QColor(QStringLiteral("#8D8D8D")));
 	QVERIFY(s.hasColor(QStringLiteral("palette"), QStringLiteral("focus.outer")));
 	QVERIFY(s.hasColor(QStringLiteral("palette"), QStringLiteral("focus.inner")));
 	QVERIFY(s.hasColor(QStringLiteral("progress"), QStringLiteral("chunk.paused")));
@@ -208,19 +205,14 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	qtheme::ThemeStore dark;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), &dark));
 	QVERIFY(dark.hasColor(QStringLiteral("combo"), QStringLiteral("arrow")));
-	QCOMPARE(dark.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value,
-			 QColor(QStringLiteral("#CFCFCF")));
-	QCOMPARE(dark.color(QStringLiteral("progress"), QStringLiteral("chunk.paused")).value,
-			 QColor(QStringLiteral("#FCE100")));
-	QCOMPARE(dark.color(QStringLiteral("progress"), QStringLiteral("chunk.error")).value,
-			 QColor(QStringLiteral("#FF99A4")));
+	QCOMPARE(dark.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value, QColor(QStringLiteral("#CFCFCF")));
+	QCOMPARE(dark.color(QStringLiteral("progress"), QStringLiteral("chunk.paused")).value, QColor(QStringLiteral("#FCE100")));
+	QCOMPARE(dark.color(QStringLiteral("progress"), QStringLiteral("chunk.error")).value, QColor(QStringLiteral("#FF99A4")));
 	auto darkShared = std::make_shared<qtheme::ThemeStore>();
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), darkShared.get()));
 	qtheme::QThemeStyle darkStyle(darkShared);
-	QCOMPARE(darkStyle.standardPalette().color(QPalette::PlaceholderText),
-			 QColor(QStringLiteral("#CFCFCF")));
-	QCOMPARE(darkStyle.standardPalette().color(QPalette::BrightText),
-			 QColor(QStringLiteral("#9C9C9C")));
+	QCOMPARE(darkStyle.standardPalette().color(QPalette::PlaceholderText), QColor(QStringLiteral("#CFCFCF")));
+	QCOMPARE(darkStyle.standardPalette().color(QPalette::BrightText), QColor(QStringLiteral("#9C9C9C")));
 	qtheme::ThemeStore hc;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), &hc));
 	QCOMPARE(hc.metric(QStringLiteral("combo"), QStringLiteral("radius"), -1), 0);
@@ -266,13 +258,17 @@ void ThemeSmokeTest::style_menuRoundedPanelClearsCorners()
 		lightStyle.drawPrimitive(QStyle::PE_PanelMenu, &opt, &painter, nullptr);
 	}
 
-	auto cornerAlpha = [&img](int x, int y) { return qAlpha(img.pixel(x, y)); };
+	auto cornerAlpha = [&img](int x, int y)
+	{
+		return qAlpha(img.pixel(x, y));
+	};
 	QCOMPARE(cornerAlpha(0, 0), 0);
 	QCOMPARE(cornerAlpha(img.width() - 1, img.height() - 1), 0);
 	QCOMPARE(cornerAlpha(0, img.height() - 1), 0);
 	QCOMPARE(cornerAlpha(img.width() - 1, 0), 0);
 
-	auto opaqueNear = [&img](int x, int y) {
+	auto opaqueNear = [&img](int x, int y)
+	{
 		return qAlpha(img.pixel(qBound(0, x, img.width() - 1), qBound(0, y, img.height() - 1))) > 200;
 	};
 	QVERIFY(opaqueNear(img.width() / 2, 1));
@@ -297,8 +293,7 @@ void ThemeSmokeTest::style_menuRoundedPanelClearsCorners()
 		const QColor hover = light->color(QStringLiteral("menu"), QStringLiteral("bg.hover")).value;
 		const QRgb corner = itemImg.pixel(0, itemImg.height() - 1);
 		const QRgb mid = itemImg.pixel(itemImg.width() / 2, itemImg.height() / 2);
-		QVERIFY2(qAlpha(corner) < 16 || QColor::fromRgba(corner) != hover,
-				 "item corner must not be square hover fill");
+		QVERIFY2(qAlpha(corner) < 16 || QColor::fromRgba(corner) != hover, "item corner must not be square hover fill");
 		QCOMPARE(QColor::fromRgba(mid).rgb(), hover.rgb());
 	}
 
@@ -316,8 +311,7 @@ void ThemeSmokeTest::style_menuRoundedPanelClearsCorners()
 	live.hide();
 	QVERIFY(!grabbed.isNull());
 	QVERIFY2(qAlpha(grabbed.pixel(0, 0)) < 16, "top-left corner should be transparent");
-	QVERIFY2(qAlpha(grabbed.pixel(grabbed.width() - 1, grabbed.height() - 1)) < 16,
-			 "bottom-right corner should be transparent");
+	QVERIFY2(qAlpha(grabbed.pixel(grabbed.width() - 1, grabbed.height() - 1)) < 16, "bottom-right corner should be transparent");
 
 	auto hc = std::make_shared<qtheme::ThemeStore>();
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), hc.get()));
@@ -417,8 +411,7 @@ void ThemeSmokeTest::engine_switchFluentSkins()
 	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::HighContrast));
 	QVERIFY(engine.setAccent(QColor(QStringLiteral("#112233"))));
 	QCOMPARE(engine.accent(), QColor(QStringLiteral("#112233")));
-	QVERIFY(engine.store()->color(QStringLiteral("palette"), QStringLiteral("accent")).value
-			== QColor(QStringLiteral("#112233")));
+	QVERIFY(engine.store()->color(QStringLiteral("palette"), QStringLiteral("accent")).value == QColor(QStringLiteral("#112233")));
 }
 
 void ThemeSmokeTest::engine_userPackKeepsColorScheme()
@@ -505,8 +498,7 @@ void ThemeSmokeTest::pack_registerDirectory()
 	QVERIFY(reg.hasPack(QStringLiteral("ext.brand")));
 	qtheme::ThemeStore store;
 	QVERIFY(reg.materialize(QStringLiteral("ext.brand"), &store, nullptr));
-	QCOMPARE(store.color(QStringLiteral("palette"), QStringLiteral("accent")).value,
-			 QColor(QStringLiteral("#FF00AA")));
+	QCOMPARE(store.color(QStringLiteral("palette"), QStringLiteral("accent")).value, QColor(QStringLiteral("#FF00AA")));
 }
 
 void ThemeSmokeTest::style_pushButtonLightDiffersFromDark()
@@ -556,8 +548,7 @@ void ThemeSmokeTest::style_checkBoxCheckedNearAccent()
 		for (int x = 0; x < qMin(28, img.width()); ++x)
 		{
 			const QColor c = img.pixelColor(x, y);
-			const int dist = qAbs(c.red() - accent.red()) + qAbs(c.green() - accent.green())
-							 + qAbs(c.blue() - accent.blue());
+			const int dist = qAbs(c.red() - accent.red()) + qAbs(c.green() - accent.green()) + qAbs(c.blue() - accent.blue());
 			if (dist < 100)
 			{
 				found = true;

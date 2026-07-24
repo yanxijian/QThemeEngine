@@ -12,8 +12,8 @@ namespace theme
 	ThemeLoader::ThemeLoader() = default;
 	ThemeLoader::~ThemeLoader() = default;
 
-	bool ThemeLoader::setupXml(const QString& /*filePath*/, const QString& /*relatedSkinName*/,
-							   const QStringList& /*searchPaths*/, ThemeError* err)
+	bool ThemeLoader::setupXml(const QString& /*filePath*/, const QString& /*relatedSkinName*/, const QStringList& /*searchPaths*/,
+							   ThemeError* err)
 	{
 		// L0: implement per docs/zh/theme-engine-spec.md T2.4
 		if (err)

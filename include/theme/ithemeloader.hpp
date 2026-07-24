@@ -42,8 +42,7 @@ namespace theme
 
 		virtual void resetXml(ThemeResetMode mode) = 0;
 
-		virtual ThemeColor color(const QString& className, const QString& propName,
-								 const QColor& def = QColor()) const = 0;
+		virtual ThemeColor color(const QString& className, const QString& propName, const QColor& def = QColor()) const = 0;
 
 		virtual int hint(const QString& className, const QString& propName, int def = 0, bool* ok = nullptr) const = 0;
 
@@ -51,4 +50,4 @@ namespace theme
 	};
 } // namespace theme
 
-#endif  // __QTHEME_ENGINE_ITHEMELOADER_H__
+#endif // __QTHEME_ENGINE_ITHEMELOADER_H__

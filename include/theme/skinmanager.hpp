@@ -33,4 +33,4 @@ namespace theme
 	};
 } // namespace theme
 
-#endif  // __QTHEME_ENGINE_SKINMANAGER_H__
+#endif // __QTHEME_ENGINE_SKINMANAGER_H__

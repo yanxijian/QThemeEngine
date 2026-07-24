@@ -15,4 +15,4 @@ namespace theme
 	[[nodiscard]] bool hasUtf8Bom(const QByteArray& bytes);
 } // namespace theme
 
-#endif  // __QTHEME_ENGINE_THEME_COLOR_UTIL_H__
+#endif // __QTHEME_ENGINE_THEME_COLOR_UTIL_H__

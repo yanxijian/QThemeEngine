@@ -14,7 +14,7 @@ NamespaceIndentation: All
 IndentCaseLabels: false
 IndentPPDirectives: None
 
-ColumnLimit: 120
+ColumnLimit: 140
 ReflowComments: false
 MaxEmptyLinesToKeep: 1
 KeepEmptyLinesAtTheStartOfBlocks: false

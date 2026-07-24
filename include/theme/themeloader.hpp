@@ -22,8 +22,7 @@ namespace theme
 					  ThemeError* err = nullptr) override;
 		void resetXml(ThemeResetMode mode) override;
 
-		ThemeColor color(const QString& className, const QString& propName,
-						 const QColor& def = QColor()) const override;
+		ThemeColor color(const QString& className, const QString& propName, const QColor& def = QColor()) const override;
 		int hint(const QString& className, const QString& propName, int def = 0, bool* ok = nullptr) const override;
 		bool hasClass(const QString& className) const override;
 
@@ -33,4 +32,4 @@ namespace theme
 	};
 } // namespace theme
 
-#endif  // __QTHEME_ENGINE_THEMELOADER_H__
+#endif // __QTHEME_ENGINE_THEMELOADER_H__
