@@ -52,8 +52,8 @@
 | `palette.*` | 全局语义 Token |
 | `button.*` | 按钮面/文/边/圆角/边距 / accent |
 | `commandlink.*` | 命令链接标题/说明 |
-| `edit.*` | 输入框 |
-| `textedit.*` | 多行编辑 / 滚动区外框 |
+| `edit.*` | 输入框（含 `fg.placeholder` → `QPalette::PlaceholderText`） |
+| `textedit.*` | 多行编辑 / 滚动区外框（含 `fg.placeholder`） |
 | `check.*` | 复选 / 单选指示器 |
 | `scroll.*` | 滚动条 |
 | `tab.*` | 标签页 |

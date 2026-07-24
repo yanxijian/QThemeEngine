@@ -208,6 +208,16 @@ QPalette QThemeStyle::standardPalette() const
 	{
 		pal.setColor(QPalette::Disabled, QPalette::Text, editFgDis.value);
 	}
+	// Fluent TextControlPlaceholderForeground ≈ TextFillColorSecondary/Tertiary (not primary Text).
+	const ColorValue editPlaceholder =
+		m_store->color(QStringLiteral("edit"), QStringLiteral("fg.placeholder"));
+	if (editPlaceholder.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::PlaceholderText, editPlaceholder.value);
+		pal.setColor(QPalette::Inactive, QPalette::PlaceholderText, editPlaceholder.value);
+		pal.setColor(QPalette::Disabled, QPalette::PlaceholderText,
+					 editFgDis.ok ? editFgDis.value : editPlaceholder.value);
+	}
 
 	const ColorValue tipBg = m_store->color(QStringLiteral("tooltip"), QStringLiteral("bg"));
 	if (tipBg.ok)

@@ -160,12 +160,22 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QCOMPARE(s.metric(QStringLiteral("tooltip"), QStringLiteral("padding"), -1), 6);
 	QCOMPARE(s.metric(QStringLiteral("splitter"), QStringLiteral("width"), -1), 6);
 	QVERIFY(s.hasColor(QStringLiteral("textedit"), QStringLiteral("border.focus")));
+	QVERIFY(s.hasColor(QStringLiteral("edit"), QStringLiteral("fg.placeholder")));
+	QCOMPARE(s.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value,
+			 QColor(QStringLiteral("#717171")));
 	QVERIFY(s.hasColor(QStringLiteral("dock"), QStringLiteral("title.bg")));
 	QVERIFY(s.hasColor(QStringLiteral("dial"), QStringLiteral("fill")));
 
 	qtheme::ThemeStore dark;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), &dark));
 	QVERIFY(dark.hasColor(QStringLiteral("combo"), QStringLiteral("arrow")));
+	QCOMPARE(dark.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value,
+			 QColor(QStringLiteral("#9A9A9A")));
+	auto darkShared = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), darkShared.get()));
+	qtheme::QThemeStyle darkStyle(darkShared);
+	QCOMPARE(darkStyle.standardPalette().color(QPalette::PlaceholderText),
+			 QColor(QStringLiteral("#9A9A9A")));
 	qtheme::ThemeStore hc;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), &hc));
 	QCOMPARE(hc.metric(QStringLiteral("combo"), QStringLiteral("radius"), -1), 0);
