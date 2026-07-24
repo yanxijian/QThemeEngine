@@ -164,6 +164,60 @@
       "fg": "#FFFFFF",
       "border": "#3F3F3F"
     },
+    "textedit": {
+      "bg": "#2C2C2C",
+      "bg.disabled": "#202020",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#777777",
+      "border": "#3F3F3F",
+      "border.focus": "#60CDFF",
+      "border.hover": "#6B6B6B",
+      "border.disabled": "#2A2A2A"
+    },
+    "frame": {
+      "bg": "#2C2C2C",
+      "border": "#3F3F3F",
+      "line": "#3F3F3F"
+    },
+    "splitter": {
+      "bg": "#202020",
+      "handle": "#5C5C5C",
+      "handle.hover": "#60CDFF"
+    },
+    "dock": {
+      "bg": "#202020",
+      "border": "#3F3F3F",
+      "title.bg": "#2A2A2A",
+      "title.bg.active": "#323232",
+      "title.fg": "#FFFFFF",
+      "title.fg.disabled": "#777777"
+    },
+    "status": {
+      "bg": "#202020",
+      "fg": "#FFFFFF",
+      "border": "#3F3F3F"
+    },
+    "dial": {
+      "groove": "#3F3F3F",
+      "groove.disabled": "#2A2A2A",
+      "fill": "#60CDFF",
+      "fill.disabled": "#4A4A4A",
+      "handle": "#2C2C2C",
+      "handle.border": "#5C5C5C",
+      "handle.border.focus": "#60CDFF"
+    },
+    "calendar": {
+      "bg": "#2C2C2C",
+      "border": "#3F3F3F",
+      "header.bg": "#202020",
+      "header.fg": "#FFFFFF",
+      "grid": "#3F3F3F"
+    },
+    "commandlink": {
+      "fg": "#FFFFFF",
+      "description": "#B0B0B0",
+      "fg.disabled": "#777777"
+    },
     "view": {
       "bg": "#2C2C2C",
       "bg.alternate": "#262626",

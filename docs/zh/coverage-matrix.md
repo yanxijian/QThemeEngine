@@ -8,29 +8,40 @@
 
 ---
 
-## v0.1 目标（M0–M2）
+## v0.1 + M6 目标
 
 | 控件族 | 代表类 | 绘制 | 度量 (PM_/size) | Palette | 备注 |
 |--------|--------|------|-----------------|---------|------|
 | 应用级 | `QApplication` | — | — | ● seed | `standardPalette` |
 | 按钮 | `QPushButton` | ● Fluent | ● | ● | N/H/P/D + Default accent |
+| 命令链接 | `QCommandLinkButton` | ● | ○ | ● | `CE_PushButtonLabel` + `commandlink.*` |
 | 工具按钮 | `QToolButton` | ● Fluent | ● | ● | `CC_ToolButton` / height |
 | 勾选 | `QCheckBox` | ● | ● | ● | N/H/Checked/Disabled |
 | 单选 | `QRadioButton` | ● | ● | ● | 同 check |
 | 单行编辑 | `QLineEdit` | ● | ● | ● | N/H/Focus/Disabled；height/padding |
+| 多行编辑 | `QPlainTextEdit`/`QTextEdit` | ● Fluent | ◐ | ● | `textedit.*` + `PE_Frame` |
 | 数字框 | `QSpinBox`/`QDoubleSpinBox` | ● Fluent | ● | ● | N/H/Focus/Disabled + 上下按钮 |
+| 日期时间 | `QDateEdit`/`QTimeEdit`/`QDateTimeEdit` | ● | ● | ● | 复用 `CC_SpinBox` / spin 帧 |
+| 月历 | `QCalendarWidget` | ● | ○ | ● | `calendar.*` 面板 + view 格子 |
 | 下拉 | `QComboBox` | ● Fluent | ● | ● | N/H/P/D/Focus |
 | 标签 | `QLabel` | ○ | ○ | ● | 多靠 Palette |
 | 滚动条 | `QScrollBar` | ● | ● | — | handle + arrows；N/H/P/D |
 | 滑块 | `QSlider` | ● Fluent | ● | — | groove/fill/handle；N/H/P/D/Focus |
+| 拨盘 | `QDial` | ● Fluent | ● | — | `CC_Dial` + `dial.*` |
 | 进度 | `QProgressBar` | ● Fluent | ● | — | groove/chunk/label |
 | 标签页 | `QTabBar`/`QTabWidget` | ● | ● | — | N/H/Selected/Disabled；tab.height |
-| 工具栏 | `QToolBar` | ● | ◐ | — | `CE_ToolBar` |
+| 工具栏 | `QToolBar` | ● | ● | — | `CE_ToolBar` + handle/separator/PM_ |
 | 菜单 | `QMenu`/`QMenuBar` | ● | ● | — | itemHeight / bar / separator |
 | 视图 | `QTreeView`/`QTableView`/`QListView` | ● Fluent | ● | ● | 选中/hover/交替行/branch |
 | 表头 | `QHeaderView` | ● | ● | — | section + label；header.height |
-| 分组 | `QGroupBox` | ● | ◐ | — | `PE_FrameGroupBox` |
-| 提示 | `QToolTip` | ● | ◐ | ● | `PE_PanelTipLabel` + palette |
+| 分组 | `QGroupBox` | ● | ● | — | `PE_FrameGroupBox` + `CT_GroupBox` padding |
+| 提示 | `QToolTip` | ● | ● | ● | `PE_PanelTipLabel` + `PM_ToolTipLabelFrameWidth` |
+| 线框 | `QFrame` | ● | ◐ | — | StyledPanel / HLine / VLine |
+| 滚动区 | `QScrollArea` | ● | ○ | — | 外框走 `textedit`/`PE_Frame` |
+| 分割条 | `QSplitter` | ● | ● | — | `CE_Splitter` + `PM_SplitterWidth` |
+| 停靠 | `QDockWidget` | ● | ● | — | title / frame / resize handle |
+| 状态栏 | `QStatusBar` | ● | ◐ | — | `PE_PanelStatusBar` / item |
+| 对话框按钮 | `QDialogButtonBox` | ○ | ○ | ● | 复用 Button；间距靠布局 |
 
 ---
 
@@ -40,7 +51,9 @@
 |------|------|
 | `palette.*` | 全局语义 Token |
 | `button.*` | 按钮面/文/边/圆角/边距 / accent |
+| `commandlink.*` | 命令链接标题/说明 |
 | `edit.*` | 输入框 |
+| `textedit.*` | 多行编辑 / 滚动区外框 |
 | `check.*` | 复选 / 单选指示器 |
 | `scroll.*` | 滚动条 |
 | `tab.*` | 标签页 |
@@ -49,11 +62,17 @@
 | `combo.*` | 下拉框 |
 | `spin.*` | 数字框 / 日期时间步进 |
 | `slider.*` | 滑块 |
+| `dial.*` | 拨盘 |
 | `progress.*` | 进度条 |
 | `groupbox.*` | 分组框 |
 | `tooltip.*` | 工具提示 |
 | `header.*` | 表头 |
 | `view.*` | ItemView |
+| `frame.*` | QFrame 面板与分隔线 |
+| `splitter.*` | 分割条 |
+| `dock.*` | 停靠窗 |
+| `status.*` | 状态栏 |
+| `calendar.*` | 月历外壳 |
 
 状态：`bg` / `bg.hover` / `bg.pressed` / `bg.disabled` / `bg.checked` / `border.focus` 等。
 

@@ -18,6 +18,7 @@ Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md
 | **M3** | Slider/Progress/GroupBox/ToolTip + dpiScale | **Done** |
 | **M4** | ItemView selected/hover/alternate rows | **Done** |
 | **M5** | Pack persistence, search paths, CMake install/Config | **Done** |
+| **M6** | Deeper control coverage (TextEdit / Frame / Splitter / Dock / Dial / …) | **Done** |
 
 ## Build
 

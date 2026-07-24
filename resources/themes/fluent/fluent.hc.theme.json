@@ -164,6 +164,60 @@
       "fg": "#FFFFFF",
       "border": "#FFFFFF"
     },
+    "textedit": {
+      "bg": "#000000",
+      "bg.disabled": "#0D0D0D",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "border": "#FFFFFF",
+      "border.focus": "#FFFF00",
+      "border.hover": "#FFFFFF",
+      "border.disabled": "#808080"
+    },
+    "frame": {
+      "bg": "#000000",
+      "border": "#FFFFFF",
+      "line": "#FFFFFF"
+    },
+    "splitter": {
+      "bg": "#000000",
+      "handle": "#FFFFFF",
+      "handle.hover": "#FFFF00"
+    },
+    "dock": {
+      "bg": "#000000",
+      "border": "#FFFFFF",
+      "title.bg": "#0D0D0D",
+      "title.bg.active": "#1A1A1A",
+      "title.fg": "#FFFFFF",
+      "title.fg.disabled": "#808080"
+    },
+    "status": {
+      "bg": "#000000",
+      "fg": "#FFFFFF",
+      "border": "#FFFFFF"
+    },
+    "dial": {
+      "groove": "#808080",
+      "groove.disabled": "#404040",
+      "fill": "#FFFF00",
+      "fill.disabled": "#808080",
+      "handle": "#000000",
+      "handle.border": "#FFFFFF",
+      "handle.border.focus": "#FFFF00"
+    },
+    "calendar": {
+      "bg": "#000000",
+      "border": "#FFFFFF",
+      "header.bg": "#0D0D0D",
+      "header.fg": "#FFFFFF",
+      "grid": "#FFFFFF"
+    },
+    "commandlink": {
+      "fg": "#FFFFFF",
+      "description": "#C0C0C0",
+      "fg.disabled": "#808080"
+    },
     "view": {
       "bg": "#000000",
       "bg.alternate": "#0D0D0D",
@@ -191,7 +245,7 @@
     "tab": { "radius": 0, "height": 32 },
     "scroll": { "thickness": 12, "radius": 0 },
     "menu": { "radius": 0, "itemHeight": 32 },
-    "toolbar": { "radius": 0 },
+    "toolbar": { "radius": 0, "padding": 4, "handleExtent": 8, "itemSpacing": 4, "frameWidth": 1 },
     "combo": { "radius": 0 },
     "spin": { "radius": 0, "buttonWidth": 20 },
     "header": { "radius": 0, "height": 32 },
@@ -199,6 +253,12 @@
     "progress": { "height": 6, "radius": 0 },
     "groupbox": { "radius": 0, "padding": 8 },
     "tooltip": { "radius": 0, "padding": 6 },
+    "textedit": { "radius": 0, "padding": 6 },
+    "frame": { "radius": 0, "lineWidth": 1 },
+    "splitter": { "width": 6 },
+    "dock": { "titleHeight": 28, "frameWidth": 1, "separator": 4, "handle": 10 },
+    "status": { "height": 24, "padding": 4 },
+    "dial": { "thickness": 8 },
     "view": { "itemHeight": 28, "indent": 20 },
     "DemoButton": { "borderRadius": 0 }
   }

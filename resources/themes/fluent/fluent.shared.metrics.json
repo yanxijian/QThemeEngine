@@ -6,7 +6,7 @@
     "tab": { "radius": 4, "height": 32 },
     "scroll": { "thickness": 10, "radius": 4 },
     "menu": { "radius": 4, "itemHeight": 28, "separatorHeight": 1 },
-    "toolbar": { "radius": 0, "padding": 4 },
+    "toolbar": { "radius": 0, "padding": 4, "handleExtent": 8, "itemSpacing": 4, "frameWidth": 1 },
     "combo": { "radius": 4 },
     "spin": { "radius": 4, "buttonWidth": 20 },
     "header": { "radius": 0, "height": 28 },
@@ -14,6 +14,12 @@
     "progress": { "height": 6, "radius": 3 },
     "groupbox": { "radius": 4, "padding": 8 },
     "tooltip": { "radius": 4, "padding": 6 },
+    "textedit": { "radius": 4, "padding": 6 },
+    "frame": { "radius": 4, "lineWidth": 1 },
+    "splitter": { "width": 6 },
+    "dock": { "titleHeight": 28, "frameWidth": 1, "separator": 4, "handle": 10 },
+    "status": { "height": 24, "padding": 4 },
+    "dial": { "thickness": 8 },
     "view": { "itemHeight": 28, "indent": 20 },
     "DemoButton": { "borderRadius": 4 }
   }

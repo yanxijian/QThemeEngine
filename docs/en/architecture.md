@@ -24,8 +24,9 @@ Theme pack → ThemeStore → QThemeStyle → QApplication::setStyle
 | ID | Focus |
 |----|--------|
 | M0 | Store seed + Engine::apply + QThemeStyle skeleton; native `QPushButton` recolors without QSS |
-| M1 | Load `.theme.xml` + light/dark |
-| M2+ | Expand [coverage matrix](../zh/coverage-matrix.md) |
+| M1 | Optional XML Format stub; JSON packs are SSOT |
+| M2–M5 | Fluent control coverage, prefs, pack paths, CMake package |
+| **M6** | Deeper coverage: TextEdit / Frame / Splitter / Dock / Status / Dial / Calendar / CommandLink |
 
 Details, principles, Theme Pack / Accent / HC: see the Chinese architecture doc (§4.3–4.6).
 Widget catalog for planning: [qt-widgets-inventory.md](qt-widgets-inventory.md) (Chinese canonical).

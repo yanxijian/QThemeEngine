@@ -239,6 +239,7 @@ engine.scanPackSearchPaths();
 | **M3** | Slider / Progress / GroupBox / ToolTip + DPI | **已交付**：度量 × `dpiScale`（96DPI=1.0） |
 | **M4** | ItemView 选中/hover/交替行 | **已交付**：`view.*` + PE_PanelItemView* / CE_ItemViewItem |
 | **M5** | 皮肤包、扩展、持久化 | **已交付**：QSettings 偏好、Pack 搜索目录、CMake Config 安装 |
+| **M6** | 控件覆盖加深 | **已交付**：◐ 度量补齐；TextEdit / Frame / Splitter / Dock / Status / Dial / Calendar / CommandLink |
 
 ---
 

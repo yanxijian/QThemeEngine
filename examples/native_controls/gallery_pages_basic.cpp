@@ -259,6 +259,12 @@ QWidget* pageInput(QWidget* parent)
 	plain->setMaximumHeight(80);
 	form->addRow(QStringLiteral("QPlainTextEdit"), plain);
 
+	auto* plainDis = new QPlainTextEdit(root);
+	plainDis->setPlainText(QStringLiteral("Disabled multi-line"));
+	plainDis->setEnabled(false);
+	plainDis->setMaximumHeight(60);
+	form->addRow(QStringLiteral("QPlainTextEdit disabled"), plainDis);
+
 	auto* rich = new QTextEdit(root);
 	rich->setHtml(QStringLiteral("<b>QTextEdit</b> with <i>rich</i> text"));
 	rich->setMaximumHeight(80);

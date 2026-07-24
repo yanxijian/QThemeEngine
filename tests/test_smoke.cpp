@@ -15,10 +15,17 @@
 #include <QFile>
 #include <QImage>
 #include <QLineEdit>
+#include <QPainter>
+#include <QPixmap>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSettings>
+#include <QStyle>
+#include <QStyleOptionFrame>
 #include <QTemporaryDir>
 #include <QtTest>
+
+#include <memory>
 
 class ThemeSmokeTest : public QObject
 {
@@ -42,6 +49,8 @@ private slots:
 	void pack_registerDirectory();
 	void style_pushButtonLightDiffersFromDark();
 	void style_checkBoxCheckedNearAccent();
+	void style_m6MetricsFromPack();
+	void style_textEditFrameLightDiffersFromDark();
 	void setupXml_deferredToM1_compatStub();
 };
 
@@ -147,6 +156,12 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QVERIFY(s.hasColor(QStringLiteral("view"), QStringLiteral("bg.hover")));
 	QVERIFY(s.hasColor(QStringLiteral("view"), QStringLiteral("fg.selected")));
 	QCOMPARE(s.metric(QStringLiteral("view"), QStringLiteral("itemHeight"), -1), 28);
+	QCOMPARE(s.metric(QStringLiteral("toolbar"), QStringLiteral("handleExtent"), -1), 8);
+	QCOMPARE(s.metric(QStringLiteral("tooltip"), QStringLiteral("padding"), -1), 6);
+	QCOMPARE(s.metric(QStringLiteral("splitter"), QStringLiteral("width"), -1), 6);
+	QVERIFY(s.hasColor(QStringLiteral("textedit"), QStringLiteral("border.focus")));
+	QVERIFY(s.hasColor(QStringLiteral("dock"), QStringLiteral("title.bg")));
+	QVERIFY(s.hasColor(QStringLiteral("dial"), QStringLiteral("fill")));
 
 	qtheme::ThemeStore dark;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), &dark));
@@ -352,6 +367,57 @@ void ThemeSmokeTest::style_checkBoxCheckedNearAccent()
 		}
 	}
 	QVERIFY(found);
+}
+
+void ThemeSmokeTest::style_m6MetricsFromPack()
+{
+	auto store = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), store.get()));
+	qtheme::QThemeStyle style(store);
+	style.setDpiScale(1.0);
+	QCOMPARE(style.pixelMetric(QStyle::PM_ToolBarHandleExtent), 8);
+	QCOMPARE(style.pixelMetric(QStyle::PM_ToolBarItemSpacing), 4);
+	QCOMPARE(style.pixelMetric(QStyle::PM_ToolBarFrameWidth), 1);
+	QCOMPARE(style.pixelMetric(QStyle::PM_ToolTipLabelFrameWidth), 6);
+	QCOMPARE(style.pixelMetric(QStyle::PM_SplitterWidth), 6);
+	QCOMPARE(style.pixelMetric(QStyle::PM_DockWidgetFrameWidth), 1);
+	style.setDpiScale(2.0);
+	QCOMPARE(style.pixelMetric(QStyle::PM_ToolTipLabelFrameWidth), 12);
+	QCOMPARE(style.pixelMetric(QStyle::PM_SplitterWidth), 12);
+}
+
+void ThemeSmokeTest::style_textEditFrameLightDiffersFromDark()
+{
+	auto lightStore = std::make_shared<qtheme::ThemeStore>();
+	auto darkStore = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), lightStore.get()));
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), darkStore.get()));
+	const QColor lightToken = lightStore->color(QStringLiteral("textedit"), QStringLiteral("bg")).value;
+	const QColor darkToken = darkStore->color(QStringLiteral("textedit"), QStringLiteral("bg")).value;
+	QVERIFY(lightToken != darkToken);
+
+	auto paintFrame = [](const std::shared_ptr<qtheme::ThemeStore>& store) -> QColor
+	{
+		qtheme::QThemeStyle style(store);
+		QPlainTextEdit edit;
+		edit.resize(120, 48);
+		QPixmap pm(120, 48);
+		pm.fill(Qt::magenta);
+		QPainter painter(&pm);
+		QStyleOptionFrame opt;
+		opt.initFrom(&edit);
+		opt.rect = QRect(0, 0, 120, 48);
+		opt.frameShape = QFrame::StyledPanel;
+		opt.state |= QStyle::State_Enabled;
+		style.drawPrimitive(QStyle::PE_Frame, &opt, &painter, &edit);
+		painter.end();
+		return pm.toImage().pixelColor(4, 4);
+	};
+
+	const QColor lightPx = paintFrame(lightStore);
+	const QColor darkPx = paintFrame(darkStore);
+	QVERIFY(lightPx != darkPx);
+	QVERIFY(lightPx.lightness() > darkPx.lightness());
 }
 
 void ThemeSmokeTest::setupXml_deferredToM1_compatStub()

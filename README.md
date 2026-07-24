@@ -22,6 +22,7 @@ English：[docs/en/architecture.md](docs/en/architecture.md)
 | M1 | `.theme.xml` Format（可选兼容 stub；JSON Pack 为 SSOT） | stub only |
 | **M2–M4** | 常用控件 Fluent 绘制（含 Spin/Menu/Slider/ItemView 等） | **已落地** |
 | **M5** | 偏好持久化、Pack 搜索目录、`find_package(QThemeEngine)` 安装 | **已落地** |
+| **M6** | 控件覆盖加深（TextEdit / Frame / Splitter / Dock / Dial 等） | **已落地** |
 
 ## 目录
 

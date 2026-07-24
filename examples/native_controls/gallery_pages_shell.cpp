@@ -175,6 +175,21 @@ QWidget* pageContainers(QWidget* parent)
 	}
 
 	{
+		auto* box = detail::makeGroup(QStringLiteral("QScrollArea (framed)"), root);
+		auto* area = new QScrollArea(box);
+		area->setWidgetResizable(true);
+		area->setFrameShape(QFrame::StyledPanel);
+		auto* inner = new QLabel(QStringLiteral("Scrollable content inside framed QScrollArea\n\n")
+									 + QStringLiteral("Line 2\nLine 3\nLine 4\nLine 5"),
+								 area);
+		inner->setMinimumHeight(120);
+		area->setWidget(inner);
+		area->setMinimumHeight(100);
+		static_cast<QVBoxLayout*>(box->layout())->addWidget(area);
+		layout->addWidget(box);
+	}
+
+	{
 		auto* checkable = new QGroupBox(QStringLiteral("Checkable group"), root);
 		checkable->setCheckable(true);
 		checkable->setChecked(true);

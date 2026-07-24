@@ -1,12 +1,21 @@
 #include "qtheme/style.hpp"
 
+#include <QAbstractScrollArea>
+#include <QCalendarWidget>
+#include <QFrame>
+#include <QtMath>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPlainTextEdit>
+#include <QSplitter>
+#include <QStatusBar>
 #include <QStyleFactory>
 #include <QStyleOption>
 #include <QStyleOptionButton>
 #include <QStyleOptionComboBox>
 #include <QStyleOptionComplex>
+#include <QStyleOptionDockWidget>
+#include <QStyleOptionFrame>
 #include <QStyleOptionHeader>
 #include <QStyleOptionMenuItem>
 #include <QStyleOptionProgressBar>
@@ -15,6 +24,7 @@
 #include <QStyleOptionTab>
 #include <QStyleOptionToolButton>
 #include <QStyleOptionViewItem>
+#include <QTextEdit>
 
 namespace qtheme {
 
@@ -71,6 +81,28 @@ void drawArrow(QPainter* painter, const QRect& rect, Qt::ArrowType type, const Q
 	}
 	painter->drawPolygon(poly);
 	painter->restore();
+}
+
+QString stateBorderRole(const QStyleOption* option)
+{
+	if (!(option->state & QStyle::State_Enabled))
+	{
+		return QStringLiteral("border.disabled");
+	}
+	if (option->state & QStyle::State_HasFocus)
+	{
+		return QStringLiteral("border.focus");
+	}
+	if (option->state & QStyle::State_MouseOver)
+	{
+		return QStringLiteral("border.hover");
+	}
+	return QStringLiteral("border");
+}
+
+bool isTextEditLike(const QWidget* widget)
+{
+	return qobject_cast<const QTextEdit*>(widget) || qobject_cast<const QPlainTextEdit*>(widget);
 }
 
 } // namespace
@@ -255,11 +287,15 @@ int QThemeStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, con
 	case PM_HeaderMargin:
 		return 4;
 	case PM_ToolBarHandleExtent:
-		return 8;
+		return roleMetric(QStringLiteral("toolbar"), QStringLiteral("handleExtent"), 8);
 	case PM_ToolBarItemSpacing:
-		return 4;
+		return roleMetric(QStringLiteral("toolbar"), QStringLiteral("itemSpacing"), 4);
 	case PM_ToolBarItemMargin:
 		return roleMetric(QStringLiteral("toolbar"), QStringLiteral("padding"), 4);
+	case PM_ToolBarFrameWidth:
+		return roleMetric(QStringLiteral("toolbar"), QStringLiteral("frameWidth"), 1);
+	case PM_ToolTipLabelFrameWidth:
+		return roleMetric(QStringLiteral("tooltip"), QStringLiteral("padding"), 6);
 	case PM_SpinBoxFrameWidth:
 		return 1;
 	case PM_TabBarTabVSpace:
@@ -276,6 +312,18 @@ int QThemeStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, con
 		return roleMetric(QStringLiteral("progress"), QStringLiteral("height"), 6);
 	case PM_TreeViewIndentation:
 		return roleMetric(QStringLiteral("view"), QStringLiteral("indent"), 20);
+	case PM_SplitterWidth:
+		return roleMetric(QStringLiteral("splitter"), QStringLiteral("width"), 6);
+	case PM_DockWidgetTitleBarButtonMargin:
+		return 4;
+	case PM_DockWidgetTitleMargin:
+		return 4;
+	case PM_DockWidgetFrameWidth:
+		return roleMetric(QStringLiteral("dock"), QStringLiteral("frameWidth"), 1);
+	case PM_DockWidgetSeparatorExtent:
+		return roleMetric(QStringLiteral("dock"), QStringLiteral("separator"), 4);
+	case PM_DockWidgetHandleExtent:
+		return roleMetric(QStringLiteral("dock"), QStringLiteral("handle"), 10);
 	case PM_FocusFrameVMargin:
 	case PM_FocusFrameHMargin:
 		return 1;
@@ -334,6 +382,12 @@ QSize QThemeStyle::sizeFromContents(ContentsType type, const QStyleOption* optio
 	{
 		const int h = roleMetric(QStringLiteral("view"), QStringLiteral("itemHeight"), sz.height());
 		sz.setHeight(qMax(sz.height(), h));
+		break;
+	}
+	case CT_GroupBox:
+	{
+		const int pad = roleMetric(QStringLiteral("groupbox"), QStringLiteral("padding"), 8);
+		sz += QSize(pad * 2, pad);
 		break;
 	}
 	default:
@@ -568,6 +622,159 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 										option->palette.mid().color());
 		const int radius = roleMetric(QStringLiteral("tooltip"), QStringLiteral("radius"), 4);
 		drawRounded(painter, option->rect, radius, bg, border);
+		return;
+	}
+
+	if (element == PE_IndicatorToolBarSeparator)
+	{
+		const QColor sep = roleColor(QStringLiteral("toolbar"), QStringLiteral("separator"),
+									 option->palette.mid().color());
+		painter->save();
+		painter->setPen(sep);
+		const QRect r = option->rect;
+		if (option->state & State_Horizontal)
+		{
+			const int x = r.center().x();
+			painter->drawLine(x, r.top() + 4, x, r.bottom() - 4);
+		}
+		else
+		{
+			const int y = r.center().y();
+			painter->drawLine(r.left() + 4, y, r.right() - 4, y);
+		}
+		painter->restore();
+		return;
+	}
+
+	if (element == PE_IndicatorToolBarHandle)
+	{
+		const QColor handle = roleColor(QStringLiteral("toolbar"), QStringLiteral("handle"),
+										option->palette.mid().color());
+		painter->save();
+		painter->setPen(handle);
+		painter->setBrush(handle);
+		const QRect r = option->rect.adjusted(2, 2, -2, -2);
+		const bool horiz = option->state & State_Horizontal;
+		for (int i = 0; i < 3; ++i)
+		{
+			if (horiz)
+			{
+				const int x = r.left() + i * 3;
+				painter->drawRect(x, r.top() + 2, 1, r.height() - 4);
+			}
+			else
+			{
+				const int y = r.top() + i * 3;
+				painter->drawRect(r.left() + 2, y, r.width() - 4, 1);
+			}
+		}
+		painter->restore();
+		return;
+	}
+
+	if (element == PE_Frame || element == PE_FrameWindow)
+	{
+		const bool textEdit = isTextEditLike(widget);
+		const auto* scroll = qobject_cast<const QAbstractScrollArea*>(widget);
+		if (textEdit || (scroll && scroll->frameWidth() > 0 && !widget->inherits("QAbstractItemView")))
+		{
+			const QString group = QStringLiteral("textedit");
+			const bool enabled = option->state & State_Enabled;
+			const QString borderRole = stateBorderRole(option);
+			const QColor bg =
+				roleColor(group, enabled ? QStringLiteral("bg") : QStringLiteral("bg.disabled"),
+						  option->palette.color(QPalette::Base));
+			const QColor border = roleColor(group, borderRole, option->palette.mid().color());
+			const int radius = roleMetric(group, QStringLiteral("radius"), 4);
+			const qreal bw =
+				(borderRole == QStringLiteral("border.focus") && enabled) ? 2.0 : 1.0;
+			drawRounded(painter, option->rect, radius, bg, border, bw);
+			return;
+		}
+
+		if (qobject_cast<const QCalendarWidget*>(widget)
+			|| (widget && widget->parentWidget()
+				&& qobject_cast<const QCalendarWidget*>(widget->parentWidget())))
+		{
+			const QColor bg = roleColor(QStringLiteral("calendar"), QStringLiteral("bg"),
+										option->palette.color(QPalette::Base));
+			const QColor border = roleColor(QStringLiteral("calendar"), QStringLiteral("border"),
+											option->palette.mid().color());
+			painter->fillRect(option->rect, bg);
+			painter->setPen(border);
+			painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
+			return;
+		}
+
+		const auto* frameOpt = qstyleoption_cast<const QStyleOptionFrame*>(option);
+		const QFrame* frameWidget = qobject_cast<const QFrame*>(widget);
+		const QFrame::Shape shape =
+			frameOpt ? frameOpt->frameShape
+					 : (frameWidget ? frameWidget->frameShape() : QFrame::NoFrame);
+		if (shape == QFrame::HLine || shape == QFrame::VLine)
+		{
+			const QColor line =
+				roleColor(QStringLiteral("frame"), QStringLiteral("line"), option->palette.mid().color());
+			painter->save();
+			painter->setPen(QPen(line, roleMetric(QStringLiteral("frame"), QStringLiteral("lineWidth"), 1)));
+			if (shape == QFrame::HLine)
+			{
+				const int y = option->rect.center().y();
+				painter->drawLine(option->rect.left(), y, option->rect.right(), y);
+			}
+			else
+			{
+				const int x = option->rect.center().x();
+				painter->drawLine(x, option->rect.top(), x, option->rect.bottom());
+			}
+			painter->restore();
+			return;
+		}
+
+		if (shape != QFrame::NoFrame)
+		{
+			const QColor bg = roleColor(QStringLiteral("frame"), QStringLiteral("bg"),
+										option->palette.color(QPalette::Window));
+			const QColor border = roleColor(QStringLiteral("frame"), QStringLiteral("border"),
+											option->palette.mid().color());
+			const int radius = roleMetric(QStringLiteral("frame"), QStringLiteral("radius"), 4);
+			drawRounded(painter, option->rect, radius, bg, border);
+			return;
+		}
+	}
+
+	if (element == PE_FrameDockWidget)
+	{
+		const QColor bg =
+			roleColor(QStringLiteral("dock"), QStringLiteral("bg"), option->palette.color(QPalette::Window));
+		const QColor border =
+			roleColor(QStringLiteral("dock"), QStringLiteral("border"), option->palette.mid().color());
+		painter->fillRect(option->rect, bg);
+		painter->setPen(border);
+		painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
+		return;
+	}
+
+	if (element == PE_FrameStatusBarItem || element == PE_PanelStatusBar)
+	{
+		const QColor bg =
+			roleColor(QStringLiteral("status"), QStringLiteral("bg"), option->palette.color(QPalette::Window));
+		painter->fillRect(option->rect, bg);
+		if (element == PE_PanelStatusBar)
+		{
+			const QColor border =
+				roleColor(QStringLiteral("status"), QStringLiteral("border"), option->palette.mid().color());
+			painter->setPen(border);
+			painter->drawLine(option->rect.topLeft(), option->rect.topRight());
+		}
+		return;
+	}
+
+	if (element == PE_IndicatorDockWidgetResizeHandle)
+	{
+		const QColor handle = roleColor(QStringLiteral("dock"), QStringLiteral("border"),
+										option->palette.mid().color());
+		painter->fillRect(option->rect, handle);
 		return;
 	}
 
@@ -856,6 +1063,81 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 		painter->setPen(border);
 		painter->drawLine(option->rect.bottomLeft(), option->rect.bottomRight());
 		return;
+	}
+
+	if (element == CE_Splitter)
+	{
+		const bool hover = option->state & State_MouseOver;
+		const QColor bg =
+			roleColor(QStringLiteral("splitter"), QStringLiteral("bg"), option->palette.window().color());
+		const QColor handle =
+			roleColor(QStringLiteral("splitter"),
+					  hover ? QStringLiteral("handle.hover") : QStringLiteral("handle"),
+					  option->palette.mid().color());
+		painter->fillRect(option->rect, bg);
+		painter->save();
+		painter->setPen(Qt::NoPen);
+		painter->setBrush(handle);
+		const QRect r = option->rect;
+		if (option->state & State_Horizontal)
+		{
+			const int x = r.center().x();
+			painter->drawRect(x - 1, r.center().y() - 12, 2, 24);
+		}
+		else
+		{
+			const int y = r.center().y();
+			painter->drawRect(r.center().x() - 12, y - 1, 24, 2);
+		}
+		painter->restore();
+		return;
+	}
+
+	if (element == CE_DockWidgetTitle)
+	{
+		const auto* dock = qstyleoption_cast<const QStyleOptionDockWidget*>(option);
+		if (dock && painter)
+		{
+			const bool active = dock->state & State_Active;
+			const bool enabled = dock->state & State_Enabled;
+			const QColor bg = roleColor(
+				QStringLiteral("dock"),
+				active ? QStringLiteral("title.bg.active") : QStringLiteral("title.bg"),
+				dock->palette.color(QPalette::Window));
+			const QColor fg =
+				roleColor(QStringLiteral("dock"),
+						  enabled ? QStringLiteral("title.fg") : QStringLiteral("title.fg.disabled"),
+						  dock->palette.color(QPalette::WindowText));
+			painter->fillRect(dock->rect, bg);
+			painter->setPen(fg);
+			QRect textRect = dock->rect.adjusted(8, 0, -8, 0);
+			painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, dock->title);
+			return;
+		}
+	}
+
+	if (element == CE_PushButtonLabel)
+	{
+		const auto* btn = qstyleoption_cast<const QStyleOptionButton*>(option);
+		if (btn && painter
+			&& (btn->features & QStyleOptionButton::CommandLinkButton))
+		{
+			const bool enabled = btn->state & State_Enabled;
+			const QColor title =
+				roleColor(QStringLiteral("commandlink"),
+						  enabled ? QStringLiteral("fg") : QStringLiteral("fg.disabled"),
+						  btn->palette.color(QPalette::ButtonText));
+			const QColor desc =
+				roleColor(QStringLiteral("commandlink"),
+						  enabled ? QStringLiteral("description") : QStringLiteral("fg.disabled"),
+						  btn->palette.color(QPalette::WindowText));
+			QStyleOptionButton copy = *btn;
+			copy.palette.setColor(QPalette::ButtonText, title);
+			copy.palette.setColor(QPalette::WindowText, desc);
+			copy.palette.setColor(QPalette::Text, desc);
+			QProxyStyle::drawControl(element, &copy, painter, widget);
+			return;
+		}
 	}
 
 	if (element == CE_HeaderSection)
@@ -1308,6 +1590,60 @@ void QThemeStyle::drawComplexControl(ComplexControl control, const QStyleOptionC
 				drawArrow(painter, menuRect, Qt::DownArrow, arrow);
 			}
 			QProxyStyle::drawControl(CE_ToolButtonLabel, &copy, painter, widget);
+			return;
+		}
+	}
+
+	if (control == CC_Dial)
+	{
+		const auto* dial = qstyleoption_cast<const QStyleOptionSlider*>(option);
+		if (dial && painter)
+		{
+			const bool enabled = dial->state & State_Enabled;
+			const bool focused = (dial->state & State_HasFocus) && enabled;
+			const QRect r = dial->rect.adjusted(4, 4, -4, -4);
+			const int thickness = roleMetric(QStringLiteral("dial"), QStringLiteral("thickness"), 8);
+			const QColor groove =
+				roleColor(QStringLiteral("dial"),
+						  enabled ? QStringLiteral("groove") : QStringLiteral("groove.disabled"),
+						  dial->palette.mid().color());
+			const QColor fill =
+				roleColor(QStringLiteral("dial"),
+						  enabled ? QStringLiteral("fill") : QStringLiteral("fill.disabled"),
+						  dial->palette.color(QPalette::Highlight));
+			const QColor handleBg =
+				roleColor(QStringLiteral("dial"), QStringLiteral("handle"), dial->palette.button().color());
+			const QColor handleBorder =
+				roleColor(QStringLiteral("dial"),
+						  focused ? QStringLiteral("handle.border.focus")
+								  : QStringLiteral("handle.border"),
+						  dial->palette.mid().color());
+
+			painter->save();
+			painter->setRenderHint(QPainter::Antialiasing, true);
+			const QPen groovePen(groove, thickness, Qt::SolidLine, Qt::RoundCap);
+			painter->setPen(groovePen);
+			painter->setBrush(Qt::NoBrush);
+			painter->drawEllipse(r);
+
+			const int span = dial->maximum - dial->minimum;
+			const qreal ratio =
+				span > 0 ? qreal(dial->sliderPosition - dial->minimum) / qreal(span) : 0.0;
+			const int startAngle = 225 * 16;
+			const int arcSpan = -int(270.0 * 16.0 * ratio);
+			painter->setPen(QPen(fill, thickness, Qt::SolidLine, Qt::RoundCap));
+			painter->drawArc(r, startAngle, arcSpan);
+
+			const qreal angleRad = qDegreesToRadians(225.0 - 270.0 * ratio);
+			const QPointF center = r.center();
+			const qreal radius = qMin(r.width(), r.height()) / 2.0 - thickness / 2.0;
+			const QPointF tip(center.x() + radius * qCos(angleRad),
+							 center.y() - radius * qSin(angleRad));
+			const int hs = qMax(6, thickness + 2);
+			painter->setPen(QPen(handleBorder, focused ? 2.0 : 1.0));
+			painter->setBrush(handleBg);
+			painter->drawEllipse(tip, hs / 2.0, hs / 2.0);
+			painter->restore();
 			return;
 		}
 	}
