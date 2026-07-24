@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(Qt6 REQUIRED COMPONENTS Widgets)
+
+include("${CMAKE_CURRENT_LIST_DIR}/QThemeEngineTargets.cmake")
+
+check_required_components(QThemeEngine)

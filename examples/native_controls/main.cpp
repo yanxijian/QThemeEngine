@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QColor>
 #include <QColorDialog>
+#include <QCoreApplication>
 #include <QDockWidget>
 #include <QLabel>
 #include <QLineEdit>
@@ -26,6 +27,8 @@
 int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
+	QCoreApplication::setOrganizationName(QStringLiteral("yanxijian"));
+	QCoreApplication::setApplicationName(QStringLiteral("QThemeEngineGallery"));
 
 	QPixmap splashPm(420, 180);
 	splashPm.fill(QColor(QStringLiteral("#0078D4")));
@@ -37,6 +40,13 @@ int main(int argc, char** argv)
 
 	qtheme::Engine engine;
 	engine.apply(&app);
+	(void)engine.loadPreferences();
+	engine.setAutoSavePreferences(true);
+	QObject::connect(&app, &QCoreApplication::aboutToQuit, &engine,
+					 [&engine]
+					 {
+						 (void)engine.savePreferences();
+					 });
 
 	const bool selfCheckOnly = app.arguments().contains(QStringLiteral("--self-check"));
 
@@ -49,7 +59,6 @@ int main(int argc, char** argv)
 
 	auto* actLight = themeMenu->addAction(QStringLiteral("Fluent &Light"));
 	actLight->setCheckable(true);
-	actLight->setChecked(true);
 	schemeGroup->addAction(actLight);
 	auto* actDark = themeMenu->addAction(QStringLiteral("Fluent &Dark"));
 	actDark->setCheckable(true);
@@ -60,6 +69,33 @@ int main(int argc, char** argv)
 	auto* actSystem = themeMenu->addAction(QStringLiteral("Follow &System"));
 	actSystem->setCheckable(true);
 	schemeGroup->addAction(actSystem);
+
+	auto syncSchemeActions = [&]()
+	{
+		switch (engine.colorScheme())
+		{
+		case qtheme::ColorScheme::Dark:
+			actDark->setChecked(true);
+			break;
+		case qtheme::ColorScheme::HighContrast:
+			actHc->setChecked(true);
+			break;
+		case qtheme::ColorScheme::System:
+			actSystem->setChecked(true);
+			break;
+		case qtheme::ColorScheme::Light:
+		default:
+			actLight->setChecked(true);
+			break;
+		}
+	};
+	syncSchemeActions();
+	QObject::connect(&engine, &qtheme::Engine::colorSchemeChanged, &window, syncSchemeActions);
+	QObject::connect(&engine, &qtheme::Engine::skinChanged, &window,
+					 [&](const QString&, const QString&)
+					 {
+						 syncSchemeActions();
+					 });
 
 	themeMenu->addSeparator();
 	auto* actUser = themeMenu->addAction(QStringLiteral("User &Sample Pack"));

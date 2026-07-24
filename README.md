@@ -19,8 +19,9 @@ English：[docs/en/architecture.md](docs/en/architecture.md)
 |----|------|------|
 | **M0** | Store seed + `Engine::apply` + QThemeStyle 骨架；原生 `QPushButton` 无 QSS 换色 | **已落地** |
 | **M0.5** | Fluent Pack（light/dark/hc）+ Accent/ColorScheme + Pack 注册/merge + T0 绘制扩展 | **已落地** |
-| M1 | `.theme.xml` Format 加载 + light/dark Golden | 脚手架（`ThemeLoader::setupXml` 仍 TODO） |
-| M2+ | 按覆盖矩阵扩展控件族 | 进行中（Check/Edit/Tab/Scroll 已部分） |
+| M1 | `.theme.xml` Format 加载（可选；JSON Pack 为 SSOT） | 脚手架 |
+| **M2–M4** | 常用控件 Fluent 绘制（含 Spin/Menu/Slider/ItemView 等） | **已落地** |
+| **M5** | 偏好持久化、Pack 搜索目录、`find_package(QThemeEngine)` 安装 | **已落地** |
 
 ## 目录
 
@@ -38,8 +39,12 @@ docs/zh|en/
 
 ```cpp
 QApplication app(argc, argv);
+QCoreApplication::setOrganizationName("MyOrg");
+QCoreApplication::setApplicationName("MyApp");
 qtheme::Engine engine;
-engine.apply(&app);                 // 安装 QThemeStyle，seed light
+engine.apply(&app);
+engine.loadPreferences();
+engine.setAutoSavePreferences(true);
 engine.switchSkin(QStringLiteral("dark"));
 ```
 
@@ -51,13 +56,15 @@ cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=%QTDIR%
 cmake --build build
 ctest --test-dir build --output-on-failure
 build\qtheme_demo.exe
+cmake --install build --prefix dist
 ```
 
-Demo 为 Fluent 控件画廊：Theme 菜单切换 `fluent.light` / `dark` / `hc` / System / `user.sample`，Accent 跟随系统或自定义；启动自检含必需 Token。
+Demo 为 Fluent 控件画廊：Theme 菜单切换 `fluent.light` / `dark` / `hc` / System / `user.sample`，Accent 跟随系统或自定义；偏好经 QSettings 自动保存。
 
 Windows 上编 `qtheme_demo` 会自动跑 `windeployqt`（含 CRT），把 Qt DLL 拷到 exe 旁，可直接双击运行。
 
-CMake 选项：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGETS`。
+CMake 选项：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGETS`、`QTE_INSTALL`。
+产品侧：`find_package(QThemeEngine)` → `QThemeEngine::engine`。
 
 ## 约定
 

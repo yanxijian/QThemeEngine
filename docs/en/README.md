@@ -17,7 +17,7 @@ Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md
 | **M2** | Button/Edit/Check/Combo/Spin/Menu/Tab/Header/ToolBar + state gallery | **Done** |
 | **M3** | Slider/Progress/GroupBox/ToolTip + dpiScale | **Done** |
 | **M4** | ItemView selected/hover/alternate rows | **Done** |
-| M5 | Pack persistence / install | Planned |
+| **M5** | Pack persistence, search paths, CMake install/Config | **Done** |
 
 ## Build
 

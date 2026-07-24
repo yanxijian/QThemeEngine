@@ -2,6 +2,7 @@
 
 #include "qtheme/color_util.hpp"
 
+#include <QDir>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -164,6 +165,42 @@ bool PackRegistry::registerPackFile(const QString& pathOrQrc, Error* err)
 		*err = Error::None;
 	}
 	return true;
+}
+
+int PackRegistry::registerPacksInDirectory(const QString& dir, Error* err)
+{
+	QDir d(dir);
+	if (!d.exists())
+	{
+		if (err)
+		{
+			*err = Error::FileNotFound;
+		}
+		return 0;
+	}
+
+	int count = 0;
+	Error firstErr = Error::None;
+	const QStringList files =
+		d.entryList(QStringList{QStringLiteral("*.theme.json")}, QDir::Files, QDir::Name);
+	for (const QString& name : files)
+	{
+		Error local = Error::None;
+		if (registerPackFile(d.absoluteFilePath(name), &local))
+		{
+			++count;
+		}
+		else if (firstErr == Error::None)
+		{
+			firstErr = local;
+		}
+	}
+
+	if (err)
+	{
+		*err = (count > 0) ? Error::None : firstErr;
+	}
+	return count;
 }
 
 bool PackRegistry::registerBuiltinFluentPacks(Error* err)

@@ -23,6 +23,8 @@ class PackRegistry
 {
 public:
 	[[nodiscard]] bool registerPackFile(const QString& pathOrQrc, Error* err = nullptr);
+	/// Register all `*.theme.json` files under dir (non-recursive). Returns count registered.
+	[[nodiscard]] int registerPacksInDirectory(const QString& dir, Error* err = nullptr);
 	[[nodiscard]] bool registerBuiltinFluentPacks(Error* err = nullptr);
 
 	[[nodiscard]] QStringList packIds() const;

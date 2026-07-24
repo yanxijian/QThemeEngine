@@ -2,12 +2,17 @@
 #include "qtheme/color_util.hpp"
 #include "qtheme/engine.hpp"
 #include "qtheme/pack.hpp"
+#include "qtheme/settings.hpp"
 #include "qtheme/store.hpp"
 #include "qtheme/style.hpp"
 #include "qtheme/types.hpp"
 #include "theme/themeloader.hpp"
 
 #include <QCoreApplication>
+#include <QDir>
+#include <QFile>
+#include <QSettings>
+#include <QTemporaryDir>
 #include <QtTest>
 
 class ThemeSmokeTest : public QObject
@@ -28,6 +33,8 @@ private slots:
 	void engine_switchFluentSkins();
 	void engine_userPackKeepsColorScheme();
 	void engine_setColorSchemeSystemPreserved();
+	void settings_appearancePrefsRoundTrip();
+	void pack_registerDirectory();
 	void setupXml_deferredToM1();
 };
 
@@ -219,6 +226,66 @@ void ThemeSmokeTest::engine_setColorSchemeSystemPreserved()
 	// Idempotent: same scheme + resolved pack should not re-emit.
 	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::System));
 	QCOMPARE(schemeEmits, 1);
+}
+
+void ThemeSmokeTest::settings_appearancePrefsRoundTrip()
+{
+	QTemporaryDir tmp;
+	QVERIFY(tmp.isValid());
+	const QString ini = tmp.filePath(QStringLiteral("prefs.ini"));
+	QSettings settings(ini, QSettings::IniFormat);
+
+	qtheme::AppearancePrefs prefs;
+	prefs.skinId = QString::fromUtf8(qtheme::kPackFluentDark);
+	prefs.colorScheme = qtheme::ColorScheme::Dark;
+	prefs.accentFollowSystem = false;
+	prefs.accent = QColor(QStringLiteral("#AABBCC"));
+	prefs.followOsHighContrast = false;
+	prefs.packSearchPaths = QStringList{QStringLiteral("/tmp/packs")};
+	prefs.extraPackFiles = QStringList{QStringLiteral("/tmp/custom.theme.json")};
+	QVERIFY(qtheme::saveAppearancePrefs(&settings, prefs));
+
+	qtheme::AppearancePrefs loaded;
+	QVERIFY(qtheme::loadAppearancePrefs(&settings, &loaded));
+	QCOMPARE(loaded.skinId, prefs.skinId);
+	QCOMPARE(static_cast<int>(loaded.colorScheme), static_cast<int>(prefs.colorScheme));
+	QCOMPARE(loaded.accentFollowSystem, false);
+	QCOMPARE(loaded.accent, prefs.accent);
+	QCOMPARE(loaded.followOsHighContrast, false);
+	QCOMPARE(loaded.packSearchPaths, prefs.packSearchPaths);
+	QCOMPARE(loaded.extraPackFiles, prefs.extraPackFiles);
+
+	qtheme::Engine engine;
+	QVERIFY(engine.applyAppearancePrefs(loaded));
+	QCOMPARE(engine.currentSkin(), QString::fromUtf8(qtheme::kPackFluentDark));
+	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
+	QCOMPARE(engine.accent(), QColor(QStringLiteral("#AABBCC")));
+	QVERIFY(!engine.accentFollowsSystem());
+}
+
+void ThemeSmokeTest::pack_registerDirectory()
+{
+	QTemporaryDir tmp;
+	QVERIFY(tmp.isValid());
+	const QString packPath = tmp.filePath(QStringLiteral("ext.brand.theme.json"));
+	QFile f(packPath);
+	QVERIFY(f.open(QIODevice::WriteOnly | QIODevice::Truncate));
+	f.write(R"({
+  "id": "ext.brand",
+  "displayName": "Ext Brand",
+  "base": "fluent.light",
+  "colors": { "palette": { "accent": "#FF00AA" } }
+})");
+	f.close();
+
+	qtheme::PackRegistry reg;
+	QVERIFY(reg.registerBuiltinFluentPacks());
+	QCOMPARE(reg.registerPacksInDirectory(tmp.path()), 1);
+	QVERIFY(reg.hasPack(QStringLiteral("ext.brand")));
+	qtheme::ThemeStore store;
+	QVERIFY(reg.materialize(QStringLiteral("ext.brand"), &store, nullptr));
+	QCOMPARE(store.color(QStringLiteral("palette"), QStringLiteral("accent")).value,
+			 QColor(QStringLiteral("#FF00AA")));
 }
 
 void ThemeSmokeTest::setupXml_deferredToM1()

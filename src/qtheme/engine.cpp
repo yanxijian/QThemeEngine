@@ -2,12 +2,14 @@
 
 #include "qtheme/accent.hpp"
 #include "qtheme/pack.hpp"
+#include "qtheme/settings.hpp"
 
 #include <QApplication>
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QPalette>
 #include <QScreen>
+#include <QSettings>
 #include <QStyleHints>
 #include <QWidget>
 
@@ -311,6 +313,7 @@ bool Engine::applyPack(const QString& packId, ColorScheme scheme, bool force)
 	{
 		emit colorSchemeChanged();
 	}
+	onAutoSavePreferences();
 	return true;
 }
 
@@ -352,6 +355,16 @@ bool Engine::setColorScheme(ColorScheme scheme, bool force)
 	return applyPack(packIdForScheme(scheme), scheme, force);
 }
 
+void Engine::setFollowOsHighContrast(bool follow)
+{
+	followOsHighContrast_ = follow;
+	if (colorScheme_ == ColorScheme::System)
+	{
+		(void)setColorScheme(ColorScheme::System, true);
+	}
+	onAutoSavePreferences();
+}
+
 bool Engine::setAccent(const QColor& accent)
 {
 	if (!accent.isValid())
@@ -364,6 +377,7 @@ bool Engine::setAccent(const QColor& accent)
 	applyAccentToStore();
 	refreshUi();
 	emit accentChanged(accent_);
+	onAutoSavePreferences();
 	return true;
 }
 
@@ -377,6 +391,7 @@ bool Engine::setAccentFollowSystem(bool follow)
 	applyAccentToStore();
 	refreshUi();
 	emit accentChanged(accent_);
+	onAutoSavePreferences();
 	return true;
 }
 
@@ -388,13 +403,141 @@ bool Engine::registerPack(const QString& pathOrQrc)
 		lastError_ = err;
 		return false;
 	}
+	if (!pathOrQrc.startsWith(QLatin1Char(':')))
+	{
+		if (!extraPackFiles_.contains(pathOrQrc))
+		{
+			extraPackFiles_.append(pathOrQrc);
+		}
+	}
 	lastError_ = Error::None;
+	onAutoSavePreferences();
 	return true;
+}
+
+void Engine::addPackSearchPath(const QString& dir)
+{
+	if (dir.isEmpty() || packSearchPaths_.contains(dir))
+	{
+		return;
+	}
+	packSearchPaths_.append(dir);
+	onAutoSavePreferences();
+}
+
+int Engine::scanPackSearchPaths()
+{
+	if (!packs_)
+	{
+		return 0;
+	}
+	int total = 0;
+	for (const QString& dir : packSearchPaths_)
+	{
+		total += packs_->registerPacksInDirectory(dir, nullptr);
+	}
+	return total;
 }
 
 QStringList Engine::registeredPacks() const
 {
 	return packs_ ? packs_->packIds() : QStringList{};
+}
+
+AppearancePrefs Engine::appearancePrefs() const
+{
+	AppearancePrefs prefs;
+	prefs.skinId = currentSkin_;
+	prefs.colorScheme = colorScheme_;
+	prefs.accentFollowSystem = accentFollowSystem_;
+	prefs.accent = accent_;
+	prefs.followOsHighContrast = followOsHighContrast_;
+	prefs.packSearchPaths = packSearchPaths_;
+	prefs.extraPackFiles = extraPackFiles_;
+	return prefs;
+}
+
+bool Engine::applyAppearancePrefs(const AppearancePrefs& prefs)
+{
+	loadingPreferences_ = true;
+
+	packSearchPaths_ = prefs.packSearchPaths;
+	extraPackFiles_ = prefs.extraPackFiles;
+	(void)scanPackSearchPaths();
+	for (const QString& file : extraPackFiles_)
+	{
+		Error err = Error::None;
+		(void)packs_->registerPackFile(file, &err);
+	}
+
+	followOsHighContrast_ = prefs.followOsHighContrast;
+
+	if (prefs.accentFollowSystem)
+	{
+		(void)setAccentFollowSystem(true);
+	}
+	else
+	{
+		(void)setAccent(prefs.accent);
+	}
+
+	bool ok = false;
+	if (prefs.colorScheme == ColorScheme::System)
+	{
+		ok = setColorScheme(ColorScheme::System, true);
+	}
+	else
+	{
+		ok = applyPack(prefs.skinId.isEmpty() ? packIdForScheme(prefs.colorScheme) : prefs.skinId,
+					   prefs.colorScheme, true);
+	}
+
+	loadingPreferences_ = false;
+	return ok;
+}
+
+bool Engine::savePreferences(QSettings* settings) const
+{
+	if (settings)
+	{
+		return saveAppearancePrefs(settings, appearancePrefs());
+	}
+	QSettings local;
+	return saveAppearancePrefs(&local, appearancePrefs());
+}
+
+bool Engine::loadPreferences(QSettings* settings)
+{
+	AppearancePrefs prefs;
+	bool ok = false;
+	if (settings)
+	{
+		ok = loadAppearancePrefs(settings, &prefs);
+	}
+	else
+	{
+		QSettings local;
+		ok = loadAppearancePrefs(&local, &prefs);
+	}
+	if (!ok)
+	{
+		return false;
+	}
+	return applyAppearancePrefs(prefs);
+}
+
+void Engine::setAutoSavePreferences(bool enable)
+{
+	autoSavePreferences_ = enable;
+}
+
+void Engine::onAutoSavePreferences()
+{
+	if (!autoSavePreferences_ || loadingPreferences_)
+	{
+		return;
+	}
+	(void)savePreferences(nullptr);
 }
 
 } // namespace qtheme

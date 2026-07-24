@@ -1,6 +1,7 @@
 #ifndef __QTHEME_ENGINE_ENGINE_H__
 #define __QTHEME_ENGINE_ENGINE_H__
 
+#include "settings.hpp"
 #include "store.hpp"
 #include "style.hpp"
 #include "types.hpp"
@@ -12,12 +13,13 @@
 
 class QApplication;
 class QGuiApplication;
+class QSettings;
 
 namespace qtheme {
 
 class PackRegistry;
 
-/// Process-facing session: packs, accent, color scheme, QThemeStyle.
+/// Process-facing session: packs, accent, color scheme, QThemeStyle, preferences.
 class Engine final : public QObject
 {
 	Q_OBJECT
@@ -40,11 +42,24 @@ public:
 	[[nodiscard]] bool accentFollowsSystem() const { return accentFollowSystem_; }
 
 	/// When true (default), ColorScheme::System prefers fluent.hc if the OS high-contrast mode is on.
-	void setFollowOsHighContrast(bool follow) { followOsHighContrast_ = follow; }
+	void setFollowOsHighContrast(bool follow);
 	[[nodiscard]] bool followOsHighContrast() const { return followOsHighContrast_; }
 
 	bool registerPack(const QString& pathOrQrc);
+	/// Append a directory to scan for `*.theme.json` extension packs.
+	void addPackSearchPath(const QString& dir);
+	[[nodiscard]] QStringList packSearchPaths() const { return packSearchPaths_; }
+	/// Register packs from all search paths. Returns total newly attempted registrations.
+	int scanPackSearchPaths();
 	[[nodiscard]] QStringList registeredPacks() const;
+
+	/// Snapshot / restore appearance (skin, scheme, accent, pack paths).
+	[[nodiscard]] AppearancePrefs appearancePrefs() const;
+	bool applyAppearancePrefs(const AppearancePrefs& prefs);
+	bool savePreferences(QSettings* settings = nullptr) const;
+	bool loadPreferences(QSettings* settings = nullptr);
+	void setAutoSavePreferences(bool enable);
+	[[nodiscard]] bool autoSavePreferences() const { return autoSavePreferences_; }
 
 	[[nodiscard]] ThemeStore* store() const { return store_.get(); }
 	[[nodiscard]] QThemeStyle* style() const { return style_; }
@@ -61,6 +76,7 @@ signals:
 private slots:
 	void onOsPaletteChanged(const QPalette& palette);
 	void onOsColorSchemeChanged(Qt::ColorScheme scheme);
+	void onAutoSavePreferences();
 
 private:
 	void refreshUi();
@@ -82,6 +98,10 @@ private:
 	bool followOsHighContrast_ = true;
 	bool osHooksInstalled_ = false;
 	bool syncingFromOs_ = false;
+	bool autoSavePreferences_ = false;
+	bool loadingPreferences_ = false;
+	QStringList packSearchPaths_;
+	QStringList extraPackFiles_;
 	Error lastError_ = Error::None;
 	bool inited_ = false;
 };

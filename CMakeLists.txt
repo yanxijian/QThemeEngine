@@ -19,12 +19,15 @@ endif()
 option(QTE_BUILD_TESTS "Build unit tests" ON)
 option(QTE_BUILD_EXAMPLES "Build example apps" ON)
 option(QTE_BUILD_WIDGETS "Build owner-drawn sample widgets" ON)
+option(QTE_INSTALL "Install library, headers, and CMake package" ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 COMPONENTS PrintSupport OpenGLWidgets QUIET)
 if(QTE_BUILD_TESTS)
   find_package(Qt6 REQUIRED COMPONENTS Test)
 endif()
+
+include(GNUInstallDirs)
 
 set(QTE_ENGINE_SOURCES
   src/qtheme/color_util.cpp
@@ -33,6 +36,7 @@ set(QTE_ENGINE_SOURCES
   src/qtheme/accent.cpp
   src/qtheme/style.cpp
   src/qtheme/engine.cpp
+  src/qtheme/settings.cpp
   src/qtheme/api.cpp
   # M1 Format stubs (XML loader)
   src/themeloader.cpp
@@ -46,6 +50,7 @@ set(QTE_ENGINE_SOURCES
   include/qtheme/accent.hpp
   include/qtheme/style.hpp
   include/qtheme/engine.hpp
+  include/qtheme/settings.hpp
   include/qtheme/api.hpp
   include/qtheme/color_util.hpp
   include/theme/ithemeloader.hpp
@@ -68,13 +73,23 @@ add_library(QThemeEngine::engine ALIAS qtheme_engine)
 
 target_include_directories(qtheme_engine
   PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 if(QTE_BUILD_WIDGETS)
-  target_include_directories(qtheme_engine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/widgets")
+  target_include_directories(qtheme_engine PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/widgets>
+  )
 endif()
 
 target_link_libraries(qtheme_engine PUBLIC Qt6::Widgets)
+
+set_target_properties(qtheme_engine PROPERTIES
+  EXPORT_NAME engine
+  OUTPUT_NAME qtheme_engine
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION_MAJOR}
+)
 
 if(QTE_BUILD_EXAMPLES)
   add_executable(qtheme_demo
@@ -127,5 +142,46 @@ if(QTE_BUILD_TESTS)
   add_test(NAME qtheme_tests COMMAND qtheme_tests)
 endif()
 
+if(QTE_INSTALL)
+  include(CMakePackageConfigHelpers)
+
+  install(TARGETS qtheme_engine
+    EXPORT QThemeEngineTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+  install(DIRECTORY include/qtheme
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.hpp"
+  )
+
+  install(EXPORT QThemeEngineTargets
+    FILE QThemeEngineTargets.cmake
+    NAMESPACE QThemeEngine::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QThemeEngine
+  )
+
+  configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/QThemeEngineConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/QThemeEngineConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QThemeEngine
+  )
+
+  write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/QThemeEngineConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+  )
+
+  install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/QThemeEngineConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/QThemeEngineConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QThemeEngine
+  )
+endif()
+
 message(STATUS "QThemeEngine ${PROJECT_VERSION}")
-message(STATUS "  QTE_BUILD_EXAMPLES=${QTE_BUILD_EXAMPLES} QTE_BUILD_TESTS=${QTE_BUILD_TESTS} QTE_BUILD_WIDGETS=${QTE_BUILD_WIDGETS}")
+message(STATUS "  QTE_BUILD_EXAMPLES=${QTE_BUILD_EXAMPLES} QTE_BUILD_TESTS=${QTE_BUILD_TESTS} QTE_BUILD_WIDGETS=${QTE_BUILD_WIDGETS} QTE_INSTALL=${QTE_INSTALL}")

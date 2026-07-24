@@ -203,10 +203,28 @@ examples/                原生控件演示（无 QSS）
 tests/                   Store Golden + Style 度量
 docs/zh|en/
 resources/               内置 fallback 主题
-cmake/                   后续：安装与 Config 包
+cmake/                   QThemeEngineConfig.cmake.in（find_package）
 ```
 
-CMake 选项建议：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGETS`（自绘示例控件）。
+CMake 选项：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGETS`、`QTE_INSTALL`。
+
+### 产品集成（M5）
+
+```cmake
+find_package(QThemeEngine REQUIRED)
+target_link_libraries(app PRIVATE QThemeEngine::engine)
+```
+
+```cpp
+qtheme::Engine engine;
+engine.apply(app);
+engine.loadPreferences();          // QSettings org/app
+engine.setAutoSavePreferences(true);
+engine.addPackSearchPath(packDir); // *.theme.json 扩展包
+engine.scanPackSearchPaths();
+```
+
+偏好键位于 `qtheme` 组：`skinId` / `colorScheme` / `accent` / `accentFollowSystem` / `followOsHighContrast` / `packSearchPaths` / `extraPackFiles`。
 
 ---
 
@@ -220,7 +238,7 @@ CMake 选项建议：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGE
 | **M2** | Button / Edit / Check / Combo / Spin / Menu / Tab / Header / ToolBar | **已交付**（含状态页验收） |
 | **M3** | Slider / Progress / GroupBox / ToolTip + DPI | **已交付**：度量 × `dpiScale`（96DPI=1.0） |
 | **M4** | ItemView 选中/hover/交替行 | **已交付**：`view.*` + PE_PanelItemView* / CE_ItemViewItem |
-| **M5** | 皮肤包、扩展、持久化 | 产品集成 |
+| **M5** | 皮肤包、扩展、持久化 | **已交付**：QSettings 偏好、Pack 搜索目录、CMake Config 安装 |
 
 ---
 
