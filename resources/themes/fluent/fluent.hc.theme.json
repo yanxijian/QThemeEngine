@@ -262,11 +262,11 @@
   "metrics": {
     "button": { "radius": 0, "padding": 10, "height": 32 },
     "edit": { "radius": 0, "padding": 6 },
-    "check": { "indicator": 18, "radius": 0 },
+    "check": { "indicator": 18, "radius": 0, "focusWidth": 1 },
     "tab": { "radius": 0, "height": 32 },
     "scroll": { "thickness": 12, "radius": 0 },
     "menu": { "radius": 0, "itemHeight": 32, "itemInset": 2, "itemRadius": 0 },
-    "focus": { "radius": 0, "outer": 2, "inner": 1, "margin": 1 },
+    "focus": { "radius": 0, "outer": 2, "inner": 1, "margin": 1, "derive": 0, "lightnessOffset": 165 },
     "toolbar": { "radius": 0, "padding": 4, "handleExtent": 8, "itemSpacing": 4, "frameWidth": 1 },
     "combo": { "radius": 0 },
     "spin": { "radius": 0, "buttonWidth": 20 },
@@ -281,7 +281,7 @@
     "dock": { "titleHeight": 28, "frameWidth": 1, "separator": 4, "handle": 10 },
     "status": { "height": 24, "padding": 4 },
     "dial": { "thickness": 8 },
-    "view": { "itemHeight": 28, "indent": 20 },
+    "view": { "itemHeight": 28, "indent": 20, "contentPadLeft": 8, "contentPadRight": 8, "focusWidth": 1 },
     "DemoButton": { "borderRadius": 0 }
   }
 }

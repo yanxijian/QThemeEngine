@@ -46,6 +46,8 @@ private:
 								   const QColor& fallback) const;
 	[[nodiscard]] int roleMetric(const QString& group, const QString& role, int fallback) const;
 	[[nodiscard]] int scaleMetric(int logicalPx) const;
+	/// Relative-luminance focus strokes; HC (focus.derive=0) keeps pack palette.focus.*.
+	void focusStrokeColors(const QColor& ambient, QColor* outer, QColor* inner) const;
 
 	std::shared_ptr<ThemeStore> m_store;
 	qreal m_dpiScale = 1.0;

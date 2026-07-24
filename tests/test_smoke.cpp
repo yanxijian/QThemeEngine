@@ -38,6 +38,7 @@ class ThemeSmokeTest : public QObject
 	Q_OBJECT
 private slots:
 	void colorLiteral_rrggbbaa();
+	void color_focusOuterInvertsVsAmbientLuminance();
 	void store_fluentLightHasRequiredTokens();
 	void store_fluentDarkDiffersFromLight();
 	void store_fluentHcHasZeroRadius();
@@ -70,6 +71,24 @@ void ThemeSmokeTest::colorLiteral_rrggbbaa()
 	QCOMPARE(c.green(), 0x0D);
 	QCOMPARE(c.blue(), 0x0D);
 	QCOMPARE(c.alpha(), 0xE5);
+}
+
+void ThemeSmokeTest::color_focusOuterInvertsVsAmbientLuminance()
+{
+	const QColor lightBg(QStringLiteral("#F3F3F3"));
+	const QColor darkBg(QStringLiteral("#202020"));
+	QVERIFY(qtheme::relativeLuminance(lightBg) > qtheme::relativeLuminance(darkBg));
+	QCOMPARE(qtheme::focusContrastDirection(lightBg), -1);
+	QCOMPARE(qtheme::focusContrastDirection(darkBg), 1);
+
+	const QColor onLight = qtheme::focusOuterFromAmbient(lightBg, 165);
+	const QColor onDark = qtheme::focusOuterFromAmbient(darkBg, 165);
+	QVERIFY(onLight.lightness() < lightBg.lightness());
+	QVERIFY(onDark.lightness() > darkBg.lightness());
+	QVERIFY(onLight.lightness() < 80);
+	QVERIFY(onDark.lightness() > 175);
+	QCOMPARE(qtheme::focusInnerFromOuter(onLight), QColor(Qt::white));
+	QCOMPARE(qtheme::focusInnerFromOuter(onDark), QColor(Qt::black));
 }
 
 void ThemeSmokeTest::store_fluentLightHasRequiredTokens()
@@ -317,6 +336,10 @@ void ThemeSmokeTest::style_fluentFocusRingAndCheckFocusRect()
 	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("outer"), -1), 2);
 	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("inner"), -1), 1);
 	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("radius"), -1), 4);
+	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("derive"), -1), 1);
+	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("lightnessOffset"), -1), 165);
+	QCOMPARE(light->metric(QStringLiteral("check"), QStringLiteral("focusWidth"), -1), 1);
+	QCOMPARE(light->metric(QStringLiteral("view"), QStringLiteral("focusWidth"), -1), 1);
 
 	QCheckBox box(QStringLiteral("Unchecked"));
 	box.resize(160, 32);
@@ -337,7 +360,7 @@ void ThemeSmokeTest::style_fluentFocusRingAndCheckFocusRect()
 	const QRect radioFocus = style.subElementRect(QStyle::SE_RadioButtonFocusRect, &ropt, &radio);
 	QVERIFY(radioFocus.width() > 40);
 
-	// Focus ring paints opaque ink near the rim; center stays clear of the dual stroke.
+	// Focus ring paints opaque ink near the rim; center stays clear of the stroke.
 	QImage img(120, 40, QImage::Format_ARGB32_Premultiplied);
 	img.fill(Qt::transparent);
 	{
@@ -345,11 +368,15 @@ void ThemeSmokeTest::style_fluentFocusRingAndCheckFocusRect()
 		QStyleOptionFocusRect fr;
 		fr.rect = img.rect().adjusted(2, 2, -2, -2);
 		fr.state = QStyle::State_Enabled | QStyle::State_KeyboardFocusChange;
-		fr.backgroundColor = Qt::transparent;
+		fr.backgroundColor = QColor(QStringLiteral("#F3F3F3"));
 		style.drawPrimitive(QStyle::PE_FrameFocusRect, &fr, &p, nullptr);
 	}
 	QVERIFY(qAlpha(img.pixel(3, 3)) > 0);
 	QVERIFY(qAlpha(img.pixel(img.width() / 2, img.height() / 2)) < 16);
+
+	auto hc = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), hc.get()));
+	QCOMPARE(hc->metric(QStringLiteral("focus"), QStringLiteral("derive"), -1), 0);
 }
 
 void ThemeSmokeTest::accent_patchUpdatesHighlight()

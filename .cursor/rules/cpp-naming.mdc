@@ -42,4 +42,4 @@ Prefix follows whether the declaration **literally uses `static`**, not C++ link
 ## Include guards
 
 - Keep `__{TARGET}_{FILE}_H__` (see `cpp-include-guards.mdc`).
-- Formatting stays in `.clang-format` (do not change for naming).
+- Formatting stays in `.clang-format` (**`ColumnLimit: 140`**; do not change for naming).

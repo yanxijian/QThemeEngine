@@ -1,0 +1,38 @@
+---
+description: Focus ring colors use environment-relative luminance inversion, not absolute lighten/darken.
+globs: src/qtheme/style.cpp,src/qtheme/accent.cpp,resources/themes/fluent/**/*.json,resources/themes/fluent/**/*.theme.json
+alwaysApply: false
+---
+
+# Focus ring color (relative contrast)
+
+When adjusting keyboard focus frame / `focus.outer` / `focus.inner` colors:
+
+## Principle
+
+The focus ring exists to **maximize visual contrast** against its surroundings. Do **not** use an absolute “always lighten” (or always darken) formula. Use **environment-relative inversion** based on relative luminance of the ambient background.
+
+## Direction vs mode
+
+| Ambient background | Direction | Mix toward | HSL Lightness |
+|--------------------|-----------|------------|---------------|
+| Light (white / light surfaces) | `-1` | Black (darken) | Decrease `L` |
+| Dark (black / dark surfaces) | `+1` | White (lighten) | Increase `L` |
+
+## Formula
+
+Introduce an environment-aware `Direction` (`-1` light mode, `+1` dark mode):
+
+```text
+Focus_Lightness = Base_Lightness + (Direction * Offset)
+```
+
+- `Base_Lightness`: lightness of the base/reference color being adjusted
+- `Offset`: positive contrast step (theme/token tunable)
+- Result must stay readable on the actual surface behind the ring (page, control chrome, or selected SubtleFill)
+
+## Notes
+
+- Dual-stroke WinUI rings still follow this idea: the **outer** stroke is the high-contrast edge against the environment; the **inner** stroke separates that edge from control chrome.
+- Prefer deriving from ambient/surface tokens over hard-coded absolute black/white when implementing or revising focus colors.
+- Implementation: `qtheme::focusOuterFromAmbient` / `QThemeStyle::focusStrokeColors`. Tokens: `focus.derive` (0=pack HC fixed, 1=derive), `focus.lightnessOffset` (HSL L delta 0–255).

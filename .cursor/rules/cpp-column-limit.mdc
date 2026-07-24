@@ -1,0 +1,13 @@
+---
+description: C++ line length ColumnLimit 140 (clang-format + hand-written code).
+globs: "**/*.{h,hpp,hxx,hh,c,cc,cpp,cxx}"
+alwaysApply: false
+---
+
+# Line length
+
+- **Column limit: 140** (not 80/100/120).
+- Source of truth: root `.clang-format` → `ColumnLimit: 140`.
+- When writing or editing C++, keep statements on one line if they fit within 140 columns (tabs count toward display width per clang-format / editor tab width 4).
+- Do not wrap early “for style”; only wrap when exceeding the limit or when clang-format would.
+- Run `scripts/format_source.py` / clang-format for bulk reflow; do not mass-reformat unrelated files in drive-by edits.

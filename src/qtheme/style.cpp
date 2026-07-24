@@ -1,9 +1,13 @@
 #include "qtheme/style.hpp"
 
+#include "qtheme/color_util.hpp"
+
 #include <QAbstractScrollArea>
 #include <QCalendarWidget>
+#include <QCheckBox>
 #include <QFrame>
 #include <QMenu>
+#include <QRadioButton>
 #include <QtMath>
 #include <QPainter>
 #include <QPainterPath>
@@ -16,6 +20,7 @@
 #include <QStyleOptionComboBox>
 #include <QStyleOptionComplex>
 #include <QStyleOptionDockWidget>
+#include <QStyleOptionFocusRect>
 #include <QStyleOptionFrame>
 #include <QStyleOptionHeader>
 #include <QStyleOptionMenuItem>
@@ -32,6 +37,10 @@ namespace qtheme {
 
 namespace {
 
+/// When CE_ItemViewItem paints PE_PanelItemViewItem first, skip the panel pass inside
+/// QCommonStyle::drawControl so it cannot overlay a square fill on our rounded selection.
+thread_local int g_skipItemViewPanel = 0;
+
 QStyle* makeFusionBase()
 {
 	QStyle* fusion = QStyleFactory::create(QStringLiteral("Fusion"));
@@ -47,12 +56,16 @@ void drawRounded(QPainter* painter, const QRect& rect, int radius, const QColor&
 	QPainterPath path;
 	path.addRoundedRect(r, radius, radius);
 	painter->fillPath(path, fill);
-	painter->setPen(QPen(border, borderWidth));
-	painter->drawPath(path);
+	if (borderWidth > 0.0)
+	{
+		painter->setPen(QPen(border, borderWidth));
+		painter->drawPath(path);
+	}
 	painter->restore();
 }
 
 /// WinUI Focus Visual: primary (outer) 2px + secondary (inner) 1px, typically ControlCornerRadius.
+/// Pass innerWidth <= 0 to draw only the outer stroke (e.g. ItemView).
 void drawFluentFocusRing(QPainter* painter, const QRect& rect, int radius, const QColor& outer,
 						 const QColor& inner, qreal outerWidth, qreal innerWidth)
 {
@@ -76,19 +89,22 @@ void drawFluentFocusRing(QPainter* painter, const QRect& rect, int radius, const
 		painter->drawRect(outerR);
 	}
 
-	const qreal inset = outerWidth + innerWidth * 0.5;
-	const QRectF innerR = QRectF(rect).adjusted(inset, inset, -inset, -inset);
-	if (innerR.width() >= 2.0 && innerR.height() >= 2.0)
+	if (innerWidth > 0.0)
 	{
-		const qreal innerRadius = radius > 0 ? qMax(0.0, qreal(radius) - outerWidth) : 0.0;
-		painter->setPen(QPen(inner, innerWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
-		if (innerRadius > 0)
+		const qreal inset = outerWidth + innerWidth * 0.5;
+		const QRectF innerR = QRectF(rect).adjusted(inset, inset, -inset, -inset);
+		if (innerR.width() >= 2.0 && innerR.height() >= 2.0)
 		{
-			painter->drawRoundedRect(innerR, innerRadius, innerRadius);
-		}
-		else
-		{
-			painter->drawRect(innerR);
+			const qreal innerRadius = radius > 0 ? qMax(0.0, qreal(radius) - outerWidth) : 0.0;
+			painter->setPen(QPen(inner, innerWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
+			if (innerRadius > 0)
+			{
+				painter->drawRoundedRect(innerR, innerRadius, innerRadius);
+			}
+			else
+			{
+				painter->drawRect(innerR);
+			}
 		}
 	}
 	painter->restore();
@@ -254,6 +270,41 @@ int QThemeStyle::roleMetric(const QString& group, const QString& role, int fallb
 	bool ok = false;
 	const int v = m_store->metric(group, role, fallback, &ok);
 	return scaleMetric(ok ? v : fallback);
+}
+
+void QThemeStyle::focusStrokeColors(const QColor& ambient, QColor* outer, QColor* inner) const
+{
+	if (!outer)
+	{
+		return;
+	}
+	const QColor packOuter = roleColor(QStringLiteral("palette"), QStringLiteral("focus.outer"),
+									   QColor(Qt::black));
+	const QColor packInner = roleColor(QStringLiteral("palette"), QStringLiteral("focus.inner"),
+									   QColor(Qt::white));
+	// focus.derive / lightnessOffset are logical tokens — do not DPI-scale.
+	int derive = 1;
+	int offset = 165;
+	if (m_store)
+	{
+		bool ok = false;
+		derive = m_store->metric(QStringLiteral("focus"), QStringLiteral("derive"), 1, &ok);
+		offset = m_store->metric(QStringLiteral("focus"), QStringLiteral("lightnessOffset"), 165, &ok);
+	}
+	if (derive == 0 || !ambient.isValid())
+	{
+		*outer = packOuter;
+		if (inner)
+		{
+			*inner = packInner;
+		}
+		return;
+	}
+	*outer = focusOuterFromAmbient(ambient, offset);
+	if (inner)
+	{
+		*inner = focusInnerFromOuter(*outer);
+	}
 }
 
 QPalette QThemeStyle::standardPalette() const
@@ -565,13 +616,44 @@ QRect QThemeStyle::subElementRect(SubElement element, const QStyleOption* option
 			return option->rect.adjusted(margin, margin, -margin, -margin);
 		}
 	}
-	if (element == SE_PushButtonFocusRect || element == SE_ItemViewItemFocusRect)
+	if (element == SE_PushButtonFocusRect)
 	{
 		const int margin = roleMetric(QStringLiteral("focus"), QStringLiteral("margin"), 1);
 		if (option)
 		{
 			return option->rect.adjusted(margin, margin, -margin, -margin);
 		}
+	}
+	// ItemView: CE_ItemViewItem draws a single outer ring flush to the item (no dual stroke, no inset gap).
+	if (element == SE_ItemViewItemFocusRect)
+	{
+		return QRect();
+	}
+	// Pad only text / icon / check — selection fill keeps the full item rect.
+	if (element == SE_ItemViewItemText || element == SE_ItemViewItemDecoration
+		|| element == SE_ItemViewItemCheckIndicator)
+	{
+		QRect r = QProxyStyle::subElementRect(element, option, widget);
+		if (!option || r.isEmpty())
+		{
+			return r;
+		}
+		const int padL = roleMetric(QStringLiteral("view"), QStringLiteral("contentPadLeft"), 8);
+		const int padR = roleMetric(QStringLiteral("view"), QStringLiteral("contentPadRight"), 8);
+		if (element == SE_ItemViewItemText)
+		{
+			r.setLeft(qMax(r.left(), option->rect.left() + padL));
+			r.setRight(qMin(r.right(), option->rect.right() - padR));
+		}
+		else
+		{
+			r.translate(padL, 0);
+			if (r.right() > option->rect.right() - padR)
+			{
+				r.moveRight(option->rect.right() - padR);
+			}
+		}
+		return r;
 	}
 	// Combo/Spin/Slider already use accent border.focus chrome — skip a second ring.
 	if (element == SE_ComboBoxFocusRect || element == SE_SliderFocusRect)
@@ -714,13 +796,33 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 
 	if (element == PE_FrameFocusRect)
 	{
-		const QColor outer = roleColor(QStringLiteral("palette"), QStringLiteral("focus.outer"),
-									   option->palette.color(QPalette::Highlight));
-		const QColor inner = roleColor(QStringLiteral("palette"), QStringLiteral("focus.inner"),
-									   option->palette.color(QPalette::Base));
+		QColor ambient;
+		if (const auto* fr = qstyleoption_cast<const QStyleOptionFocusRect*>(option))
+		{
+			ambient = fr->backgroundColor;
+		}
+		if (!ambient.isValid() && widget)
+		{
+			ambient = widget->palette().color(widget->backgroundRole());
+		}
+		if (!ambient.isValid())
+		{
+			ambient = roleColor(QStringLiteral("palette"), QStringLiteral("canvas"),
+								option->palette.color(QPalette::Window));
+		}
+		QColor outer;
+		QColor inner;
+		focusStrokeColors(ambient, &outer, &inner);
 		const int radius = roleMetric(QStringLiteral("focus"), QStringLiteral("radius"), 4);
-		const qreal outerW = qreal(roleMetric(QStringLiteral("focus"), QStringLiteral("outer"), 2));
-		const qreal innerW = qreal(roleMetric(QStringLiteral("focus"), QStringLiteral("inner"), 1));
+		// Check/Radio: 1px single stroke (minimum). Other controls keep dual-stroke metrics.
+		const bool checkLike = qobject_cast<const QCheckBox*>(widget)
+							   || qobject_cast<const QRadioButton*>(widget);
+		const qreal outerW =
+			checkLike ? qreal(roleMetric(QStringLiteral("check"), QStringLiteral("focusWidth"), 1))
+					  : qreal(roleMetric(QStringLiteral("focus"), QStringLiteral("outer"), 2));
+		const qreal innerW =
+			checkLike ? 0.0
+					  : qreal(roleMetric(QStringLiteral("focus"), QStringLiteral("inner"), 1));
 		drawFluentFocusRing(painter, option->rect, radius, outer, inner, outerW, innerW);
 		return;
 	}
@@ -966,6 +1068,10 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 
 	if (element == PE_PanelItemViewItem || element == PE_PanelItemViewRow)
 	{
+		if (g_skipItemViewPanel > 0)
+		{
+			return;
+		}
 		const auto* item = qstyleoption_cast<const QStyleOptionViewItem*>(option);
 		const bool enabled = option->state & State_Enabled;
 		const bool selected = option->state & State_Selected;
@@ -995,7 +1101,25 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 		const QColor bg = roleColor(QStringLiteral("view"), bgRole,
 									selected ? option->palette.color(QPalette::Highlight)
 											 : option->palette.color(QPalette::Base));
-		painter->fillRect(option->rect, bg);
+		// Focused: same corner radius family as the focus ring so fill cannot poke past the arc.
+		if ((option->state & State_HasFocus) && enabled)
+		{
+			const qreal outerW = qreal(roleMetric(QStringLiteral("view"), QStringLiteral("focusWidth"), 1));
+			const int radius = roleMetric(QStringLiteral("focus"), QStringLiteral("radius"), 4);
+			const QRectF fillRect = QRectF(option->rect).adjusted(outerW, outerW, -outerW, -outerW);
+			// Stroke centerline uses `radius`; inner contour ≈ radius - outerW/2.
+			const qreal fillRadius = qMax(0.0, qreal(radius) - outerW * 0.5);
+			painter->save();
+			painter->setRenderHint(QPainter::Antialiasing, true);
+			painter->setPen(Qt::NoPen);
+			painter->setBrush(bg);
+			painter->drawRoundedRect(fillRect, fillRadius, fillRadius);
+			painter->restore();
+		}
+		else
+		{
+			painter->fillRect(option->rect, bg);
+		}
 		return;
 	}
 
@@ -1564,8 +1688,25 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 			copy.palette.setColor(QPalette::Highlight, selBg);
 			copy.palette.setColor(QPalette::Base, base);
 			copy.palette.setColor(QPalette::AlternateBase, alt);
-			// Panel background comes from PE_PanelItemViewItem (our override).
+			// Full item rect for selection fill; contentPad is applied in subElementRect (text/icon only).
+			const bool focused = (item->state & State_HasFocus) && enabled;
+			// Paint panel once with real Selected/HasFocus (rounded when focused). Skip the
+			// panel inside QCommonStyle so it cannot cover blue with a square Base/Highlight fill.
+			drawPrimitive(PE_PanelItemViewItem, item, painter, widget);
+			copy.state &= ~(State_HasFocus | State_KeyboardFocusChange);
+			++g_skipItemViewPanel;
 			QProxyStyle::drawControl(element, &copy, painter, widget);
+			--g_skipItemViewPanel;
+			if (focused)
+			{
+				// Ambient = the fill behind the ring (selected accent / inactive / base).
+				const QColor ambient = selected ? selBg : base;
+				QColor outer;
+				focusStrokeColors(ambient, &outer, nullptr);
+				const int radius = roleMetric(QStringLiteral("focus"), QStringLiteral("radius"), 4);
+				const qreal outerW = qreal(roleMetric(QStringLiteral("view"), QStringLiteral("focusWidth"), 1));
+				drawFluentFocusRing(painter, item->rect, radius, outer, QColor(), outerW, 0.0);
+			}
 			return;
 		}
 	}
