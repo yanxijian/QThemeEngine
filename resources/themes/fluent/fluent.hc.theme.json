@@ -19,7 +19,13 @@
       "accent.text": "#000000",
       "stroke": "#FFFFFF",
       "canvas": "#000000",
-      "surface": "#000000"
+      "surface": "#000000",
+      "text.tertiary": "#C0C0C0",
+      "accent.hover": "#FFFF00",
+      "accent.pressed": "#FFFF00",
+      "accent.text.secondary": "#000000",
+      "focus.outer": "#FFFFFF",
+      "focus.inner": "#000000"
     },
     "button": {
       "bg": "#000000",
@@ -29,7 +35,12 @@
       "fg": "#FFFFFF",
       "fg.disabled": "#808080",
       "border": "#FFFFFF",
-      "border.focus": "#FFFF00"
+      "border.focus": "#FFFF00",
+      "bg.accent": "#FFFF00",
+      "bg.accent.hover": "#FFFF00",
+      "bg.accent.pressed": "#FFFF00",
+      "fg.accent": "#000000",
+      "fg.accent.pressed": "#000000"
     },
     "edit": {
       "bg": "#000000",
@@ -45,6 +56,7 @@
     "check": {
       "bg": "#000000",
       "bg.checked": "#FFFF00",
+      "bg.checked.hover": "#FFFF00",
       "bg.hover": "#1A1A1A",
       "bg.disabled": "#000000",
       "bg.checked.disabled": "#808080",
@@ -78,6 +90,7 @@
     },
     "menu": {
       "bg": "#000000",
+      "bg.acrylic": "#000000",
       "bg.hover": "#1A1A1A",
       "bg.disabled": "#000000",
       "fg": "#FFFFFF",
@@ -103,6 +116,7 @@
       "bg.disabled": "#000000",
       "fg": "#FFFFFF",
       "fg.disabled": "#808080",
+      "fg.placeholder": "#C0C0C0",
       "border": "#FFFFFF",
       "border.focus": "#FFFF00",
       "border.hover": "#FFFFFF",
@@ -137,6 +151,7 @@
       "groove": "#FFFFFF",
       "groove.disabled": "#808080",
       "fill": "#FFFF00",
+      "fill.hover": "#FFFF00",
       "fill.disabled": "#808080",
       "handle": "#000000",
       "handle.hover": "#1A1A1A",
@@ -150,6 +165,8 @@
       "groove.disabled": "#000000",
       "chunk": "#FFFF00",
       "chunk.disabled": "#808080",
+      "chunk.paused": "#FFFF00",
+      "chunk.error": "#FF0000",
       "fg": "#FFFFFF",
       "fg.disabled": "#808080",
       "border": "#FFFFFF"
@@ -225,6 +242,7 @@
       "bg.alternate": "#0D0D0D",
       "bg.hover": "#1A1A1A",
       "bg.selected": "#FFFF00",
+      "bg.selected.hover": "#FFFF00",
       "bg.selected.inactive": "#808080",
       "fg": "#FFFFFF",
       "fg.selected": "#000000",

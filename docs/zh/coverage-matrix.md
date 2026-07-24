@@ -28,7 +28,7 @@
 | 滚动条 | `QScrollBar` | ● | ● | — | handle + arrows；N/H/P/D |
 | 滑块 | `QSlider` | ● Fluent | ● | — | groove/fill/handle；N/H/P/D/Focus |
 | 拨盘 | `QDial` | ● Fluent | ● | — | `CC_Dial` + `dial.*` |
-| 进度 | `QProgressBar` | ● Fluent | ● | — | groove/chunk/label |
+| 进度 | `QProgressBar` | ● Fluent | ● | — | groove/chunk；`qtheme.progressState`=paused/error |
 | 标签页 | `QTabBar`/`QTabWidget` | ● | ● | — | N/H/Selected/Disabled；tab.height |
 | 工具栏 | `QToolBar` | ● | ● | — | `CE_ToolBar` + handle/separator/PM_ |
 | 菜单 | `QMenu`/`QMenuBar` | ● | ● | — | itemHeight / bar / separator |
@@ -49,32 +49,32 @@
 
 | 前缀 | 用途 |
 |------|------|
-| `palette.*` | 全局语义 Token |
-| `button.*` | 按钮面/文/边/圆角/边距 / accent |
+| `palette.*` | 全局语义 Token（含 `text.tertiary` / `accent.*` / `focus.outer|inner`） |
+| `button.*` | 按钮面/文/边/圆角/边距 / `bg.accent*` / `fg.accent*` |
 | `commandlink.*` | 命令链接标题/说明 |
 | `edit.*` | 输入框（含 `fg.placeholder` → `QPalette::PlaceholderText`） |
 | `textedit.*` | 多行编辑 / 滚动区外框（含 `fg.placeholder`） |
-| `check.*` | 复选 / 单选指示器 |
+| `check.*` | 复选 / 单选指示器（含 `bg.checked.hover`） |
 | `scroll.*` | 滚动条 |
 | `tab.*` | 标签页 |
-| `menu.*` | 菜单 / 菜单栏 |
+| `menu.*` | 菜单 / 菜单栏（含 `bg.acrylic` 实色近似） |
 | `toolbar.*` | 工具栏 |
-| `combo.*` | 下拉框 |
+| `combo.*` | 下拉框（含 `fg.placeholder`） |
 | `spin.*` | 数字框 / 日期时间步进 |
-| `slider.*` | 滑块 |
+| `slider.*` | 滑块（含 `fill.hover`） |
 | `dial.*` | 拨盘 |
-| `progress.*` | 进度条 |
+| `progress.*` | 进度条（含 `chunk.paused` / `chunk.error`） |
 | `groupbox.*` | 分组框 |
 | `tooltip.*` | 工具提示 |
 | `header.*` | 表头 |
-| `view.*` | ItemView |
+| `view.*` | ItemView（含 `bg.selected.hover`） |
 | `frame.*` | QFrame 面板与分隔线 |
 | `splitter.*` | 分割条 |
 | `dock.*` | 停靠窗 |
 | `status.*` | 状态栏 |
 | `calendar.*` | 月历外壳 |
 
-状态：`bg` / `bg.hover` / `bg.pressed` / `bg.disabled` / `bg.checked` / `border.focus` 等。
+状态：`bg` / `bg.hover` / `bg.pressed` / `bg.disabled` / `bg.checked` / `bg.selected.hover` / `border.focus` 等。
 
 ---
 

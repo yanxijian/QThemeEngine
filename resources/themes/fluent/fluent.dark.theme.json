@@ -19,7 +19,13 @@
       "accent.text": "#000000",
       "stroke": "#3F3F3F",
       "canvas": "#202020",
-      "surface": "#2C2C2C"
+      "surface": "#2C2C2C",
+      "text.tertiary": "#9C9C9C",
+      "accent.hover": "#74D7FF",
+      "accent.pressed": "#4CB8E8",
+      "accent.text.secondary": "#80000000",
+      "focus.outer": "#FFFFFF",
+      "focus.inner": "#0D0D0D"
     },
     "button": {
       "bg": "#2C2C2C",
@@ -29,7 +35,12 @@
       "fg": "#FFFFFF",
       "fg.disabled": "#777777",
       "border": "#3F3F3F",
-      "border.focus": "#60CDFF"
+      "border.focus": "#60CDFF",
+      "bg.accent": "#60CDFF",
+      "bg.accent.hover": "#74D7FF",
+      "bg.accent.pressed": "#4CB8E8",
+      "fg.accent": "#000000",
+      "fg.accent.pressed": "#80000000"
     },
     "edit": {
       "bg": "#2C2C2C",
@@ -54,7 +65,8 @@
       "indicator": "#000000",
       "indicator.disabled": "#777777",
       "fg": "#FFFFFF",
-      "fg.disabled": "#777777"
+      "fg.disabled": "#777777",
+      "bg.checked.hover": "#74D7FF"
     },
     "tab": {
       "bg": "#202020",
@@ -88,7 +100,8 @@
       "bar.bg": "#202020",
       "bar.bg.hover": "#2C2C2C",
       "bar.bg.pressed": "#1A1A1A",
-      "bar.fg": "#FFFFFF"
+      "bar.fg": "#FFFFFF",
+      "bg.acrylic": "#282828"
     },
     "toolbar": {
       "bg": "#202020",
@@ -107,7 +120,8 @@
       "border.focus": "#60CDFF",
       "border.hover": "#6B6B6B",
       "arrow": "#CFCFCF",
-      "arrow.disabled": "#777777"
+      "arrow.disabled": "#777777",
+      "fg.placeholder": "#CFCFCF"
     },
     "spin": {
       "bg": "#2C2C2C",
@@ -143,7 +157,8 @@
       "handle.pressed": "#1F1F1F",
       "handle.disabled": "#282828",
       "handle.border": "#6B6B6B",
-      "handle.border.focus": "#60CDFF"
+      "handle.border.focus": "#60CDFF",
+      "fill.hover": "#74D7FF"
     },
     "progress": {
       "groove": "#9F9F9F",
@@ -152,7 +167,9 @@
       "chunk.disabled": "#4A4A4A",
       "fg": "#FFFFFF",
       "fg.disabled": "#777777",
-      "border": "#3F3F3F"
+      "border": "#3F3F3F",
+      "chunk.paused": "#FCE100",
+      "chunk.error": "#FF99A4"
     },
     "groupbox": {
       "bg": "#202020",
@@ -230,7 +247,8 @@
       "fg.selected": "#000000",
       "fg.disabled": "#777777",
       "grid": "#3F3F3F",
-      "branch": "#CFCFCF"
+      "branch": "#CFCFCF",
+      "bg.selected.hover": "#74D7FF"
     },
     "DemoButton": {
       "background": "#2C2C2C",

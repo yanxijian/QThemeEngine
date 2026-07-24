@@ -209,14 +209,25 @@ QPalette QThemeStyle::standardPalette() const
 		pal.setColor(QPalette::Disabled, QPalette::Text, editFgDis.value);
 	}
 	// Fluent TextControlPlaceholderForeground ≈ TextFillColorSecondary/Tertiary (not primary Text).
-	const ColorValue editPlaceholder =
-		m_store->color(QStringLiteral("edit"), QStringLiteral("fg.placeholder"));
-	if (editPlaceholder.ok)
+	ColorValue placeholder = m_store->color(QStringLiteral("combo"), QStringLiteral("fg.placeholder"));
+	if (!placeholder.ok)
 	{
-		pal.setColor(QPalette::Active, QPalette::PlaceholderText, editPlaceholder.value);
-		pal.setColor(QPalette::Inactive, QPalette::PlaceholderText, editPlaceholder.value);
+		placeholder = m_store->color(QStringLiteral("edit"), QStringLiteral("fg.placeholder"));
+	}
+	if (placeholder.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::PlaceholderText, placeholder.value);
+		pal.setColor(QPalette::Inactive, QPalette::PlaceholderText, placeholder.value);
 		pal.setColor(QPalette::Disabled, QPalette::PlaceholderText,
-					 editFgDis.ok ? editFgDis.value : editPlaceholder.value);
+					 editFgDis.ok ? editFgDis.value : placeholder.value);
+	}
+
+	const ColorValue textTertiary = m_store->color(QStringLiteral("palette"), QStringLiteral("text.tertiary"));
+	if (textTertiary.ok)
+	{
+		// Midtone text for secondary labels (Fluent TextFillColorTertiary).
+		pal.setColor(QPalette::Active, QPalette::BrightText, textTertiary.value);
+		pal.setColor(QPalette::Inactive, QPalette::BrightText, textTertiary.value);
 	}
 
 	const ColorValue tipBg = m_store->color(QStringLiteral("tooltip"), QStringLiteral("bg"));
@@ -495,15 +506,17 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 			}
 			border = roleColor(QStringLiteral("check"), QStringLiteral("border.disabled"), border);
 		}
-		else if (on || partial)
-		{
-			bg = roleColor(QStringLiteral("check"), QStringLiteral("bg.checked"), bg);
-			border = roleColor(QStringLiteral("check"), QStringLiteral("border.checked"), border);
-		}
-		else if (hover)
-		{
-			bg = roleColor(QStringLiteral("check"), QStringLiteral("bg.hover"), bg);
-		}
+			else if (on || partial)
+			{
+				bg = roleColor(QStringLiteral("check"),
+							   hover ? QStringLiteral("bg.checked.hover") : QStringLiteral("bg.checked"),
+							   bg);
+				border = roleColor(QStringLiteral("check"), QStringLiteral("border.checked"), border);
+			}
+			else if (hover)
+			{
+				bg = roleColor(QStringLiteral("check"), QStringLiteral("bg.hover"), bg);
+			}
 		const int radius =
 			radio ? option->rect.width() / 2
 				  : roleMetric(QStringLiteral("check"), QStringLiteral("radius"), 3);
@@ -544,12 +557,29 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 
 	if (element == PE_PanelMenu || element == PE_FrameMenu)
 	{
-		const QColor bg = roleColor(QStringLiteral("menu"), QStringLiteral("bg"),
-									option->palette.color(QPalette::Window));
+		const QColor solid = roleColor(QStringLiteral("menu"), QStringLiteral("bg"),
+									   option->palette.color(QPalette::Window));
+		const QColor bg = roleColor(QStringLiteral("menu"), QStringLiteral("bg.acrylic"), solid);
 		const QColor border = roleColor(QStringLiteral("menu"), QStringLiteral("border"),
 										option->palette.color(QPalette::Mid));
 		const int radius = roleMetric(QStringLiteral("menu"), QStringLiteral("radius"), 4);
 		drawRounded(painter, option->rect, radius, bg, border);
+		return;
+	}
+
+	if (element == PE_FrameFocusRect)
+	{
+		const QColor outer = roleColor(QStringLiteral("palette"), QStringLiteral("focus.outer"),
+									   option->palette.color(QPalette::Highlight));
+		const QColor inner = roleColor(QStringLiteral("palette"), QStringLiteral("focus.inner"),
+									   option->palette.color(QPalette::Base));
+		painter->save();
+		painter->setBrush(Qt::NoBrush);
+		painter->setPen(QPen(outer, 1));
+		painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
+		painter->setPen(QPen(inner, 1));
+		painter->drawRect(option->rect.adjusted(1, 1, -2, -2));
+		painter->restore();
 		return;
 	}
 
@@ -799,7 +829,11 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 			item && (item->features & QStyleOptionViewItem::Alternate);
 
 		QString bgRole = QStringLiteral("bg");
-		if (selected)
+		if (selected && hover && enabled && active)
+		{
+			bgRole = QStringLiteral("bg.selected.hover");
+		}
+		else if (selected)
 		{
 			bgRole = active ? QStringLiteral("bg.selected") : QStringLiteral("bg.selected.inactive");
 		}
@@ -904,7 +938,14 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 			}
 			else if (isDefault)
 			{
-				fgRole = QStringLiteral("fg.accent");
+				if (btn->state & State_Sunken)
+				{
+					fgRole = QStringLiteral("fg.accent.pressed");
+				}
+				else
+				{
+					fgRole = QStringLiteral("fg.accent");
+				}
 			}
 			const QColor fg =
 				roleColor(QStringLiteral("button"), fgRole, btn->palette.color(QPalette::ButtonText));
@@ -1137,10 +1178,13 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 				roleColor(QStringLiteral("commandlink"),
 						  enabled ? QStringLiteral("fg") : QStringLiteral("fg.disabled"),
 						  btn->palette.color(QPalette::ButtonText));
+			const QColor descFallback =
+				roleColor(QStringLiteral("palette"), QStringLiteral("text.tertiary"),
+						  btn->palette.color(QPalette::WindowText));
 			const QColor desc =
 				roleColor(QStringLiteral("commandlink"),
 						  enabled ? QStringLiteral("description") : QStringLiteral("fg.disabled"),
-						  btn->palette.color(QPalette::WindowText));
+						  descFallback);
 			QStyleOptionButton copy = *btn;
 			copy.palette.setColor(QPalette::ButtonText, title);
 			copy.palette.setColor(QPalette::WindowText, desc);
@@ -1266,10 +1310,21 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 					chunk.moveTop(full.top());
 				}
 			}
+			QString chunkRole = enabled ? QStringLiteral("chunk") : QStringLiteral("chunk.disabled");
+			if (enabled && widget)
+			{
+				const QString st = widget->property("qtheme.progressState").toString();
+				if (st == QLatin1String("paused"))
+				{
+					chunkRole = QStringLiteral("chunk.paused");
+				}
+				else if (st == QLatin1String("error"))
+				{
+					chunkRole = QStringLiteral("chunk.error");
+				}
+			}
 			const QColor fill =
-				roleColor(QStringLiteral("progress"),
-						  enabled ? QStringLiteral("chunk") : QStringLiteral("chunk.disabled"),
-						  prog->palette.color(QPalette::Highlight));
+				roleColor(QStringLiteral("progress"), chunkRole, prog->palette.color(QPalette::Highlight));
 			const int radius = roleMetric(QStringLiteral("progress"), QStringLiteral("radius"), 3);
 			if (chunk.isValid() && chunk.width() > 0 && chunk.height() > 0)
 			{
@@ -1438,10 +1493,17 @@ void QThemeStyle::drawComplexControl(ComplexControl control, const QStyleOptionC
 					fill.setBottom(handleRect.center().y());
 				}
 			}
+			QString fillRole = QStringLiteral("fill");
+			if (!enabled)
+			{
+				fillRole = QStringLiteral("fill.disabled");
+			}
+			else if (slider->state & State_MouseOver)
+			{
+				fillRole = QStringLiteral("fill.hover");
+			}
 			const QColor fillColor =
-				roleColor(QStringLiteral("slider"),
-						  enabled ? QStringLiteral("fill") : QStringLiteral("fill.disabled"),
-						  slider->palette.color(QPalette::Highlight));
+				roleColor(QStringLiteral("slider"), fillRole, slider->palette.color(QPalette::Highlight));
 			drawRounded(painter, fill, qMin(radius, grooveThickness), fillColor, fillColor);
 
 			QString handleRole = QStringLiteral("handle");

@@ -2,20 +2,20 @@
 
 - Common: `D:\Codes\microsoft-ui-xaml\controls\dev\CommonStyles\Common_themeresources_any.xaml`
 - QTE: `D:\Codes\QThemeEngine\resources\themes\fluent/fluent.{light,dark}.theme.json`
-- 对照角色数（有映射）: 186
-- QTE 角色总数: 186；无映射: 0
+- 对照角色数（有映射）: 204
+- QTE 角色总数: 204；无映射: 0
 
 ## 汇总
 
 | 类别 | 数量 |
 |------|------|
-| OK / STRUCT_OK / ACCENT | 346 |
+| OK / STRUCT_OK / ACCENT | 382 |
 | CLOSE (≤24) | 12 |
 | DIFF (严格语义偏差) | 0 |
 | STRUCT_DIFF (半透明≈不透明偏差大) | 14 |
 | QTE 无 WinUI 映射 | 0 |
-| Common Color 未被任何映射引用 | 49 |
-| 重要控件 StaticResource 未覆盖（含间接） | 14 |
+| Common Color 未被任何映射引用 | 43 |
+| 重要控件 StaticResource 未覆盖（含间接） | 11 |
 
 图例：`OK` 通道差≤8；`CLOSE`≤24；`DIFF` 严格映射偏差；`STRUCT_*` 故意用不透明近似半透明；`ACCENT` 跟系统强调色样本比。
 
@@ -106,11 +106,6 @@
 - `ControlStrokeColorOnAccentTertiary`
 - `ControlStrokeColorSecondary`
 
-### FocusStroke* (2)
-
-- `FocusStrokeColorInner`
-- `FocusStrokeColorOuter`
-
 ### LayerFill* (2)
 
 - `LayerFillColorAlt`
@@ -145,12 +140,10 @@
 - `SurfaceStrokeColorDefault`
 - `SurfaceStrokeColorInverse`
 
-### SystemFill* (12)
+### SystemFill* (10)
 
 - `SystemFillColorAttentionBackground`
-- `SystemFillColorCaution`
 - `SystemFillColorCautionBackground`
-- `SystemFillColorCritical`
 - `SystemFillColorCriticalBackground`
 - `SystemFillColorNeutral`
 - `SystemFillColorNeutralBackground`
@@ -160,14 +153,12 @@
 - `SystemFillColorSuccess`
 - `SystemFillColorSuccessBackground`
 
-### TextFill* (2)
+### TextFill* (1)
 
 - `TextFillColorInverse`
-- `TextFillColorTertiary`
 
-### TextOnAccentFill* (2)
+### TextOnAccentFill* (1)
 
-- `TextOnAccentFillColorSecondary`
 - `TextOnAccentFillColorSelectedText`
 
 ## 反向：重要控件 StaticResource 未覆盖
@@ -182,33 +173,24 @@
 | `TextControlSelectionHighlightColor` | `AccentFillColorSelectedTextBackground` |
 | `ButtonBorderBrush` | `ControlElevationBorder` |
 | `ComboBoxPlaceholderTextForegroundThemeBrush` | `?` |
-| `ComboBoxBackgroundBorderBrushFocused` | `FocusStrokeColorOuter` |
 | `ComboBoxBorderBrushFocused` | `?` |
 | `MenuFlyoutPresenterBackground` | `DesktopAcrylicTransparent` |
 | `AppBarBackground` | `?` |
 | `ToolTipBackground` | `SystemControlBackgroundChromeMediumLow` |
 | `CalendarViewSelectedBackground` | `?` |
-| `ProgressBarPausedForegroundColor` | `SystemFillColorCaution` |
-| `ProgressBarErrorForegroundColor` | `SystemFillColorCritical` |
 
 ## 建议优先补的遗漏（人工筛选）
 
-- **TextOnAccentFillColorSecondary** — Accent 按下态文字
-- **AccentFillColorSecondary/Tertiary** — Accent 悬停/按下（现多用单一 accent）
 - **ControlFillColorInputActive** — TextBox 聚焦底 — textedit/bg 已 STRUCT 映射
-- **SystemFillColorSuccess/Caution/Critical** — Progress 暂停/错误态 — QTE 无对应 role
-- **ListViewItemBackgroundSelectedPointerOver** — 选中+悬停 — QTE view 无合并态
-- **MenuFlyoutPresenterBackground** — 若 menu/bg 要用 Acrylic 替代实色
-- **FocusStrokeColorOuter/Inner** — 焦点环双描边 — QTE 多用 border.focus
-- **TextFillColorTertiary** — 三级文字（部分次要标签）
-- **ProgressBarPausedForegroundColor / ProgressBarErrorForegroundColor** — 无 `progress.chunk.paused|error`
-- **ComboBoxBackgroundBorderBrushFocused → FocusStrokeColorOuter** — 聚焦外环与 `border.focus` 模型不同
+- **SystemFillColorSuccess** — 成功态 — QTE 暂无独立 role（Caution/Critical 已映 progress.chunk.paused|error）
+- **MenuFlyoutPresenterBackground** — 真 Acrylic 需平台材质；现 menu/bg.acrylic 为实色近似
+- **TextOnAccentFillColorDisabled** — Accent 禁用文字 — check/indicator.disabled 已 STRUCT
 
 ## 结论（本轮）
 
-1. **正向**：186 个 QTE 色 role 全部有 WinUI 映射；严格 `DIFF=0`。剩余 `STRUCT_DIFF` 主要是输入框边框用不透明深描边近似 WinUI 半透明 `ControlStrongStroke`（Qt Widgets 常见取舍）。
-2. **反向未引用的 Common 色（49）**：多数为 Acrylic/Mica/烟层/系统语义色/反色文字，不属于当前 QStyle 覆盖面。
-3. **真正可能遗漏（建议后续里程碑）**：Accent 次级态、Progress 暂停/错误、Focus 双描边、ListView 选中+悬停、三级文字、Acrylic 菜单底。
+1. **正向**：全部 QTE 色 role 已声明 WinUI 映射；严格 `DIFF=0`。剩余 `STRUCT_DIFF` 主要为半透明描边/填充的不透明近似、以及焦点环内外描边。
+2. **本轮已补**：Accent Secondary/Tertiary、TextOnAccentSecondary、Progress paused/error（`qtheme.progressState`）、Focus 双描边、view selected+hover、text.tertiary、menu/bg.acrylic、combo placeholder。
+3. **仍非本引擎范围**：真 Acrylic/Mica 材质、SystemFill Success 独立态。
 
 复跑：`python scripts/audit_fluent_vs_mux_full.py`
 

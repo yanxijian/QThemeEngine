@@ -133,7 +133,13 @@ MAPPINGS: dict[str, Mapping] = {
 	"palette/light": ("SolidBackgroundFillColorQuinary", "none", "STRUCT"),
 	"palette/dark": ("SolidBackgroundFillColorSecondary", "none", "STRUCT"),  # QPalette::Dark ≠ WinUI surface name
 	"palette/accent": ("AccentFillColorDefault", "none", "ACCENT"),
+	"palette/accent.hover": ("AccentFillColorSecondary", "none", "ACCENT"),
+	"palette/accent.pressed": ("AccentFillColorTertiary", "none", "ACCENT"),
 	"palette/accent.text": ("TextOnAccentFillColorPrimary", "none", ""),
+	"palette/accent.text.secondary": ("TextOnAccentFillColorSecondary", "none", "STRUCT"),
+	"palette/text.tertiary": ("TextFillColorTertiary", "surface", ""),
+	"palette/focus.outer": ("FocusStrokeColorOuter", "none", "STRUCT"),
+	"palette/focus.inner": ("FocusStrokeColorInner", "none", "STRUCT"),
 	"palette/stroke": ("ControlStrokeColorDefault", "surface", "STRUCT"),
 	"palette/canvas": ("SolidBackgroundFillColorBase", "none", ""),
 	"palette/surface": ("SolidBackgroundFillColorQuarternary", "none", ""),
@@ -142,8 +148,13 @@ MAPPINGS: dict[str, Mapping] = {
 	"button/bg.hover": ("ControlFillColorSecondary", "surface", "STRUCT"),
 	"button/bg.pressed": ("ControlFillColorTertiary", "surface", "STRUCT"),
 	"button/bg.disabled": ("ControlFillColorDisabled", "surface", "STRUCT"),
+	"button/bg.accent": ("AccentFillColorDefault", "none", "ACCENT"),
+	"button/bg.accent.hover": ("AccentFillColorSecondary", "none", "ACCENT"),
+	"button/bg.accent.pressed": ("AccentFillColorTertiary", "none", "ACCENT"),
 	"button/fg": ("TextFillColorPrimary", "surface", ""),
 	"button/fg.disabled": ("TextFillColorDisabled", "surface", ""),
+	"button/fg.accent": ("TextOnAccentFillColorPrimary", "none", ""),
+	"button/fg.accent.pressed": ("TextOnAccentFillColorSecondary", "none", "STRUCT"),
 	"button/border": ("ControlStrokeColorDefault", "surface", "STRUCT"),
 	"button/border.focus": ("AccentFillColorDefault", "none", "ACCENT"),
 	# edit / textedit (TextBox)
@@ -168,6 +179,7 @@ MAPPINGS: dict[str, Mapping] = {
 	# check
 	"check/bg": ("ControlAltFillColorSecondary", "surface", "STRUCT"),
 	"check/bg.checked": ("AccentFillColorDefault", "none", "ACCENT"),
+	"check/bg.checked.hover": ("AccentFillColorSecondary", "none", "ACCENT"),
 	"check/bg.hover": ("ControlAltFillColorTertiary", "surface", "STRUCT"),
 	"check/bg.disabled": ("ControlAltFillColorDisabled", "surface", "STRUCT"),
 	"check/bg.checked.disabled": ("AccentFillColorDisabled", "surface", "STRUCT"),
@@ -185,6 +197,7 @@ MAPPINGS: dict[str, Mapping] = {
 	"combo/bg.disabled": ("ControlFillColorDisabled", "surface", "STRUCT"),
 	"combo/fg": ("TextFillColorPrimary", "surface", ""),
 	"combo/fg.disabled": ("TextFillColorDisabled", "surface", ""),
+	"combo/fg.placeholder": ("TextFillColorSecondary", "surface", ""),
 	"combo/border": ("ControlStrongStrokeColorDefault", "surface", "STRUCT"),
 	"combo/border.focus": ("AccentFillColorDefault", "none", "ACCENT"),
 	"combo/border.hover": ("ControlStrongStrokeColorDefault", "surface", "STRUCT"),
@@ -208,6 +221,7 @@ MAPPINGS: dict[str, Mapping] = {
 	"slider/groove": ("ControlStrongFillColorDefault", "surface", ""),
 	"slider/groove.disabled": ("ControlStrongFillColorDisabled", "surface", ""),
 	"slider/fill": ("AccentFillColorDefault", "none", "ACCENT"),
+	"slider/fill.hover": ("AccentFillColorSecondary", "none", "ACCENT"),
 	"slider/fill.disabled": ("AccentFillColorDisabled", "surface", "STRUCT"),
 	"slider/handle": ("ControlSolidFillColorDefault", "none", "STRUCT"),
 	"slider/handle.hover": ("ControlSolidFillColorDefault", "none", "STRUCT"),
@@ -225,6 +239,8 @@ MAPPINGS: dict[str, Mapping] = {
 	"progress/groove": ("ControlStrongStrokeColorDefault", "surface", ""),
 	"progress/groove.disabled": ("ControlStrongStrokeColorDisabled", "surface", ""),
 	"progress/chunk": ("AccentFillColorDefault", "none", "ACCENT"),
+	"progress/chunk.paused": ("SystemFillColorCaution", "none", ""),
+	"progress/chunk.error": ("SystemFillColorCritical", "none", ""),
 	"progress/chunk.disabled": ("AccentFillColorDisabled", "surface", "STRUCT"),
 	"progress/fg": ("TextFillColorPrimary", "surface", ""),
 	"progress/fg.disabled": ("TextFillColorDisabled", "surface", ""),
@@ -248,6 +264,7 @@ MAPPINGS: dict[str, Mapping] = {
 	"tab/border": ("DividerStrokeColorDefault", "base", "STRUCT"),
 	"tab/indicator": ("AccentFillColorDefault", "none", "ACCENT"),
 	"menu/bg": ("SolidBackgroundFillColorTertiary", "none", "STRUCT"),
+	"menu/bg.acrylic": ("SolidBackgroundFillColorTertiary", "none", "STRUCT"),
 	"menu/bg.hover": ("SubtleFillColorSecondary", "surface", "STRUCT"),
 	"menu/bg.disabled": ("SubtleFillColorDisabled", "surface", "STRUCT"),
 	"menu/fg": ("TextFillColorPrimary", "surface", ""),
@@ -273,6 +290,7 @@ MAPPINGS: dict[str, Mapping] = {
 	"view/bg.alternate": ("LayerOnMicaBaseAltFillColorDefault", "surface", "STRUCT"),
 	"view/bg.hover": ("SubtleFillColorSecondary", "surface", "STRUCT"),
 	"view/bg.selected": ("AccentFillColorDefault", "none", "ACCENT"),
+	"view/bg.selected.hover": ("AccentFillColorSecondary", "none", "ACCENT"),
 	"view/bg.selected.inactive": ("AccentFillColorDefault", "none", "ACCENT"),
 	"view/fg": ("TextFillColorPrimary", "surface", ""),
 	"view/fg.selected": ("TextOnAccentFillColorPrimary", "none", ""),
@@ -624,17 +642,31 @@ def main() -> None:
 	lines.append("## 建议优先补的遗漏（人工筛选）")
 	lines.append("")
 	priority_hints = [
-		("TextOnAccentFillColorSecondary", "Accent 按下态文字"),
-		("AccentFillColorSecondary/Tertiary", "Accent 悬停/按下（现多用单一 accent）"),
 		("ControlFillColorInputActive", "TextBox 聚焦底 — textedit/bg 已 STRUCT 映射"),
-		("SystemFillColorSuccess/Caution/Critical", "Progress 暂停/错误态 — QTE 无对应 role"),
-		("ListViewItemBackgroundSelectedPointerOver", "选中+悬停 — QTE view 无合并态"),
-		("MenuFlyoutPresenterBackground", "若 menu/bg 要用 Acrylic 替代实色"),
-		("FocusStrokeColorOuter/Inner", "焦点环双描边 — QTE 多用 border.focus"),
-		("TextFillColorTertiary", "三级文字（部分次要标签）"),
+		("SystemFillColorSuccess", "成功态 — QTE 暂无独立 role（Caution/Critical 已映 progress.chunk.paused|error）"),
+		("MenuFlyoutPresenterBackground", "真 Acrylic 需平台材质；现 menu/bg.acrylic 为实色近似"),
+		("TextOnAccentFillColorDisabled", "Accent 禁用文字 — check/indicator.disabled 已 STRUCT"),
 	]
 	for name, why in priority_hints:
 		lines.append(f"- **{name}** — {why}")
+	lines.append("")
+
+	lines.append("## 结论（本轮）")
+	lines.append("")
+	lines.append(
+		"1. **正向**：全部 QTE 色 role 已声明 WinUI 映射；严格 `DIFF=0`。"
+		"剩余 `STRUCT_DIFF` 主要为半透明描边/填充的不透明近似、以及焦点环内外描边。"
+	)
+	lines.append(
+		"2. **本轮已补**：Accent Secondary/Tertiary、TextOnAccentSecondary、"
+		"Progress paused/error（`qtheme.progressState`）、Focus 双描边、"
+		"view selected+hover、text.tertiary、menu/bg.acrylic、combo placeholder。"
+	)
+	lines.append(
+		"3. **仍非本引擎范围**：真 Acrylic/Mica 材质、SystemFill Success 独立态。"
+	)
+	lines.append("")
+	lines.append("复跑：`python scripts/audit_fluent_vs_mux_full.py`")
 	lines.append("")
 
 	OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")

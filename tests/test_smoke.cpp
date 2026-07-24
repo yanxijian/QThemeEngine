@@ -163,6 +163,18 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QVERIFY(s.hasColor(QStringLiteral("edit"), QStringLiteral("fg.placeholder")));
 	QCOMPARE(s.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value,
 			 QColor(QStringLiteral("#616161")));
+	QCOMPARE(s.color(QStringLiteral("combo"), QStringLiteral("fg.placeholder")).value,
+			 QColor(QStringLiteral("#616161")));
+	QCOMPARE(s.color(QStringLiteral("palette"), QStringLiteral("text.tertiary")).value,
+			 QColor(QStringLiteral("#8D8D8D")));
+	QVERIFY(s.hasColor(QStringLiteral("palette"), QStringLiteral("focus.outer")));
+	QVERIFY(s.hasColor(QStringLiteral("palette"), QStringLiteral("focus.inner")));
+	QVERIFY(s.hasColor(QStringLiteral("progress"), QStringLiteral("chunk.paused")));
+	QVERIFY(s.hasColor(QStringLiteral("progress"), QStringLiteral("chunk.error")));
+	QVERIFY(s.hasColor(QStringLiteral("view"), QStringLiteral("bg.selected.hover")));
+	QVERIFY(s.hasColor(QStringLiteral("menu"), QStringLiteral("bg.acrylic")));
+	QVERIFY(s.hasColor(QStringLiteral("button"), QStringLiteral("bg.accent.hover")));
+	QVERIFY(s.hasColor(QStringLiteral("button"), QStringLiteral("fg.accent.pressed")));
 	QVERIFY(s.hasColor(QStringLiteral("dock"), QStringLiteral("title.bg")));
 	QVERIFY(s.hasColor(QStringLiteral("dial"), QStringLiteral("fill")));
 
@@ -171,11 +183,17 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QVERIFY(dark.hasColor(QStringLiteral("combo"), QStringLiteral("arrow")));
 	QCOMPARE(dark.color(QStringLiteral("edit"), QStringLiteral("fg.placeholder")).value,
 			 QColor(QStringLiteral("#CFCFCF")));
+	QCOMPARE(dark.color(QStringLiteral("progress"), QStringLiteral("chunk.paused")).value,
+			 QColor(QStringLiteral("#FCE100")));
+	QCOMPARE(dark.color(QStringLiteral("progress"), QStringLiteral("chunk.error")).value,
+			 QColor(QStringLiteral("#FF99A4")));
 	auto darkShared = std::make_shared<qtheme::ThemeStore>();
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), darkShared.get()));
 	qtheme::QThemeStyle darkStyle(darkShared);
 	QCOMPARE(darkStyle.standardPalette().color(QPalette::PlaceholderText),
 			 QColor(QStringLiteral("#CFCFCF")));
+	QCOMPARE(darkStyle.standardPalette().color(QPalette::BrightText),
+			 QColor(QStringLiteral("#9C9C9C")));
 	qtheme::ThemeStore hc;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), &hc));
 	QCOMPARE(hc.metric(QStringLiteral("combo"), QStringLiteral("radius"), -1), 0);
@@ -206,6 +224,14 @@ void ThemeSmokeTest::accent_patchUpdatesHighlight()
 	qtheme::AccentResolver::applyAccentPatch(&store, accent);
 	QCOMPARE(store.color(QStringLiteral("palette"), QStringLiteral("highlight")).value, accent);
 	QCOMPARE(store.color(QStringLiteral("button"), QStringLiteral("border.focus")).value, accent);
+	QCOMPARE(store.color(QStringLiteral("button"), QStringLiteral("bg.accent")).value, accent);
+	QVERIFY(store.color(QStringLiteral("button"), QStringLiteral("bg.accent.hover")).value != accent);
+	QCOMPARE(store.color(QStringLiteral("view"), QStringLiteral("bg.selected.hover")).value,
+			 store.color(QStringLiteral("palette"), QStringLiteral("accent.hover")).value);
+	QCOMPARE(store.color(QStringLiteral("slider"), QStringLiteral("fill.hover")).value,
+			 store.color(QStringLiteral("palette"), QStringLiteral("accent.hover")).value);
+	QCOMPARE(store.color(QStringLiteral("button"), QStringLiteral("fg.accent.pressed")).value,
+			 store.color(QStringLiteral("palette"), QStringLiteral("accent.text.secondary")).value);
 	// Accent patch is one generation bump (batched), not one per role.
 	QCOMPARE(store.generation(), g0 + 1);
 }

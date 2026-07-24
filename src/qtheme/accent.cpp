@@ -69,32 +69,45 @@ void applyAccentPatch(ThemeStore* store, const QColor& accent)
 	store->beginUpdate();
 
 	const QColor onAccent = (accent.lightness() > 140) ? QColor(Qt::black) : QColor(Qt::white);
+	// WinUI TextOnAccentFillColorSecondary: black@50% (dark) / white@70% (light on-accent).
+	QColor onAccentPressed = onAccent;
+	onAccentPressed.setAlpha(onAccent == QColor(Qt::black) ? 0x80 : 0xB3);
 	const QColor hover = lighten(accent, 20);
 	const QColor pressed = darken(accent, 24);
 
 	store->setColor(QStringLiteral("palette"), QStringLiteral("accent"), accent);
+	store->setColor(QStringLiteral("palette"), QStringLiteral("accent.hover"), hover);
+	store->setColor(QStringLiteral("palette"), QStringLiteral("accent.pressed"), pressed);
 	store->setColor(QStringLiteral("palette"), QStringLiteral("accent.text"), onAccent);
+	store->setColor(QStringLiteral("palette"), QStringLiteral("accent.text.secondary"), onAccentPressed);
 	store->setColor(QStringLiteral("palette"), QStringLiteral("highlight"), accent);
 	store->setColor(QStringLiteral("palette"), QStringLiteral("highlightedText"), onAccent);
 
 	store->setColor(QStringLiteral("button"), QStringLiteral("border.focus"), accent);
 	store->setColor(QStringLiteral("edit"), QStringLiteral("border.focus"), accent);
+	store->setColor(QStringLiteral("textedit"), QStringLiteral("border.focus"), accent);
 	store->setColor(QStringLiteral("combo"), QStringLiteral("border.focus"), accent);
 	store->setColor(QStringLiteral("spin"), QStringLiteral("border.focus"), accent);
 	store->setColor(QStringLiteral("slider"), QStringLiteral("fill"), accent);
+	store->setColor(QStringLiteral("slider"), QStringLiteral("fill.hover"), hover);
 	store->setColor(QStringLiteral("slider"), QStringLiteral("handle.border.focus"), accent);
+	store->setColor(QStringLiteral("dial"), QStringLiteral("fill"), accent);
 	store->setColor(QStringLiteral("progress"), QStringLiteral("chunk"), accent);
 	store->setColor(QStringLiteral("view"), QStringLiteral("bg.selected"), accent);
+	store->setColor(QStringLiteral("view"), QStringLiteral("bg.selected.hover"), hover);
 	store->setColor(QStringLiteral("view"), QStringLiteral("fg.selected"), onAccent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("bg.checked"), accent);
+	store->setColor(QStringLiteral("check"), QStringLiteral("bg.checked.hover"), hover);
 	store->setColor(QStringLiteral("check"), QStringLiteral("border.checked"), accent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("indicator"), onAccent);
 	store->setColor(QStringLiteral("tab"), QStringLiteral("indicator"), accent);
+	store->setColor(QStringLiteral("splitter"), QStringLiteral("handle.hover"), accent);
 
 	store->setColor(QStringLiteral("button"), QStringLiteral("bg.accent"), accent);
 	store->setColor(QStringLiteral("button"), QStringLiteral("bg.accent.hover"), hover);
 	store->setColor(QStringLiteral("button"), QStringLiteral("bg.accent.pressed"), pressed);
 	store->setColor(QStringLiteral("button"), QStringLiteral("fg.accent"), onAccent);
+	store->setColor(QStringLiteral("button"), QStringLiteral("fg.accent.pressed"), onAccentPressed);
 
 	store->endUpdate();
 }
