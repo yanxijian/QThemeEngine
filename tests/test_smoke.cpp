@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QImage>
 #include <QLineEdit>
+#include <QMenu>
 #include <QPainter>
 #include <QPixmap>
 #include <QPlainTextEdit>
@@ -40,6 +41,7 @@ private slots:
 	void pack_userSampleDerivesFromLight();
 	void pack_t0ChromeTokensPresent();
 	void style_dpiScaleAffectsMetrics();
+	void style_menuPolishEnablesTranslucentCorners();
 	void accent_patchUpdatesHighlight();
 	void accent_systemHighContrastApi();
 	void engine_switchFluentSkins();
@@ -214,6 +216,24 @@ void ThemeSmokeTest::style_dpiScaleAffectsMetrics()
 	QCOMPARE(style.pixelMetric(QStyle::PM_ButtonMargin), 10);
 	style.setDpiScale(1.5);
 	QCOMPARE(style.pixelMetric(QStyle::PM_ButtonMargin), 15);
+}
+
+void ThemeSmokeTest::style_menuPolishEnablesTranslucentCorners()
+{
+	auto light = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), light.get()));
+	qtheme::QThemeStyle lightStyle(light);
+	QMenu lightMenu;
+	lightStyle.polish(&lightMenu);
+	QVERIFY(lightMenu.testAttribute(Qt::WA_TranslucentBackground));
+	QVERIFY(lightMenu.windowFlags() & Qt::NoDropShadowWindowHint);
+
+	auto hc = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), hc.get()));
+	qtheme::QThemeStyle hcStyle(hc);
+	QMenu hcMenu;
+	hcStyle.polish(&hcMenu);
+	QVERIFY(!hcMenu.testAttribute(Qt::WA_TranslucentBackground));
 }
 
 void ThemeSmokeTest::accent_patchUpdatesHighlight()

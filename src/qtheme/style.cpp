@@ -3,6 +3,7 @@
 #include <QAbstractScrollArea>
 #include <QCalendarWidget>
 #include <QFrame>
+#include <QMenu>
 #include <QtMath>
 #include <QPainter>
 #include <QPainterPath>
@@ -105,6 +106,21 @@ bool isTextEditLike(const QWidget* widget)
 	return qobject_cast<const QTextEdit*>(widget) || qobject_cast<const QPlainTextEdit*>(widget);
 }
 
+void polishRoundedPopup(QWidget* widget, int radius)
+{
+	if (!widget || radius <= 0)
+	{
+		return;
+	}
+	// Top-level popups are opaque rectangles; rounded PE_* fills leave sharp window corners.
+	// Enable alpha before the native window is created (polish runs first).
+	widget->setAttribute(Qt::WA_TranslucentBackground, true);
+	widget->setAttribute(Qt::WA_NoSystemBackground, true);
+	widget->setAutoFillBackground(false);
+	// Rectangular OS drop shadow does not follow rounded corners.
+	widget->setWindowFlag(Qt::NoDropShadowWindowHint, true);
+}
+
 } // namespace
 
 QThemeStyle::QThemeStyle(std::shared_ptr<ThemeStore> store, QStyle* base)
@@ -126,6 +142,35 @@ void QThemeStyle::setDpiScale(qreal scale)
 		scale = 1.0;
 	}
 	m_dpiScale = scale;
+}
+
+void QThemeStyle::polish(QWidget* widget)
+{
+	QProxyStyle::polish(widget);
+	if (!widget || !m_store)
+	{
+		return;
+	}
+	if (qobject_cast<QMenu*>(widget))
+	{
+		polishRoundedPopup(widget, roleMetric(QStringLiteral("menu"), QStringLiteral("radius"), 4));
+		return;
+	}
+	// QTipLabel is private; match by class name used across Qt versions.
+	if (widget->inherits("QTipLabel"))
+	{
+		polishRoundedPopup(widget, roleMetric(QStringLiteral("tooltip"), QStringLiteral("radius"), 4));
+	}
+}
+
+void QThemeStyle::unpolish(QWidget* widget)
+{
+	if (widget && (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel")))
+	{
+		widget->setAttribute(Qt::WA_TranslucentBackground, false);
+		widget->setAttribute(Qt::WA_NoSystemBackground, false);
+	}
+	QProxyStyle::unpolish(widget);
 }
 
 QColor QThemeStyle::roleColor(const QString& group, const QString& role, const QColor& fallback) const

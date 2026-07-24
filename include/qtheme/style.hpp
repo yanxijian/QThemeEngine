@@ -36,6 +36,9 @@ public:
 						 const QWidget* widget = nullptr) const override;
 	QPalette standardPalette() const override;
 
+	void polish(QWidget* widget) override;
+	void unpolish(QWidget* widget) override;
+
 private:
 	[[nodiscard]] QColor roleColor(const QString& group, const QString& role,
 								   const QColor& fallback) const;
