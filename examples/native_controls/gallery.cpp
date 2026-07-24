@@ -831,6 +831,8 @@ QWidget* pageItemViews(QWidget* parent)
 		root);
 	auto* listView = new QListView(root);
 	listView->setModel(listModel);
+	listView->setAlternatingRowColors(true);
+	listView->setMouseTracking(true);
 	listView->setMaximumHeight(90);
 	layout->addWidget(new QLabel(QStringLiteral("QListView"), root));
 	layout->addWidget(listView);
@@ -839,6 +841,8 @@ QWidget* pageItemViews(QWidget* parent)
 	auto* treeView = new QTreeView(root);
 	treeView->setModel(treeModel);
 	treeView->expandAll();
+	treeView->setAlternatingRowColors(true);
+	treeView->setMouseTracking(true);
 	treeView->setMaximumHeight(120);
 	layout->addWidget(new QLabel(QStringLiteral("QTreeView"), root));
 	layout->addWidget(treeView);
@@ -856,6 +860,9 @@ QWidget* pageItemViews(QWidget* parent)
 	auto* tableView = new QTableView(root);
 	tableView->setModel(tableModel);
 	tableView->horizontalHeader()->setStretchLastSection(true);
+	tableView->setAlternatingRowColors(true);
+	tableView->setMouseTracking(true);
+	tableView->setShowGrid(true);
 	tableView->setMaximumHeight(120);
 	layout->addWidget(new QLabel(QStringLiteral("QTableView"), root));
 	layout->addWidget(tableView);

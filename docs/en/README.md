@@ -16,7 +16,8 @@ Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md
 | M1 | Load `.theme.xml` (optional; JSON packs are SSOT) | Scaffold |
 | **M2** | Button/Edit/Check/Combo/Spin/Menu/Tab/Header/ToolBar + state gallery | **Done** |
 | **M3** | Slider/Progress/GroupBox/ToolTip + dpiScale | **Done** |
-| M4+ | ItemViews, pack persistence | Planned |
+| **M4** | ItemView selected/hover/alternate rows | **Done** |
+| M5 | Pack persistence / install | Planned |
 
 ## Build
 

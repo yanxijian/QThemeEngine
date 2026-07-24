@@ -164,6 +164,18 @@
       "fg": "#FFFFFF",
       "border": "#FFFFFF"
     },
+    "view": {
+      "bg": "#000000",
+      "bg.alternate": "#0D0D0D",
+      "bg.hover": "#1A1A1A",
+      "bg.selected": "#FFFF00",
+      "bg.selected.inactive": "#808080",
+      "fg": "#FFFFFF",
+      "fg.selected": "#000000",
+      "fg.disabled": "#808080",
+      "grid": "#FFFFFF",
+      "branch": "#FFFFFF"
+    },
     "DemoButton": {
       "background": "#000000",
       "background.hover": "#1A1A1A",
@@ -187,6 +199,7 @@
     "progress": { "height": 6, "radius": 0 },
     "groupbox": { "radius": 0, "padding": 8 },
     "tooltip": { "radius": 0, "padding": 6 },
+    "view": { "itemHeight": 28, "indent": 20 },
     "DemoButton": { "borderRadius": 0 }
   }
 }

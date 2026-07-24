@@ -164,6 +164,18 @@
       "fg": "#1A1A1A",
       "border": "#D1D1D1"
     },
+    "view": {
+      "bg": "#FFFFFF",
+      "bg.alternate": "#F7F7F7",
+      "bg.hover": "#F0F0F0",
+      "bg.selected": "#0078D4",
+      "bg.selected.inactive": "#C7E0F4",
+      "fg": "#1A1A1A",
+      "fg.selected": "#FFFFFF",
+      "fg.disabled": "#A0A0A0",
+      "grid": "#E0E0E0",
+      "branch": "#5C5C5C"
+    },
     "DemoButton": {
       "background": "#FFFFFF",
       "background.hover": "#F5F5F5",

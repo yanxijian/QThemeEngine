@@ -27,7 +27,7 @@
 | 标签页 | `QTabBar`/`QTabWidget` | ● | ● | — | N/H/Selected/Disabled；tab.height |
 | 工具栏 | `QToolBar` | ● | ◐ | — | `CE_ToolBar` |
 | 菜单 | `QMenu`/`QMenuBar` | ● | ● | — | itemHeight / bar / separator |
-| 视图 | `QTreeView`/`QTableView`/`QListView` | — | — | — | M4 |
+| 视图 | `QTreeView`/`QTableView`/`QListView` | ● Fluent | ● | ● | 选中/hover/交替行/branch |
 | 表头 | `QHeaderView` | ● | ● | — | section + label；header.height |
 | 分组 | `QGroupBox` | ● | ◐ | — | `PE_FrameGroupBox` |
 | 提示 | `QToolTip` | ● | ◐ | ● | `PE_PanelTipLabel` + palette |

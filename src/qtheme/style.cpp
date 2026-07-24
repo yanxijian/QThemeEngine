@@ -14,6 +14,7 @@
 #include <QStyleOptionSpinBox>
 #include <QStyleOptionTab>
 #include <QStyleOptionToolButton>
+#include <QStyleOptionViewItem>
 
 namespace qtheme {
 
@@ -188,6 +189,41 @@ QPalette QThemeStyle::standardPalette() const
 		pal.setColor(QPalette::Active, QPalette::ToolTipText, tipFg.value);
 		pal.setColor(QPalette::Inactive, QPalette::ToolTipText, tipFg.value);
 	}
+
+	const ColorValue viewBg = store_->color(QStringLiteral("view"), QStringLiteral("bg"));
+	if (viewBg.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::Base, viewBg.value);
+		pal.setColor(QPalette::Inactive, QPalette::Base, viewBg.value);
+	}
+	const ColorValue viewAlt = store_->color(QStringLiteral("view"), QStringLiteral("bg.alternate"));
+	if (viewAlt.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::AlternateBase, viewAlt.value);
+		pal.setColor(QPalette::Inactive, QPalette::AlternateBase, viewAlt.value);
+	}
+	const ColorValue viewFg = store_->color(QStringLiteral("view"), QStringLiteral("fg"));
+	if (viewFg.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::Text, viewFg.value);
+		pal.setColor(QPalette::Inactive, QPalette::Text, viewFg.value);
+	}
+	const ColorValue viewSel = store_->color(QStringLiteral("view"), QStringLiteral("bg.selected"));
+	if (viewSel.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::Highlight, viewSel.value);
+	}
+	const ColorValue viewSelFg = store_->color(QStringLiteral("view"), QStringLiteral("fg.selected"));
+	if (viewSelFg.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::HighlightedText, viewSelFg.value);
+	}
+	const ColorValue viewGrid = store_->color(QStringLiteral("view"), QStringLiteral("grid"));
+	if (viewGrid.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::Mid, viewGrid.value);
+		pal.setColor(QPalette::Inactive, QPalette::Mid, viewGrid.value);
+	}
 	return pal;
 }
 
@@ -238,6 +274,11 @@ int QThemeStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, con
 		return roleMetric(QStringLiteral("slider"), QStringLiteral("handle"), 16);
 	case PM_ProgressBarChunkWidth:
 		return roleMetric(QStringLiteral("progress"), QStringLiteral("height"), 6);
+	case PM_TreeViewIndentation:
+		return roleMetric(QStringLiteral("view"), QStringLiteral("indent"), 20);
+	case PM_FocusFrameVMargin:
+	case PM_FocusFrameHMargin:
+		return 1;
 	default:
 		return QProxyStyle::pixelMetric(metric, option, widget);
 	}
@@ -286,6 +327,12 @@ QSize QThemeStyle::sizeFromContents(ContentsType type, const QStyleOption* optio
 	case CT_MenuItem:
 	{
 		const int h = roleMetric(QStringLiteral("menu"), QStringLiteral("itemHeight"), sz.height());
+		sz.setHeight(qMax(sz.height(), h));
+		break;
+	}
+	case CT_ItemViewItem:
+	{
+		const int h = roleMetric(QStringLiteral("view"), QStringLiteral("itemHeight"), sz.height());
 		sz.setHeight(qMax(sz.height(), h));
 		break;
 	}
@@ -521,6 +568,51 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 										option->palette.mid().color());
 		const int radius = roleMetric(QStringLiteral("tooltip"), QStringLiteral("radius"), 4);
 		drawRounded(painter, option->rect, radius, bg, border);
+		return;
+	}
+
+	if (element == PE_PanelItemViewItem || element == PE_PanelItemViewRow)
+	{
+		const auto* item = qstyleoption_cast<const QStyleOptionViewItem*>(option);
+		const bool enabled = option->state & State_Enabled;
+		const bool selected = option->state & State_Selected;
+		const bool hover = option->state & State_MouseOver;
+		const bool active = option->state & State_Active;
+		const bool alternate =
+			item && (item->features & QStyleOptionViewItem::Alternate);
+
+		QString bgRole = QStringLiteral("bg");
+		if (selected)
+		{
+			bgRole = active ? QStringLiteral("bg.selected") : QStringLiteral("bg.selected.inactive");
+		}
+		else if (hover && enabled)
+		{
+			bgRole = QStringLiteral("bg.hover");
+		}
+		else if (alternate)
+		{
+			bgRole = QStringLiteral("bg.alternate");
+		}
+
+		const QColor bg = roleColor(QStringLiteral("view"), bgRole,
+									selected ? option->palette.color(QPalette::Highlight)
+											 : option->palette.color(QPalette::Base));
+		painter->fillRect(option->rect, bg);
+		return;
+	}
+
+	if (element == PE_IndicatorBranch)
+	{
+		const bool hasChildren = option->state & State_Children;
+		const bool open = option->state & State_Open;
+		if (!hasChildren)
+		{
+			return;
+		}
+		const QColor branch = roleColor(QStringLiteral("view"), QStringLiteral("branch"),
+										option->palette.color(QPalette::WindowText));
+		drawArrow(painter, option->rect, open ? Qt::DownArrow : Qt::RightArrow, branch);
 		return;
 	}
 
@@ -908,6 +1000,48 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 			QStyleOptionProgressBar copy = *prog;
 			copy.palette.setColor(QPalette::WindowText, fg);
 			copy.palette.setColor(QPalette::Text, fg);
+			QProxyStyle::drawControl(element, &copy, painter, widget);
+			return;
+		}
+	}
+
+	if (element == CE_ItemViewItem)
+	{
+		const auto* item = qstyleoption_cast<const QStyleOptionViewItem*>(option);
+		if (item && painter)
+		{
+			const bool enabled = item->state & State_Enabled;
+			const bool selected = item->state & State_Selected;
+			const bool active = item->state & State_Active;
+
+			QString fgRole = QStringLiteral("fg");
+			if (!enabled)
+			{
+				fgRole = QStringLiteral("fg.disabled");
+			}
+			else if (selected)
+			{
+				fgRole = QStringLiteral("fg.selected");
+			}
+			const QColor fg =
+				roleColor(QStringLiteral("view"), fgRole, item->palette.color(QPalette::Text));
+			const QColor selBg =
+				roleColor(QStringLiteral("view"),
+						  active ? QStringLiteral("bg.selected") : QStringLiteral("bg.selected.inactive"),
+						  item->palette.color(QPalette::Highlight));
+			const QColor base =
+				roleColor(QStringLiteral("view"), QStringLiteral("bg"), item->palette.color(QPalette::Base));
+			const QColor alt = roleColor(QStringLiteral("view"), QStringLiteral("bg.alternate"),
+										 item->palette.color(QPalette::AlternateBase));
+
+			QStyleOptionViewItem copy = *item;
+			copy.palette.setColor(QPalette::Text, fg);
+			copy.palette.setColor(QPalette::WindowText, fg);
+			copy.palette.setColor(QPalette::HighlightedText, fg);
+			copy.palette.setColor(QPalette::Highlight, selBg);
+			copy.palette.setColor(QPalette::Base, base);
+			copy.palette.setColor(QPalette::AlternateBase, alt);
+			// Panel background comes from PE_PanelItemViewItem (our override).
 			QProxyStyle::drawControl(element, &copy, painter, widget);
 			return;
 		}

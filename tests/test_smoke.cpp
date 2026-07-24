@@ -128,6 +128,11 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QVERIFY(s.hasColor(QStringLiteral("groupbox"), QStringLiteral("border")));
 	QVERIFY(s.hasColor(QStringLiteral("tooltip"), QStringLiteral("bg")));
 	QCOMPARE(s.metric(QStringLiteral("slider"), QStringLiteral("handle"), -1), 16);
+	QVERIFY(s.hasColor(QStringLiteral("view"), QStringLiteral("bg.selected")));
+	QVERIFY(s.hasColor(QStringLiteral("view"), QStringLiteral("bg.alternate")));
+	QVERIFY(s.hasColor(QStringLiteral("view"), QStringLiteral("bg.hover")));
+	QVERIFY(s.hasColor(QStringLiteral("view"), QStringLiteral("fg.selected")));
+	QCOMPARE(s.metric(QStringLiteral("view"), QStringLiteral("itemHeight"), -1), 28);
 
 	qtheme::ThemeStore dark;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), &dark));

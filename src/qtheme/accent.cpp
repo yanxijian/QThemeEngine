@@ -84,6 +84,8 @@ void applyAccentPatch(ThemeStore* store, const QColor& accent)
 	store->setColor(QStringLiteral("slider"), QStringLiteral("fill"), accent);
 	store->setColor(QStringLiteral("slider"), QStringLiteral("handle.border.focus"), accent);
 	store->setColor(QStringLiteral("progress"), QStringLiteral("chunk"), accent);
+	store->setColor(QStringLiteral("view"), QStringLiteral("bg.selected"), accent);
+	store->setColor(QStringLiteral("view"), QStringLiteral("fg.selected"), onAccent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("bg.checked"), accent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("border.checked"), accent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("indicator"), onAccent);
