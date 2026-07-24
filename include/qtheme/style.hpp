@@ -6,8 +6,6 @@
 #include <QProxyStyle>
 #include <memory>
 
-class QEvent;
-
 namespace qtheme {
 
 /// Theme-table-driven style (Fluent-inspired metrics/drawing via ThemeStore).
@@ -40,7 +38,6 @@ public:
 
 	void polish(QWidget* widget) override;
 	void unpolish(QWidget* widget) override;
-	bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
 	[[nodiscard]] QColor roleColor(const QString& group, const QString& role,
