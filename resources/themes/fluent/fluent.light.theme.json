@@ -91,6 +91,7 @@
     "menu": {
       "bg": "#F9F9F9",
       "bg.hover": "#E8E8E8",
+      "bg.pressed": "#DADADA",
       "bg.disabled": "#F9F9F9",
       "fg": "#1A1A1A",
       "fg.disabled": "#A0A0A0",

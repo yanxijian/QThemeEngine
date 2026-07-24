@@ -22,7 +22,9 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QStyle>
+#include <QStyleOption>
 #include <QStyleOptionFrame>
+#include <QStyleOptionMenuItem>
 #include <QTemporaryDir>
 #include <QtTest>
 
@@ -41,7 +43,7 @@ private slots:
 	void pack_userSampleDerivesFromLight();
 	void pack_t0ChromeTokensPresent();
 	void style_dpiScaleAffectsMetrics();
-	void style_menuPolishAppliesRoundedMask();
+	void style_menuRoundedPanelClearsCorners();
 	void accent_patchUpdatesHighlight();
 	void accent_systemHighContrastApi();
 	void engine_switchFluentSkins();
@@ -218,26 +220,88 @@ void ThemeSmokeTest::style_dpiScaleAffectsMetrics()
 	QCOMPARE(style.pixelMetric(QStyle::PM_ButtonMargin), 15);
 }
 
-void ThemeSmokeTest::style_menuPolishAppliesRoundedMask()
+void ThemeSmokeTest::style_menuRoundedPanelClearsCorners()
 {
 	auto light = std::make_shared<qtheme::ThemeStore>();
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), light.get()));
 	qtheme::QThemeStyle lightStyle(light);
+
 	QMenu lightMenu;
-	lightMenu.resize(200, 120);
 	lightStyle.polish(&lightMenu);
-	QCOMPARE(lightMenu.property("qtheme.popupRadius").toInt(), 4);
-	QVERIFY(!lightMenu.mask().isEmpty());
+	QVERIFY(lightMenu.testAttribute(Qt::WA_TranslucentBackground));
 	QVERIFY(lightMenu.windowFlags() & Qt::NoDropShadowWindowHint);
+	QVERIFY(lightMenu.mask().isEmpty());
+
+	QImage img(220, 120, QImage::Format_ARGB32_Premultiplied);
+	img.fill(QColor(255, 0, 255)); // sentinel — corners must become transparent
+	{
+		QPainter painter(&img);
+		QStyleOption opt;
+		opt.rect = img.rect();
+		opt.palette = lightStyle.standardPalette();
+		opt.state = QStyle::State_Enabled;
+		lightStyle.drawPrimitive(QStyle::PE_PanelMenu, &opt, &painter, nullptr);
+	}
+
+	auto cornerAlpha = [&img](int x, int y) { return qAlpha(img.pixel(x, y)); };
+	QCOMPARE(cornerAlpha(0, 0), 0);
+	QCOMPARE(cornerAlpha(img.width() - 1, img.height() - 1), 0);
+	QCOMPARE(cornerAlpha(0, img.height() - 1), 0);
+	QCOMPARE(cornerAlpha(img.width() - 1, 0), 0);
+
+	auto opaqueNear = [&img](int x, int y) {
+		return qAlpha(img.pixel(qBound(0, x, img.width() - 1), qBound(0, y, img.height() - 1))) > 200;
+	};
+	QVERIFY(opaqueNear(img.width() / 2, 1));
+	QVERIFY(opaqueNear(img.width() / 2, img.height() - 2));
+	QVERIFY(opaqueNear(1, img.height() / 2));
+	QVERIFY(opaqueNear(img.width() - 2, img.height() / 2));
+
+	// Hover/selected pill is rounded + inset — item-rect corners stay panel (transparent clear),
+	// not the hover fill.
+	{
+		QImage itemImg(200, 28, QImage::Format_ARGB32_Premultiplied);
+		itemImg.fill(Qt::transparent);
+		QPainter itemPainter(&itemImg);
+		QStyleOptionMenuItem mi;
+		mi.rect = itemImg.rect();
+		mi.palette = lightStyle.standardPalette();
+		mi.state = QStyle::State_Enabled | QStyle::State_Selected | QStyle::State_MouseOver;
+		mi.menuItemType = QStyleOptionMenuItem::Normal;
+		mi.text = QStringLiteral("Select All");
+		lightStyle.drawControl(QStyle::CE_MenuItem, &mi, &itemPainter, nullptr);
+		itemPainter.end();
+		const QColor hover = light->color(QStringLiteral("menu"), QStringLiteral("bg.hover")).value;
+		const QRgb corner = itemImg.pixel(0, itemImg.height() - 1);
+		const QRgb mid = itemImg.pixel(itemImg.width() / 2, itemImg.height() / 2);
+		QVERIFY2(qAlpha(corner) < 16 || QColor::fromRgba(corner) != hover,
+				 "item corner must not be square hover fill");
+		QCOMPARE(QColor::fromRgba(mid).rgb(), hover.rgb());
+	}
+
+	// Widget-local style + off-screen popup: corners must stay transparent after real paint.
+	qtheme::QThemeStyle liveStyle(light);
+	QMenu live;
+	live.setStyle(&liveStyle);
+	liveStyle.polish(&live);
+	live.addAction(QStringLiteral("Copy"));
+	live.addAction(QStringLiteral("Select All"));
+	live.setAttribute(Qt::WA_DontShowOnScreen, true);
+	live.popup(QPoint(0, 0));
+	QApplication::processEvents();
+	const QImage grabbed = live.grab().toImage().convertToFormat(QImage::Format_ARGB32);
+	live.hide();
+	QVERIFY(!grabbed.isNull());
+	QVERIFY2(qAlpha(grabbed.pixel(0, 0)) < 16, "top-left corner should be transparent");
+	QVERIFY2(qAlpha(grabbed.pixel(grabbed.width() - 1, grabbed.height() - 1)) < 16,
+			 "bottom-right corner should be transparent");
 
 	auto hc = std::make_shared<qtheme::ThemeStore>();
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), hc.get()));
 	qtheme::QThemeStyle hcStyle(hc);
 	QMenu hcMenu;
-	hcMenu.resize(200, 120);
 	hcStyle.polish(&hcMenu);
-	QVERIFY(!hcMenu.property("qtheme.popupRadius").isValid());
-	QVERIFY(hcMenu.mask().isEmpty());
+	QVERIFY(!hcMenu.testAttribute(Qt::WA_TranslucentBackground));
 }
 
 void ThemeSmokeTest::accent_patchUpdatesHighlight()

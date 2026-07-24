@@ -1,16 +1,13 @@
 #include "qtheme/style.hpp"
 
 #include <QAbstractScrollArea>
-#include <QBitmap>
 #include <QCalendarWidget>
 #include <QFrame>
-#include <QImage>
 #include <QMenu>
 #include <QtMath>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPlainTextEdit>
-#include <QRegion>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QStyleFactory>
@@ -116,57 +113,27 @@ void polishRoundedPopup(QWidget* widget, int radius)
 	{
 		return;
 	}
-	// Clip HWND to a rounded region (opaque paint). Avoid WA_TranslucentBackground on
-	// Windows popups — it often clears unpainted corners to black without true alpha.
+	// Must be set before the native window is created (before base polish / first show).
+	// Corners stay transparent only if paint clears with CompositionMode_Source.
 	widget->setProperty("qtheme.popupRadius", radius);
+	widget->clearMask();
 	widget->setAutoFillBackground(false);
-	widget->setAttribute(Qt::WA_TranslucentBackground, false);
-	widget->setAttribute(Qt::WA_NoSystemBackground, false);
+	widget->setAttribute(Qt::WA_TranslucentBackground, true);
+	widget->setAttribute(Qt::WA_NoSystemBackground, true);
+	widget->setWindowFlag(Qt::FramelessWindowHint, true);
 	widget->setWindowFlag(Qt::NoDropShadowWindowHint, true);
 }
 
-/// Mask must match drawRounded()'s path (0.5 inset + same radius). A looser polygon mask
-/// leaves unpainted pixels that show as dark "sharp tips" outside the AA border.
-void applyRoundedPopupMask(QWidget* widget, int radius, const QRect& logicalRect)
+void clearPopupToTransparent(QPainter* painter, const QRect& rect)
 {
-	if (!widget)
+	if (!painter || rect.isEmpty())
 	{
 		return;
 	}
-	if (radius <= 0 || logicalRect.isEmpty())
-	{
-		widget->clearMask();
-		widget->setProperty("qtheme.popupMaskSize", QVariant());
-		widget->setProperty("qtheme.popupMaskRadius", QVariant());
-		return;
-	}
-
-	const QSize maskSize = logicalRect.size();
-	if (widget->property("qtheme.popupMaskSize").toSize() == maskSize
-		&& widget->property("qtheme.popupMaskRadius").toInt() == radius
-		&& !widget->mask().isEmpty())
-	{
-		return;
-	}
-
-	const qreal dpr = widget->devicePixelRatioF();
-	const int pw = qMax(1, qCeil(logicalRect.width() * dpr));
-	const int ph = qMax(1, qCeil(logicalRect.height() * dpr));
-	QImage image(pw, ph, QImage::Format_ARGB32_Premultiplied);
-	image.setDevicePixelRatio(dpr);
-	image.fill(Qt::transparent);
-
-	QPainter painter(&image);
-	painter.setRenderHint(QPainter::Antialiasing, true);
-	const QRectF r = QRectF(QPointF(0, 0), QSizeF(logicalRect.size())).adjusted(0.5, 0.5, -0.5, -0.5);
-	QPainterPath path;
-	path.addRoundedRect(r, radius, radius);
-	painter.fillPath(path, Qt::white);
-	painter.end();
-
-	widget->setMask(QBitmap::fromImage(image.createAlphaMask()));
-	widget->setProperty("qtheme.popupMaskSize", maskSize);
-	widget->setProperty("qtheme.popupMaskRadius", radius);
+	painter->save();
+	painter->setCompositionMode(QPainter::CompositionMode_Source);
+	painter->fillRect(rect, Qt::transparent);
+	painter->restore();
 }
 
 } // namespace
@@ -194,23 +161,15 @@ void QThemeStyle::setDpiScale(qreal scale)
 
 void QThemeStyle::polish(QWidget* widget)
 {
-	const bool roundedPopup =
-		widget && m_store
-		&& (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel"));
-	if (roundedPopup)
+	// Attributes that affect native surface creation must run before QProxyStyle::polish.
+	if (widget && m_store
+		&& (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel")))
 	{
 		const QString group = qobject_cast<QMenu*>(widget) ? QStringLiteral("menu")
 															: QStringLiteral("tooltip");
 		polishRoundedPopup(widget, roleMetric(group, QStringLiteral("radius"), 4));
 	}
-
 	QProxyStyle::polish(widget);
-
-	if (roundedPopup && widget->property("qtheme.popupRadius").isValid())
-	{
-		applyRoundedPopupMask(widget, widget->property("qtheme.popupRadius").toInt(),
-							  widget->rect());
-	}
 }
 
 void QThemeStyle::unpolish(QWidget* widget)
@@ -219,8 +178,6 @@ void QThemeStyle::unpolish(QWidget* widget)
 	{
 		widget->clearMask();
 		widget->setProperty("qtheme.popupRadius", QVariant());
-		widget->setProperty("qtheme.popupMaskSize", QVariant());
-		widget->setProperty("qtheme.popupMaskRadius", QVariant());
 		widget->setAttribute(Qt::WA_TranslucentBackground, false);
 		widget->setAttribute(Qt::WA_NoSystemBackground, false);
 	}
@@ -402,6 +359,10 @@ int QThemeStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, con
 	case PM_MenuBarHMargin:
 	case PM_MenuBarVMargin:
 		return 4;
+	case PM_MenuHMargin:
+		return roleMetric(QStringLiteral("menu"), QStringLiteral("itemInset"), 2);
+	case PM_MenuVMargin:
+		return roleMetric(QStringLiteral("menu"), QStringLiteral("itemInset"), 2);
 	case PM_MenuPanelWidth:
 		return 1;
 	case PM_HeaderMargin:
@@ -656,16 +617,22 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 
 	if (element == PE_PanelMenu || element == PE_FrameMenu)
 	{
+		const int radius = roleMetric(QStringLiteral("menu"), QStringLiteral("radius"), 4);
+		// Rounded menus: Panel draws fill+border after a transparent clear. Frame would
+		// either double-draw or (if it clears) wipe the panel — skip it.
+		if (element == PE_FrameMenu && radius > 0)
+		{
+			return;
+		}
 		const QColor solid = roleColor(QStringLiteral("menu"), QStringLiteral("bg"),
 									   option->palette.color(QPalette::Window));
 		const QColor bg = roleColor(QStringLiteral("menu"), QStringLiteral("bg.acrylic"), solid);
 		const QColor border = roleColor(QStringLiteral("menu"), QStringLiteral("border"),
 										option->palette.color(QPalette::Mid));
-		const int radius = roleMetric(QStringLiteral("menu"), QStringLiteral("radius"), 4);
-		if (widget && radius > 0)
+		if (radius > 0)
 		{
-			// Keep mask in sync with paint size; no event filter needed.
-			applyRoundedPopupMask(const_cast<QWidget*>(widget), radius, widget->rect());
+			// Without this, WA_TranslucentBackground leaves uncleared corners black on Windows.
+			clearPopupToTransparent(painter, widget ? widget->rect() : option->rect);
 		}
 		drawRounded(painter, option->rect, radius, bg, border);
 		return;
@@ -765,9 +732,9 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 		const QColor border = roleColor(QStringLiteral("tooltip"), QStringLiteral("border"),
 										option->palette.mid().color());
 		const int radius = roleMetric(QStringLiteral("tooltip"), QStringLiteral("radius"), 4);
-		if (widget && radius > 0)
+		if (radius > 0)
 		{
-			applyRoundedPopupMask(const_cast<QWidget*>(widget), radius, widget->rect());
+			clearPopupToTransparent(painter, widget ? widget->rect() : option->rect);
 		}
 		drawRounded(painter, option->rect, radius, bg, border);
 		return;
@@ -1141,32 +1108,52 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 			{
 				const QColor sep = roleColor(QStringLiteral("menu"), QStringLiteral("separator"),
 											 mi->palette.mid().color());
+				const int inset = roleMetric(QStringLiteral("menu"), QStringLiteral("itemInset"), 2);
 				const int y = mi->rect.center().y();
-				painter->fillRect(mi->rect.left() + 8, y, mi->rect.width() - 16, 1, sep);
+				painter->fillRect(mi->rect.left() + inset, y, mi->rect.width() - 2 * inset, 1, sep);
 				return;
 			}
 
 			const bool enabled = mi->state & State_Enabled;
-			const QColor bg = roleColor(QStringLiteral("menu"), QStringLiteral("bg"),
-										mi->palette.color(QPalette::Window));
-			const QColor hover = roleColor(QStringLiteral("menu"), QStringLiteral("bg.hover"), bg);
+			const QColor panelBg = roleColor(QStringLiteral("menu"), QStringLiteral("bg"),
+											 mi->palette.color(QPalette::Window));
+			const QColor hoverBg =
+				roleColor(QStringLiteral("menu"), QStringLiteral("bg.hover"), panelBg);
+			const QColor pressedBg =
+				roleColor(QStringLiteral("menu"), QStringLiteral("bg.pressed"), hoverBg);
+
+			const bool selected = enabled && (mi->state & State_Selected);
+			const bool pressed = enabled && (mi->state & State_Sunken);
+			const bool hovered = enabled && (mi->state & State_MouseOver);
+			if (selected || pressed || hovered)
+			{
+				const int inset = roleMetric(QStringLiteral("menu"), QStringLiteral("itemInset"), 2);
+				const int itemRadius =
+					roleMetric(QStringLiteral("menu"), QStringLiteral("itemRadius"), 4);
+				const QRect pill = mi->rect.adjusted(inset, inset, -inset, -inset);
+				const QColor fill = pressed ? pressedBg : hoverBg;
+				drawRounded(painter, pill, itemRadius, fill, fill);
+			}
+
 			QString fgRole = QStringLiteral("fg");
 			if (!enabled)
 			{
 				fgRole = QStringLiteral("fg.disabled");
 			}
-			else if (mi->state & State_Selected)
+			else if (selected || pressed || hovered)
 			{
 				fgRole = QStringLiteral("fg.selected");
 			}
 			const QColor fg =
 				roleColor(QStringLiteral("menu"), fgRole, mi->palette.color(QPalette::WindowText));
 
+			// Clear selection/hover so Fusion does not paint a square Highlight behind our pill.
 			QStyleOptionMenuItem copy = *mi;
-			copy.palette.setColor(QPalette::Window, bg);
-			copy.palette.setColor(QPalette::Base, bg);
-			copy.palette.setColor(QPalette::Button, bg);
-			copy.palette.setColor(QPalette::Highlight, hover);
+			copy.state &= ~(State_Selected | State_MouseOver | State_Sunken);
+			copy.palette.setColor(QPalette::Window, panelBg);
+			copy.palette.setColor(QPalette::Base, panelBg);
+			copy.palette.setColor(QPalette::Button, panelBg);
+			copy.palette.setColor(QPalette::Highlight, panelBg);
 			copy.palette.setColor(QPalette::HighlightedText, fg);
 			copy.palette.setColor(QPalette::WindowText, fg);
 			copy.palette.setColor(QPalette::Text, fg);
@@ -1197,7 +1184,16 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 				roleColor(QStringLiteral("menu"),
 						  enabled ? QStringLiteral("bar.fg") : QStringLiteral("fg.disabled"),
 						  mi->palette.color(QPalette::WindowText));
-			painter->fillRect(mi->rect, bg);
+			const int itemRadius =
+				roleMetric(QStringLiteral("menu"), QStringLiteral("itemRadius"), 4);
+			if (itemRadius > 0 && bgRole != QStringLiteral("bar.bg"))
+			{
+				drawRounded(painter, mi->rect.adjusted(2, 2, -2, -2), itemRadius, bg, bg);
+			}
+			else
+			{
+				painter->fillRect(mi->rect, bg);
+			}
 			painter->setPen(fg);
 			painter->drawText(mi->rect, Qt::AlignCenter | Qt::TextShowMnemonic, mi->text);
 			return;

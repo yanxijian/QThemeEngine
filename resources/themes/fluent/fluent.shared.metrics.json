@@ -5,7 +5,7 @@
     "check": { "indicator": 18, "radius": 3 },
     "tab": { "radius": 4, "height": 32 },
     "scroll": { "thickness": 10, "radius": 4 },
-    "menu": { "radius": 4, "itemHeight": 28, "separatorHeight": 1 },
+    "menu": { "radius": 4, "itemHeight": 28, "separatorHeight": 1, "itemInset": 2, "itemRadius": 4 },
     "toolbar": { "radius": 0, "padding": 4, "handleExtent": 8, "itemSpacing": 4, "frameWidth": 1 },
     "combo": { "radius": 4 },
     "spin": { "radius": 4, "buttonWidth": 20 },
