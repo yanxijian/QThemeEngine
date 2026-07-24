@@ -159,7 +159,7 @@ bool PackRegistry::registerPackFile(const QString& pathOrQrc, Error* err)
 	{
 		return false;
 	}
-	packs_.insert(data.info.id, data);
+	m_packs.insert(data.info.id, data);
 	if (err)
 	{
 		*err = Error::None;
@@ -250,18 +250,18 @@ bool PackRegistry::registerBuiltinFluentPacks(Error* err)
 
 QStringList PackRegistry::packIds() const
 {
-	return packs_.keys();
+	return m_packs.keys();
 }
 
 bool PackRegistry::hasPack(const QString& id) const
 {
-	return packs_.contains(id);
+	return m_packs.contains(id);
 }
 
 ThemePackInfo PackRegistry::info(const QString& id) const
 {
-	const auto it = packs_.constFind(id);
-	if (it == packs_.cend())
+	const auto it = m_packs.constFind(id);
+	if (it == m_packs.cend())
 	{
 		return {};
 	}
@@ -279,8 +279,8 @@ bool PackRegistry::materializeRecursive(const QString& id, ThemeStore* out, int 
 		return false;
 	}
 
-	const auto it = packs_.constFind(id);
-	if (it == packs_.cend())
+	const auto it = m_packs.constFind(id);
+	if (it == m_packs.cend())
 	{
 		if (err)
 		{

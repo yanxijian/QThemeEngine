@@ -31,9 +31,9 @@ protected:
 private:
 	void ensureSkinConnection();
 
-	QString text_;
-	bool pressed_ = false;
-	bool skinConnected_ = false;
+	QString m_text;
+	bool m_pressed = false;
+	bool m_skinConnected = false;
 };
 
 } // namespace qtheme

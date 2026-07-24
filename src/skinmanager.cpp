@@ -6,7 +6,7 @@ namespace theme
 {
 	SkinManager::SkinManager(QObject* parent)
 		: QObject(parent)
-		, loader_(std::make_unique<ThemeLoader>())
+		, m_loader(std::make_unique<ThemeLoader>())
 	{
 		ThemeApi::bind(this);
 	}
@@ -23,23 +23,23 @@ namespace theme
 	{
 		// L0: implement per docs/zh/theme-engine-spec.md T2.6
 		Q_UNUSED(force);
-		lastError_ = ThemeError::SkinNotFound;
+		m_lastError = ThemeError::SkinNotFound;
 		Q_UNUSED(name);
 		return false;
 	}
 
 	SkinInfo SkinManager::current() const
 	{
-		return current_;
+		return m_current;
 	}
 
 	IThemeLoader* SkinManager::theme() const
 	{
-		return loader_.get();
+		return m_loader.get();
 	}
 
 	ThemeError SkinManager::lastError() const
 	{
-		return lastError_;
+		return m_lastError;
 	}
 } // namespace theme

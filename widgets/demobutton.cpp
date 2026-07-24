@@ -21,18 +21,18 @@ DemoButton::DemoButton(QWidget* parent)
 
 void DemoButton::setText(const QString& text)
 {
-	text_ = text;
+	m_text = text;
 	update();
 }
 
 QString DemoButton::text() const
 {
-	return text_;
+	return m_text;
 }
 
 void DemoButton::ensureSkinConnection()
 {
-	if (skinConnected_)
+	if (m_skinConnected)
 	{
 		return;
 	}
@@ -44,7 +44,7 @@ void DemoButton::ensureSkinConnection()
 					update();
 				},
 				Qt::QueuedConnection);
-		skinConnected_ = true;
+		m_skinConnected = true;
 	}
 }
 
@@ -68,14 +68,14 @@ void DemoButton::leaveEvent(QEvent* event)
 
 void DemoButton::mousePressEvent(QMouseEvent* event)
 {
-	pressed_ = true;
+	m_pressed = true;
 	update();
 	QWidget::mousePressEvent(event);
 }
 
 void DemoButton::mouseReleaseEvent(QMouseEvent* event)
 {
-	pressed_ = false;
+	m_pressed = false;
 	update();
 	QWidget::mouseReleaseEvent(event);
 }
@@ -88,7 +88,7 @@ void DemoButton::paintEvent(QPaintEvent* /*event*/)
 	{
 		opt.state |= QStyle::State_MouseOver;
 	}
-	if (pressed_)
+	if (m_pressed)
 	{
 		opt.state |= QStyle::State_Sunken;
 	}
@@ -111,7 +111,7 @@ void DemoButton::paintEvent(QPaintEvent* /*event*/)
 	p.setPen(QPen(border.isValid() ? border : palette().mid().color(), 1));
 	p.drawPath(path);
 	p.setPen(fg.isValid() ? fg : palette().buttonText().color());
-	p.drawText(rect(), Qt::AlignCenter, text_);
+	p.drawText(rect(), Qt::AlignCenter, m_text);
 }
 
 } // namespace qtheme

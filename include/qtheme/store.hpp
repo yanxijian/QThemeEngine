@@ -33,7 +33,7 @@ public:
 
 	[[nodiscard]] bool hasColor(const QString& group, const QString& role) const;
 	[[nodiscard]] bool hasMetric(const QString& group, const QString& role) const;
-	[[nodiscard]] std::uint64_t generation() const { return generation_; }
+	[[nodiscard]] std::uint64_t generation() const { return m_generation; }
 
 	/// Required Fluent tokens for pack validation / self-check.
 	[[nodiscard]] static QStringList requiredColorKeys();
@@ -50,11 +50,11 @@ private:
 	void markDirty();
 	static QString key(const QString& group, const QString& role);
 
-	QHash<QString, QColor> colors_;
-	QHash<QString, int> metrics_;
-	std::uint64_t generation_ = 0;
-	int updateDepth_ = 0;
-	bool dirty_ = false;
+	QHash<QString, QColor> m_colors;
+	QHash<QString, int> m_metrics;
+	std::uint64_t m_generation = 0;
+	int m_updateDepth = 0;
+	bool m_dirty = false;
 };
 
 } // namespace qtheme

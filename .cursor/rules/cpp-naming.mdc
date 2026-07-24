@@ -1,0 +1,32 @@
+---
+description: C++ naming and container conventions (Qt-oriented)
+globs: "**/*.{h,hpp,hxx,hh,c,cc,cpp,cxx}"
+alwaysApply: false
+---
+
+# Naming & containers
+
+## Members
+
+- Data members use Qt-style **`m_` + camelCase**: `m_currentSkin`, `m_store`.
+- Do **not** use trailing-underscore Google style (`currentSkin_`).
+- Do **not** invent a second prefix (`m_foo_`).
+
+## Functions / parameters
+
+- Keep Qt API style: **lowerCamelCase** (`setColorScheme`, `packId`).
+
+## Constants
+
+- `kCamelCase` / `SettingsKeys::kSkinId` are allowed (stable string/pack ids).
+- Prefer `inline constexpr` over macros.
+
+## Containers
+
+- **UI / signals / slots / Engine-facing APIs**: prefer Qt (`QString`, `QStringList`, `QVector`, `QHash`, …).
+- **Core algorithms, wire codecs, peelable modules**: prefer STL (`std::vector`, `std::string`, …).
+
+## Include guards
+
+- Keep `__{TARGET}_{FILE}_H__` (see `cpp-include-guards.mdc`).
+- Formatting stays in `.clang-format` (do not change for naming).

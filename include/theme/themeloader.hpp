@@ -29,7 +29,7 @@ namespace theme
 
 	private:
 		struct ThemeStyle;
-		QHash<QString, std::shared_ptr<ThemeStyle>> styleMap_;
+		QHash<QString, std::shared_ptr<ThemeStyle>> m_styleMap;
 	};
 } // namespace theme
 

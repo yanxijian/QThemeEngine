@@ -26,10 +26,10 @@ namespace theme
 		void skinChanged(const QString& previous, const QString& current);
 
 	private:
-		std::unique_ptr<ThemeLoader> loader_;
-		SkinInfo current_;
-		ThemeError lastError_ = ThemeError::None;
-		bool inited_ = false;
+		std::unique_ptr<ThemeLoader> m_loader;
+		SkinInfo m_current;
+		ThemeError m_lastError = ThemeError::None;
+		bool m_inited = false;
 	};
 } // namespace theme
 

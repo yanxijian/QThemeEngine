@@ -77,14 +77,14 @@ void drawArrow(QPainter* painter, const QRect& rect, Qt::ArrowType type, const Q
 
 QThemeStyle::QThemeStyle(std::shared_ptr<ThemeStore> store, QStyle* base)
 	: QProxyStyle(base ? base : makeFusionBase())
-	, store_(std::move(store))
+	, m_store(std::move(store))
 {
 	setObjectName(QStringLiteral("QThemeStyle"));
 }
 
 void QThemeStyle::setStore(std::shared_ptr<ThemeStore> store)
 {
-	store_ = std::move(store);
+	m_store = std::move(store);
 }
 
 void QThemeStyle::setDpiScale(qreal scale)
@@ -93,16 +93,16 @@ void QThemeStyle::setDpiScale(qreal scale)
 	{
 		scale = 1.0;
 	}
-	dpiScale_ = scale;
+	m_dpiScale = scale;
 }
 
 QColor QThemeStyle::roleColor(const QString& group, const QString& role, const QColor& fallback) const
 {
-	if (!store_)
+	if (!m_store)
 	{
 		return fallback;
 	}
-	const ColorValue cv = store_->color(group, role, fallback);
+	const ColorValue cv = m_store->color(group, role, fallback);
 	return cv.ok ? cv.value : fallback;
 }
 
@@ -112,31 +112,31 @@ int QThemeStyle::scaleMetric(int logicalPx) const
 	{
 		return logicalPx;
 	}
-	return qRound(logicalPx * dpiScale_);
+	return qRound(logicalPx * m_dpiScale);
 }
 
 int QThemeStyle::roleMetric(const QString& group, const QString& role, int fallback) const
 {
-	if (!store_)
+	if (!m_store)
 	{
 		return scaleMetric(fallback);
 	}
 	bool ok = false;
-	const int v = store_->metric(group, role, fallback, &ok);
+	const int v = m_store->metric(group, role, fallback, &ok);
 	return scaleMetric(ok ? v : fallback);
 }
 
 QPalette QThemeStyle::standardPalette() const
 {
 	QPalette pal = QProxyStyle::standardPalette();
-	if (!store_)
+	if (!m_store)
 	{
 		return pal;
 	}
 
 	auto set = [&](QPalette::ColorRole role, const QString& name)
 	{
-		const ColorValue cv = store_->color(QStringLiteral("palette"), name);
+		const ColorValue cv = m_store->color(QStringLiteral("palette"), name);
 		if (cv.ok)
 		{
 			pal.setColor(QPalette::Active, role, cv.value);
@@ -157,7 +157,7 @@ QPalette QThemeStyle::standardPalette() const
 	set(QPalette::Light, QStringLiteral("light"));
 	set(QPalette::Dark, QStringLiteral("dark"));
 
-	const ColorValue disabledText = store_->color(QStringLiteral("button"), QStringLiteral("fg.disabled"));
+	const ColorValue disabledText = m_store->color(QStringLiteral("button"), QStringLiteral("fg.disabled"));
 	if (disabledText.ok)
 	{
 		pal.setColor(QPalette::Disabled, QPalette::ButtonText, disabledText.value);
@@ -165,60 +165,60 @@ QPalette QThemeStyle::standardPalette() const
 		pal.setColor(QPalette::Disabled, QPalette::Text, disabledText.value);
 	}
 
-	const ColorValue editFg = store_->color(QStringLiteral("edit"), QStringLiteral("fg"));
+	const ColorValue editFg = m_store->color(QStringLiteral("edit"), QStringLiteral("fg"));
 	if (editFg.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::Text, editFg.value);
 		pal.setColor(QPalette::Inactive, QPalette::Text, editFg.value);
 	}
-	const ColorValue editFgDis = store_->color(QStringLiteral("edit"), QStringLiteral("fg.disabled"));
+	const ColorValue editFgDis = m_store->color(QStringLiteral("edit"), QStringLiteral("fg.disabled"));
 	if (editFgDis.ok)
 	{
 		pal.setColor(QPalette::Disabled, QPalette::Text, editFgDis.value);
 	}
 
-	const ColorValue tipBg = store_->color(QStringLiteral("tooltip"), QStringLiteral("bg"));
+	const ColorValue tipBg = m_store->color(QStringLiteral("tooltip"), QStringLiteral("bg"));
 	if (tipBg.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::ToolTipBase, tipBg.value);
 		pal.setColor(QPalette::Inactive, QPalette::ToolTipBase, tipBg.value);
 	}
-	const ColorValue tipFg = store_->color(QStringLiteral("tooltip"), QStringLiteral("fg"));
+	const ColorValue tipFg = m_store->color(QStringLiteral("tooltip"), QStringLiteral("fg"));
 	if (tipFg.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::ToolTipText, tipFg.value);
 		pal.setColor(QPalette::Inactive, QPalette::ToolTipText, tipFg.value);
 	}
 
-	const ColorValue viewBg = store_->color(QStringLiteral("view"), QStringLiteral("bg"));
+	const ColorValue viewBg = m_store->color(QStringLiteral("view"), QStringLiteral("bg"));
 	if (viewBg.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::Base, viewBg.value);
 		pal.setColor(QPalette::Inactive, QPalette::Base, viewBg.value);
 	}
-	const ColorValue viewAlt = store_->color(QStringLiteral("view"), QStringLiteral("bg.alternate"));
+	const ColorValue viewAlt = m_store->color(QStringLiteral("view"), QStringLiteral("bg.alternate"));
 	if (viewAlt.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::AlternateBase, viewAlt.value);
 		pal.setColor(QPalette::Inactive, QPalette::AlternateBase, viewAlt.value);
 	}
-	const ColorValue viewFg = store_->color(QStringLiteral("view"), QStringLiteral("fg"));
+	const ColorValue viewFg = m_store->color(QStringLiteral("view"), QStringLiteral("fg"));
 	if (viewFg.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::Text, viewFg.value);
 		pal.setColor(QPalette::Inactive, QPalette::Text, viewFg.value);
 	}
-	const ColorValue viewSel = store_->color(QStringLiteral("view"), QStringLiteral("bg.selected"));
+	const ColorValue viewSel = m_store->color(QStringLiteral("view"), QStringLiteral("bg.selected"));
 	if (viewSel.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::Highlight, viewSel.value);
 	}
-	const ColorValue viewSelFg = store_->color(QStringLiteral("view"), QStringLiteral("fg.selected"));
+	const ColorValue viewSelFg = m_store->color(QStringLiteral("view"), QStringLiteral("fg.selected"));
 	if (viewSelFg.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::HighlightedText, viewSelFg.value);
 	}
-	const ColorValue viewGrid = store_->color(QStringLiteral("view"), QStringLiteral("grid"));
+	const ColorValue viewGrid = m_store->color(QStringLiteral("view"), QStringLiteral("grid"));
 	if (viewGrid.ok)
 	{
 		pal.setColor(QPalette::Active, QPalette::Mid, viewGrid.value);

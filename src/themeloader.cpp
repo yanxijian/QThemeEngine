@@ -25,13 +25,13 @@ namespace theme
 
 	void ThemeLoader::resetXml(ThemeResetMode /*mode*/)
 	{
-		styleMap_.clear();
+		m_styleMap.clear();
 	}
 
 	ThemeColor ThemeLoader::color(const QString& className, const QString& propName, const QColor& def) const
 	{
-		auto it = styleMap_.find(className);
-		while (it != styleMap_.end())
+		auto it = m_styleMap.find(className);
+		while (it != m_styleMap.end())
 		{
 			const auto& style = **it;
 			auto cit = style.colorMap.constFind(propName);
@@ -45,7 +45,7 @@ namespace theme
 			{
 				break;
 			}
-			it = styleMap_.find(style.base);
+			it = m_styleMap.find(style.base);
 		}
 		ThemeColor miss;
 		miss.value = def;
@@ -55,8 +55,8 @@ namespace theme
 
 	int ThemeLoader::hint(const QString& className, const QString& propName, int def, bool* ok) const
 	{
-		auto it = styleMap_.find(className);
-		while (it != styleMap_.end())
+		auto it = m_styleMap.find(className);
+		while (it != m_styleMap.end())
 		{
 			const auto& style = **it;
 			auto hit = style.hintMap.constFind(propName);
@@ -72,7 +72,7 @@ namespace theme
 			{
 				break;
 			}
-			it = styleMap_.find(style.base);
+			it = m_styleMap.find(style.base);
 		}
 		if (ok)
 		{
@@ -83,6 +83,6 @@ namespace theme
 
 	bool ThemeLoader::hasClass(const QString& className) const
 	{
-		return styleMap_.contains(className);
+		return m_styleMap.contains(className);
 	}
 } // namespace theme

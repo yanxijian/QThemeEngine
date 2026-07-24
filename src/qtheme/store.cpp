@@ -6,41 +6,41 @@ namespace qtheme {
 
 void ThemeStore::markDirty()
 {
-	if (updateDepth_ > 0)
+	if (m_updateDepth > 0)
 	{
-		dirty_ = true;
+		m_dirty = true;
 	}
 	else
 	{
-		++generation_;
+		++m_generation;
 	}
 }
 
 void ThemeStore::beginUpdate()
 {
-	++updateDepth_;
+	++m_updateDepth;
 }
 
 void ThemeStore::endUpdate()
 {
-	if (updateDepth_ <= 0)
+	if (m_updateDepth <= 0)
 	{
 		return;
 	}
-	--updateDepth_;
-	if (updateDepth_ == 0 && dirty_)
+	--m_updateDepth;
+	if (m_updateDepth == 0 && m_dirty)
 	{
-		++generation_;
-		dirty_ = false;
+		++m_generation;
+		m_dirty = false;
 	}
 }
 
 void ThemeStore::clear()
 {
 	beginUpdate();
-	colors_.clear();
-	metrics_.clear();
-	dirty_ = true;
+	m_colors.clear();
+	m_metrics.clear();
+	m_dirty = true;
 	endUpdate();
 }
 
@@ -51,33 +51,33 @@ QString ThemeStore::key(const QString& group, const QString& role)
 
 void ThemeStore::setColor(const QString& group, const QString& role, const QColor& color)
 {
-	colors_.insert(key(group, role), color);
+	m_colors.insert(key(group, role), color);
 	markDirty();
 }
 
 void ThemeStore::setMetric(const QString& group, const QString& role, int value)
 {
-	metrics_.insert(key(group, role), value);
+	m_metrics.insert(key(group, role), value);
 	markDirty();
 }
 
 void ThemeStore::mergeFrom(const ThemeStore& other, bool overwrite)
 {
 	beginUpdate();
-	for (auto it = other.colors_.cbegin(); it != other.colors_.cend(); ++it)
+	for (auto it = other.m_colors.cbegin(); it != other.m_colors.cend(); ++it)
 	{
-		if (overwrite || !colors_.contains(it.key()))
+		if (overwrite || !m_colors.contains(it.key()))
 		{
-			colors_.insert(it.key(), it.value());
-			dirty_ = true;
+			m_colors.insert(it.key(), it.value());
+			m_dirty = true;
 		}
 	}
-	for (auto it = other.metrics_.cbegin(); it != other.metrics_.cend(); ++it)
+	for (auto it = other.m_metrics.cbegin(); it != other.m_metrics.cend(); ++it)
 	{
-		if (overwrite || !metrics_.contains(it.key()))
+		if (overwrite || !m_metrics.contains(it.key()))
 		{
-			metrics_.insert(it.key(), it.value());
-			dirty_ = true;
+			m_metrics.insert(it.key(), it.value());
+			m_dirty = true;
 		}
 	}
 	endUpdate();
@@ -86,8 +86,8 @@ void ThemeStore::mergeFrom(const ThemeStore& other, bool overwrite)
 ColorValue ThemeStore::color(const QString& group, const QString& role, const QColor& def) const
 {
 	ColorValue out;
-	const auto it = colors_.constFind(key(group, role));
-	if (it == colors_.cend())
+	const auto it = m_colors.constFind(key(group, role));
+	if (it == m_colors.cend())
 	{
 		out.value = def;
 		out.ok = def.isValid();
@@ -100,8 +100,8 @@ ColorValue ThemeStore::color(const QString& group, const QString& role, const QC
 
 int ThemeStore::metric(const QString& group, const QString& role, int def, bool* ok) const
 {
-	const auto it = metrics_.constFind(key(group, role));
-	if (it == metrics_.cend())
+	const auto it = m_metrics.constFind(key(group, role));
+	if (it == m_metrics.cend())
 	{
 		if (ok)
 		{
@@ -118,12 +118,12 @@ int ThemeStore::metric(const QString& group, const QString& role, int def, bool*
 
 bool ThemeStore::hasColor(const QString& group, const QString& role) const
 {
-	return colors_.contains(key(group, role));
+	return m_colors.contains(key(group, role));
 }
 
 bool ThemeStore::hasMetric(const QString& group, const QString& role) const
 {
-	return metrics_.contains(key(group, role));
+	return m_metrics.contains(key(group, role));
 }
 
 QStringList ThemeStore::requiredColorKeys()
@@ -145,7 +145,7 @@ QStringList ThemeStore::missingRequiredColors() const
 	QStringList missing;
 	for (const QString& k : requiredColorKeys())
 	{
-		if (!colors_.contains(k))
+		if (!m_colors.contains(k))
 		{
 			missing << k;
 		}

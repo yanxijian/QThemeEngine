@@ -21,20 +21,20 @@ Engine* g_default = nullptr;
 
 Engine::Engine(QObject* parent)
 	: QObject(parent)
-	, store_(std::make_shared<ThemeStore>())
-	, packs_(std::make_unique<PackRegistry>())
+	, m_store(std::make_shared<ThemeStore>())
+	, m_packs(std::make_unique<PackRegistry>())
 {
 	Error err = Error::None;
-	if (!packs_->registerBuiltinFluentPacks(&err))
+	if (!m_packs->registerBuiltinFluentPacks(&err))
 	{
-		lastError_ = err;
+		m_lastError = err;
 	}
-	accentFollowSystem_ = true;
-	followOsHighContrast_ = true;
-	accent_ = AccentResolver::systemAccent();
+	m_accentFollowSystem = true;
+	m_followOsHighContrast = true;
+	m_accent = AccentResolver::systemAccent();
 	(void)rebuildStore(QString::fromUtf8(kPackFluentLight), true);
-	currentSkin_ = QString::fromUtf8(kPackFluentLight);
-	colorScheme_ = ColorScheme::Light;
+	m_currentSkin = QString::fromUtf8(kPackFluentLight);
+	m_colorScheme = ColorScheme::Light;
 }
 
 Engine::~Engine()
@@ -57,11 +57,11 @@ Engine* Engine::defaultEngine()
 
 void Engine::installOsHooks(QGuiApplication* app)
 {
-	if (!app || osHooksInstalled_)
+	if (!app || m_osHooksInstalled)
 	{
 		return;
 	}
-	osHooksInstalled_ = true;
+	m_osHooksInstalled = true;
 	connect(app, &QGuiApplication::paletteChanged, this, &Engine::onOsPaletteChanged);
 	if (QStyleHints* hints = app->styleHints())
 	{
@@ -88,26 +88,26 @@ void Engine::updateDpiScale()
 			scale = screen->logicalDotsPerInch() / 96.0;
 		}
 	}
-	if (style_)
+	if (m_style)
 	{
-		style_->setDpiScale(scale);
+		m_style->setDpiScale(scale);
 	}
 }
 
 void Engine::syncFromOsAppearance(bool forcePackReload)
 {
-	if (syncingFromOs_)
+	if (m_syncingFromOs)
 	{
 		return;
 	}
-	syncingFromOs_ = true;
+	m_syncingFromOs = true;
 
 	bool changed = false;
 
-	if (colorScheme_ == ColorScheme::System)
+	if (m_colorScheme == ColorScheme::System)
 	{
 		const QString packId = packIdForScheme(ColorScheme::System);
-		if (forcePackReload || packId != currentSkin_)
+		if (forcePackReload || packId != m_currentSkin)
 		{
 			if (applyPack(packId, ColorScheme::System, true))
 			{
@@ -116,15 +116,15 @@ void Engine::syncFromOsAppearance(bool forcePackReload)
 		}
 	}
 
-	if (accentFollowSystem_)
+	if (m_accentFollowSystem)
 	{
 		const QColor next = AccentResolver::systemAccent();
-		if (next.isValid() && next != accent_)
+		if (next.isValid() && next != m_accent)
 		{
-			accent_ = next;
+			m_accent = next;
 			applyAccentToStore();
 			changed = true;
-			emit accentChanged(accent_);
+			emit accentChanged(m_accent);
 		}
 	}
 
@@ -133,13 +133,13 @@ void Engine::syncFromOsAppearance(bool forcePackReload)
 		refreshUi();
 	}
 
-	syncingFromOs_ = false;
+	m_syncingFromOs = false;
 }
 
 void Engine::onOsPaletteChanged(const QPalette& /*palette*/)
 {
 	// Accent follow-system, and System scheme (incl. OS HC ↔ fluent.hc).
-	if (accentFollowSystem_ || colorScheme_ == ColorScheme::System)
+	if (m_accentFollowSystem || m_colorScheme == ColorScheme::System)
 	{
 		syncFromOsAppearance(false);
 	}
@@ -147,7 +147,7 @@ void Engine::onOsPaletteChanged(const QPalette& /*palette*/)
 
 void Engine::onOsColorSchemeChanged(Qt::ColorScheme /*scheme*/)
 {
-	if (colorScheme_ == ColorScheme::System)
+	if (m_colorScheme == ColorScheme::System)
 	{
 		syncFromOsAppearance(true);
 	}
@@ -156,15 +156,15 @@ void Engine::onOsColorSchemeChanged(Qt::ColorScheme /*scheme*/)
 void Engine::refreshUi()
 {
 	updateDpiScale();
-	if (style_)
+	if (m_style)
 	{
-		style_->setStore(store_);
+		m_style->setStore(m_store);
 	}
 	if (auto* app = qobject_cast<QApplication*>(QCoreApplication::instance()))
 	{
-		if (style_)
+		if (m_style)
 		{
-			app->setPalette(style_->standardPalette());
+			app->setPalette(m_style->standardPalette());
 		}
 		for (QWidget* w : app->topLevelWidgets())
 		{
@@ -178,17 +178,17 @@ void Engine::refreshUi()
 
 void Engine::applyAccentToStore()
 {
-	if (!store_)
+	if (!m_store)
 	{
 		return;
 	}
-	QColor accent = accent_;
-	if (accentFollowSystem_)
+	QColor accent = m_accent;
+	if (m_accentFollowSystem)
 	{
 		accent = AccentResolver::systemAccent();
-		accent_ = accent;
+		m_accent = accent;
 	}
-	AccentResolver::applyAccentPatch(store_.get(), accent);
+	AccentResolver::applyAccentPatch(m_store.get(), accent);
 }
 
 bool Engine::rebuildStore(const QString& packId, bool force)
@@ -196,14 +196,14 @@ bool Engine::rebuildStore(const QString& packId, bool force)
 	Q_UNUSED(force);
 	auto next = std::make_shared<ThemeStore>();
 	Error err = Error::None;
-	if (!packs_->materialize(packId, next.get(), &err))
+	if (!m_packs->materialize(packId, next.get(), &err))
 	{
-		lastError_ = err;
+		m_lastError = err;
 		return false;
 	}
-	store_ = std::move(next);
+	m_store = std::move(next);
 	applyAccentToStore();
-	lastError_ = Error::None;
+	m_lastError = Error::None;
 	return true;
 }
 
@@ -217,7 +217,7 @@ QString Engine::packIdForScheme(ColorScheme scheme) const
 		return QString::fromUtf8(kPackFluentHc);
 	case ColorScheme::System:
 	{
-		if (followOsHighContrast_ && AccentResolver::systemHighContrast())
+		if (m_followOsHighContrast && AccentResolver::systemHighContrast())
 		{
 			return QString::fromUtf8(kPackFluentHc);
 		}
@@ -238,7 +238,7 @@ QString Engine::packIdForScheme(ColorScheme scheme) const
 
 void Engine::apply(QApplication* app, bool clearStyleSheets)
 {
-	if (!app || !store_)
+	if (!app || !m_store)
 	{
 		return;
 	}
@@ -258,38 +258,38 @@ void Engine::apply(QApplication* app, bool clearStyleSheets)
 
 	installOsHooks(app);
 
-	if (accentFollowSystem_)
+	if (m_accentFollowSystem)
 	{
-		accent_ = AccentResolver::systemAccent(app);
+		m_accent = AccentResolver::systemAccent(app);
 		applyAccentToStore();
 	}
 
-	if (colorScheme_ == ColorScheme::System)
+	if (m_colorScheme == ColorScheme::System)
 	{
 		(void)rebuildStore(packIdForScheme(ColorScheme::System), true);
-		currentSkin_ = packIdForScheme(ColorScheme::System);
+		m_currentSkin = packIdForScheme(ColorScheme::System);
 	}
 
-	if (!style_)
+	if (!m_style)
 	{
-		style_ = new QThemeStyle(store_);
+		m_style = new QThemeStyle(m_store);
 	}
 	else
 	{
-		style_->setStore(store_);
+		m_style->setStore(m_store);
 	}
 
 	updateDpiScale();
-	app->setStyle(style_);
-	app->setPalette(style_->standardPalette());
+	app->setStyle(m_style);
+	app->setPalette(m_style->standardPalette());
 	setDefault(this);
-	inited_ = true;
+	m_inited = true;
 	refreshUi();
 }
 
 bool Engine::applyPack(const QString& packId, ColorScheme scheme, bool force)
 {
-	if (!force && packId == currentSkin_ && scheme == colorScheme_ && inited_)
+	if (!force && packId == m_currentSkin && scheme == m_colorScheme && m_inited)
 	{
 		return true;
 	}
@@ -299,17 +299,17 @@ bool Engine::applyPack(const QString& packId, ColorScheme scheme, bool force)
 		return false;
 	}
 
-	const QString previousSkin = currentSkin_;
-	const ColorScheme previousScheme = colorScheme_;
-	currentSkin_ = packId;
-	colorScheme_ = scheme;
+	const QString previousSkin = m_currentSkin;
+	const ColorScheme previousScheme = m_colorScheme;
+	m_currentSkin = packId;
+	m_colorScheme = scheme;
 
 	refreshUi();
-	if (previousSkin != currentSkin_)
+	if (previousSkin != m_currentSkin)
 	{
-		emit skinChanged(previousSkin, currentSkin_);
+		emit skinChanged(previousSkin, m_currentSkin);
 	}
-	if (previousScheme != colorScheme_)
+	if (previousScheme != m_colorScheme)
 	{
 		emit colorSchemeChanged();
 	}
@@ -333,7 +333,7 @@ bool Engine::switchSkin(const QString& name, bool force)
 		resolved = QString::fromUtf8(kPackFluentHc);
 	}
 
-	ColorScheme scheme = colorScheme_;
+	ColorScheme scheme = m_colorScheme;
 	if (resolved == QLatin1String(kPackFluentLight))
 	{
 		scheme = ColorScheme::Light;
@@ -357,8 +357,8 @@ bool Engine::setColorScheme(ColorScheme scheme, bool force)
 
 void Engine::setFollowOsHighContrast(bool follow)
 {
-	followOsHighContrast_ = follow;
-	if (colorScheme_ == ColorScheme::System)
+	m_followOsHighContrast = follow;
+	if (m_colorScheme == ColorScheme::System)
 	{
 		(void)setColorScheme(ColorScheme::System, true);
 	}
@@ -369,28 +369,28 @@ bool Engine::setAccent(const QColor& accent)
 {
 	if (!accent.isValid())
 	{
-		lastError_ = Error::PackInvalid;
+		m_lastError = Error::PackInvalid;
 		return false;
 	}
-	accentFollowSystem_ = false;
-	accent_ = accent;
+	m_accentFollowSystem = false;
+	m_accent = accent;
 	applyAccentToStore();
 	refreshUi();
-	emit accentChanged(accent_);
+	emit accentChanged(m_accent);
 	onAutoSavePreferences();
 	return true;
 }
 
 bool Engine::setAccentFollowSystem(bool follow)
 {
-	accentFollowSystem_ = follow;
+	m_accentFollowSystem = follow;
 	if (follow)
 	{
-		accent_ = AccentResolver::systemAccent();
+		m_accent = AccentResolver::systemAccent();
 	}
 	applyAccentToStore();
 	refreshUi();
-	emit accentChanged(accent_);
+	emit accentChanged(m_accent);
 	onAutoSavePreferences();
 	return true;
 }
@@ -398,79 +398,79 @@ bool Engine::setAccentFollowSystem(bool follow)
 bool Engine::registerPack(const QString& pathOrQrc)
 {
 	Error err = Error::None;
-	if (!packs_->registerPackFile(pathOrQrc, &err))
+	if (!m_packs->registerPackFile(pathOrQrc, &err))
 	{
-		lastError_ = err;
+		m_lastError = err;
 		return false;
 	}
 	if (!pathOrQrc.startsWith(QLatin1Char(':')))
 	{
-		if (!extraPackFiles_.contains(pathOrQrc))
+		if (!m_extraPackFiles.contains(pathOrQrc))
 		{
-			extraPackFiles_.append(pathOrQrc);
+			m_extraPackFiles.append(pathOrQrc);
 		}
 	}
-	lastError_ = Error::None;
+	m_lastError = Error::None;
 	onAutoSavePreferences();
 	return true;
 }
 
 void Engine::addPackSearchPath(const QString& dir)
 {
-	if (dir.isEmpty() || packSearchPaths_.contains(dir))
+	if (dir.isEmpty() || m_packSearchPaths.contains(dir))
 	{
 		return;
 	}
-	packSearchPaths_.append(dir);
+	m_packSearchPaths.append(dir);
 	onAutoSavePreferences();
 }
 
 int Engine::scanPackSearchPaths()
 {
-	if (!packs_)
+	if (!m_packs)
 	{
 		return 0;
 	}
 	int total = 0;
-	for (const QString& dir : packSearchPaths_)
+	for (const QString& dir : m_packSearchPaths)
 	{
-		total += packs_->registerPacksInDirectory(dir, nullptr);
+		total += m_packs->registerPacksInDirectory(dir, nullptr);
 	}
 	return total;
 }
 
 QStringList Engine::registeredPacks() const
 {
-	return packs_ ? packs_->packIds() : QStringList{};
+	return m_packs ? m_packs->packIds() : QStringList{};
 }
 
 AppearancePrefs Engine::appearancePrefs() const
 {
 	AppearancePrefs prefs;
-	prefs.skinId = currentSkin_;
-	prefs.colorScheme = colorScheme_;
-	prefs.accentFollowSystem = accentFollowSystem_;
-	prefs.accent = accent_;
-	prefs.followOsHighContrast = followOsHighContrast_;
-	prefs.packSearchPaths = packSearchPaths_;
-	prefs.extraPackFiles = extraPackFiles_;
+	prefs.skinId = m_currentSkin;
+	prefs.colorScheme = m_colorScheme;
+	prefs.accentFollowSystem = m_accentFollowSystem;
+	prefs.accent = m_accent;
+	prefs.followOsHighContrast = m_followOsHighContrast;
+	prefs.packSearchPaths = m_packSearchPaths;
+	prefs.extraPackFiles = m_extraPackFiles;
 	return prefs;
 }
 
 bool Engine::applyAppearancePrefs(const AppearancePrefs& prefs)
 {
-	loadingPreferences_ = true;
+	m_loadingPreferences = true;
 
-	packSearchPaths_ = prefs.packSearchPaths;
-	extraPackFiles_ = prefs.extraPackFiles;
+	m_packSearchPaths = prefs.packSearchPaths;
+	m_extraPackFiles = prefs.extraPackFiles;
 	(void)scanPackSearchPaths();
-	for (const QString& file : extraPackFiles_)
+	for (const QString& file : m_extraPackFiles)
 	{
 		Error err = Error::None;
-		(void)packs_->registerPackFile(file, &err);
+		(void)m_packs->registerPackFile(file, &err);
 	}
 
-	followOsHighContrast_ = prefs.followOsHighContrast;
+	m_followOsHighContrast = prefs.followOsHighContrast;
 
 	if (prefs.accentFollowSystem)
 	{
@@ -492,7 +492,7 @@ bool Engine::applyAppearancePrefs(const AppearancePrefs& prefs)
 					   prefs.colorScheme, true);
 	}
 
-	loadingPreferences_ = false;
+	m_loadingPreferences = false;
 	return ok;
 }
 
@@ -528,12 +528,12 @@ bool Engine::loadPreferences(QSettings* settings)
 
 void Engine::setAutoSavePreferences(bool enable)
 {
-	autoSavePreferences_ = enable;
+	m_autoSavePreferences = enable;
 }
 
 void Engine::onAutoSavePreferences()
 {
-	if (!autoSavePreferences_ || loadingPreferences_)
+	if (!m_autoSavePreferences || m_loadingPreferences)
 	{
 		return;
 	}

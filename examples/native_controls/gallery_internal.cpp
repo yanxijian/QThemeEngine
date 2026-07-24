@@ -40,7 +40,7 @@ class RubberBandHost final : public QWidget
 public:
 	explicit RubberBandHost(QWidget* parent = nullptr)
 		: QWidget(parent)
-		, band_(new QRubberBand(QRubberBand::Rectangle, this))
+		, m_band(new QRubberBand(QRubberBand::Rectangle, this))
 	{
 		setMinimumHeight(100);
 		setAutoFillBackground(true);
@@ -50,18 +50,18 @@ public:
 protected:
 	void mousePressEvent(QMouseEvent* event) override
 	{
-		origin_ = event->pos();
-		band_->setGeometry(QRect(origin_, QSize()));
-		band_->show();
+		m_origin = event->pos();
+		m_band->setGeometry(QRect(m_origin, QSize()));
+		m_band->show();
 	}
 	void mouseMoveEvent(QMouseEvent* event) override
 	{
-		band_->setGeometry(QRect(origin_, event->pos()).normalized());
+		m_band->setGeometry(QRect(m_origin, event->pos()).normalized());
 	}
 	void mouseReleaseEvent(QMouseEvent* event) override
 	{
 		Q_UNUSED(event);
-		band_->hide();
+		m_band->hide();
 	}
 	void paintEvent(QPaintEvent*) override
 	{
@@ -71,8 +71,8 @@ protected:
 	}
 
 private:
-	QPoint origin_;
-	QRubberBand* band_ = nullptr;
+	QPoint m_origin;
+	QRubberBand* m_band = nullptr;
 };
 
 #if defined(QTE_HAS_OPENGLWIDGETS)

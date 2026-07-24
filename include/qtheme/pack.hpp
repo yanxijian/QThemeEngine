@@ -49,7 +49,7 @@ private:
 	[[nodiscard]] bool materializeRecursive(const QString& id, ThemeStore* out, int depth,
 											Error* err) const;
 
-	QHash<QString, PackData> packs_;
+	QHash<QString, PackData> m_packs;
 };
 
 } // namespace qtheme
