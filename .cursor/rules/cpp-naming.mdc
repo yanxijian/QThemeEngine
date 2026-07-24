@@ -16,9 +16,22 @@ alwaysApply: false
 
 - Keep Qt API style: **lowerCamelCase** (`setColorScheme`, `packId`).
 
+## Storage prefixes (strict — by written `static`)
+
+Prefix follows whether the declaration **literally uses `static`**, not C++ linkage alone:
+
+| Prefix | When to use | Example |
+|--------|-------------|---------|
+| `g_` | Mutable variable **without** the `static` keyword (file scope, anonymous namespace, or true external global) | `g_default`, `g_bound` |
+| `s_` | Mutable with **`static` inside a function** or **mutable `static` class member** | `s_once`, `s_cache` |
+| `gs_` | Mutable with **explicit file-scope `static`** | `static int gs_nextId = 1;` |
+
+- Anonymous-namespace variables **without** `static` use **`g_`** (even though they have internal linkage).
+- Do **not** stack prefixes (`gs_g_foo`, `s_kFoo`).
+
 ## Constants
 
-- `kCamelCase` / `SettingsKeys::kSkinId` are allowed (stable string/pack ids).
+- Any immutable / compile-time constant uses **`kCamelCase` only** (no `g`/`s`/`gs` prefix), even if it lives in an anonymous namespace: `kPackFluentLight`, `SettingsKeys::kSkinId`.
 - Prefer `inline constexpr` over macros.
 
 ## Containers
