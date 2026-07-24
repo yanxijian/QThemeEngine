@@ -258,6 +258,7 @@ engine.scanPackSearchPaths();
 |------|------|
 | [architecture.md](architecture.md) | **本文：产品主路径** |
 | [coverage-matrix.md](coverage-matrix.md) | 控件覆盖矩阵（实现进度） |
+| [fluent-mux-audit.md](fluent-mux-audit.md) | Fluent Pack ↔ microsoft-ui-xaml 色审计（正向+反向遗漏） |
 | [qt-widgets-inventory.md](qt-widgets-inventory.md) | Qt Widgets 控件清单与主题优先级 |
 | [theme-engine-spec.md](theme-engine-spec.md) | 格式 / Token / 加载细节与历史 L0 |
 | [../en/architecture.md](../en/architecture.md) | English architecture summary |

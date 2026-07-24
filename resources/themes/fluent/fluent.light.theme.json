@@ -69,11 +69,11 @@
     },
     "scroll": {
       "groove": "#F3F3F3",
-      "handle": "#C8C8C8",
-      "handle.hover": "#A8A8A8",
-      "handle.pressed": "#888888",
-      "handle.disabled": "#E0E0E0",
-      "arrow": "#5C5C5C",
+      "handle": "#8D8D8D",
+      "handle.hover": "#8D8D8D",
+      "handle.pressed": "#8D8D8D",
+      "handle.disabled": "#AEAEAE",
+      "arrow": "#8D8D8D",
       "arrow.disabled": "#A0A0A0"
     },
     "menu": {
@@ -94,7 +94,7 @@
       "bg": "#F3F3F3",
       "border": "#E0E0E0",
       "separator": "#D1D1D1",
-      "handle": "#C8C8C8"
+      "handle": "#868686"
     },
     "combo": {
       "bg": "#FFFFFF",
@@ -134,8 +134,8 @@
       "border": "#E0E0E0"
     },
     "slider": {
-      "groove": "#E0E0E0",
-      "groove.disabled": "#F0F0F0",
+      "groove": "#8D8D8D",
+      "groove.disabled": "#AEAEAE",
       "fill": "#0078D4",
       "fill.disabled": "#C8C8C8",
       "handle": "#FFFFFF",
@@ -146,8 +146,8 @@
       "handle.border.focus": "#0078D4"
     },
     "progress": {
-      "groove": "#E0E0E0",
-      "groove.disabled": "#F0F0F0",
+      "groove": "#8D8D8D",
+      "groove.disabled": "#C8C8C8",
       "chunk": "#0078D4",
       "chunk.disabled": "#C8C8C8",
       "fg": "#1A1A1A",
@@ -179,18 +179,18 @@
     "frame": {
       "bg": "#FFFFFF",
       "border": "#D1D1D1",
-      "line": "#D1D1D1"
+      "line": "#F0F0F0"
     },
     "splitter": {
       "bg": "#F3F3F3",
-      "handle": "#C8C8C8",
+      "handle": "#868686",
       "handle.hover": "#0078D4"
     },
     "dock": {
       "bg": "#F3F3F3",
       "border": "#D1D1D1",
       "title.bg": "#EAEAEA",
-      "title.bg.active": "#E0E0E0",
+      "title.bg.active": "#FFFFFF",
       "title.fg": "#1A1A1A",
       "title.fg.disabled": "#A0A0A0"
     },
@@ -200,8 +200,8 @@
       "border": "#E0E0E0"
     },
     "dial": {
-      "groove": "#E0E0E0",
-      "groove.disabled": "#F0F0F0",
+      "groove": "#8D8D8D",
+      "groove.disabled": "#AEAEAE",
       "fill": "#0078D4",
       "fill.disabled": "#C8C8C8",
       "handle": "#FFFFFF",
