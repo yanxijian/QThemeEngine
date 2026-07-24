@@ -257,6 +257,7 @@ engine.scanPackSearchPaths();
 | 文档 | 角色 |
 |------|------|
 | [architecture.md](architecture.md) | **本文：产品主路径** |
+| [dev-plan.md](dev-plan.md) | 近中期投入与加深候选（备忘） |
 | [coverage-matrix.md](coverage-matrix.md) | 控件覆盖矩阵（实现进度） |
 | [fluent-mux-audit.md](fluent-mux-audit.md) | Fluent Pack ↔ microsoft-ui-xaml 色审计（正向+反向遗漏） |
 | [qt-widgets-inventory.md](qt-widgets-inventory.md) | Qt Widgets 控件清单与主题优先级 |

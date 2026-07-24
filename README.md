@@ -2,9 +2,9 @@
 
 Qt Widgets 工业化主题运行时：**ThemeStore + 自定义 `QThemeStyle`**，用主题表驱动原生控件绘制与度量，**替代 QSS**（不是生成 StyleSheet）。
 
-权威架构：[docs/zh/architecture.md](docs/zh/architecture.md) · 覆盖矩阵：[docs/zh/coverage-matrix.md](docs/zh/coverage-matrix.md)  
+权威架构：[docs/zh/architecture.md](docs/zh/architecture.md) · 开发计划：[docs/zh/dev-plan.md](docs/zh/dev-plan.md) · 覆盖矩阵：[docs/zh/coverage-matrix.md](docs/zh/coverage-matrix.md)  
 控件清单：[docs/zh/qt-widgets-inventory.md](docs/zh/qt-widgets-inventory.md) · 格式 / Token：[docs/zh/theme-engine-spec.md](docs/zh/theme-engine-spec.md)  
-English：[docs/en/architecture.md](docs/en/architecture.md)
+English：[docs/en/architecture.md](docs/en/architecture.md) · [docs/en/dev-plan.md](docs/en/dev-plan.md)
 
 ## 产品要点
 

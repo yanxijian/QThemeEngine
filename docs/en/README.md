@@ -4,6 +4,7 @@ Industrial Qt Widgets theming: **ThemeStore + custom `QThemeStyle`**, replacing 
 
 Canonical architecture (Chinese): [../zh/architecture.md](../zh/architecture.md)  
 English summary: [architecture.md](architecture.md)  
+Development plan: [../zh/dev-plan.md](../zh/dev-plan.md) · [dev-plan.md](dev-plan.md)  
 Coverage matrix: [../zh/coverage-matrix.md](../zh/coverage-matrix.md)  
 Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md) · [qt-widgets-inventory.md](qt-widgets-inventory.md)
 
