@@ -52,6 +52,48 @@ void drawRounded(QPainter* painter, const QRect& rect, int radius, const QColor&
 	painter->restore();
 }
 
+/// WinUI Focus Visual: primary (outer) 2px + secondary (inner) 1px, typically ControlCornerRadius.
+void drawFluentFocusRing(QPainter* painter, const QRect& rect, int radius, const QColor& outer,
+						 const QColor& inner, qreal outerWidth, qreal innerWidth)
+{
+	if (!painter || rect.isEmpty())
+	{
+		return;
+	}
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setBrush(Qt::NoBrush);
+
+	const qreal halfOuter = outerWidth * 0.5;
+	const QRectF outerR = QRectF(rect).adjusted(halfOuter, halfOuter, -halfOuter, -halfOuter);
+	painter->setPen(QPen(outer, outerWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
+	if (radius > 0)
+	{
+		painter->drawRoundedRect(outerR, radius, radius);
+	}
+	else
+	{
+		painter->drawRect(outerR);
+	}
+
+	const qreal inset = outerWidth + innerWidth * 0.5;
+	const QRectF innerR = QRectF(rect).adjusted(inset, inset, -inset, -inset);
+	if (innerR.width() >= 2.0 && innerR.height() >= 2.0)
+	{
+		const qreal innerRadius = radius > 0 ? qMax(0.0, qreal(radius) - outerWidth) : 0.0;
+		painter->setPen(QPen(inner, innerWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
+		if (innerRadius > 0)
+		{
+			painter->drawRoundedRect(innerR, innerRadius, innerRadius);
+		}
+		else
+		{
+			painter->drawRect(innerR);
+		}
+	}
+	painter->restore();
+}
+
 void drawArrow(QPainter* painter, const QRect& rect, Qt::ArrowType type, const QColor& color)
 {
 	painter->save();
@@ -407,7 +449,7 @@ int QThemeStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, con
 		return roleMetric(QStringLiteral("dock"), QStringLiteral("handle"), 10);
 	case PM_FocusFrameVMargin:
 	case PM_FocusFrameHMargin:
-		return 1;
+		return roleMetric(QStringLiteral("focus"), QStringLiteral("margin"), 1);
 	default:
 		return QProxyStyle::pixelMetric(metric, option, widget);
 	}
@@ -505,6 +547,38 @@ QRect QThemeStyle::subControlRect(ComplexControl control, const QStyleOptionComp
 		}
 	}
 	return QProxyStyle::subControlRect(control, option, subControl, widget);
+}
+
+QRect QThemeStyle::subElementRect(SubElement element, const QStyleOption* option,
+								  const QWidget* widget) const
+{
+	// Fluent CheckBox/Radio focus visual wraps the whole control, not just the label text.
+	if (element == SE_CheckBoxFocusRect || element == SE_RadioButtonFocusRect)
+	{
+		const int margin = roleMetric(QStringLiteral("focus"), QStringLiteral("margin"), 1);
+		if (widget)
+		{
+			return widget->rect().adjusted(margin, margin, -margin, -margin);
+		}
+		if (option)
+		{
+			return option->rect.adjusted(margin, margin, -margin, -margin);
+		}
+	}
+	if (element == SE_PushButtonFocusRect || element == SE_ItemViewItemFocusRect)
+	{
+		const int margin = roleMetric(QStringLiteral("focus"), QStringLiteral("margin"), 1);
+		if (option)
+		{
+			return option->rect.adjusted(margin, margin, -margin, -margin);
+		}
+	}
+	// Combo/Spin/Slider already use accent border.focus chrome — skip a second ring.
+	if (element == SE_ComboBoxFocusRect || element == SE_SliderFocusRect)
+	{
+		return QRect();
+	}
+	return QProxyStyle::subElementRect(element, option, widget);
 }
 
 void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter,
@@ -644,13 +718,10 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 									   option->palette.color(QPalette::Highlight));
 		const QColor inner = roleColor(QStringLiteral("palette"), QStringLiteral("focus.inner"),
 									   option->palette.color(QPalette::Base));
-		painter->save();
-		painter->setBrush(Qt::NoBrush);
-		painter->setPen(QPen(outer, 1));
-		painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
-		painter->setPen(QPen(inner, 1));
-		painter->drawRect(option->rect.adjusted(1, 1, -2, -2));
-		painter->restore();
+		const int radius = roleMetric(QStringLiteral("focus"), QStringLiteral("radius"), 4);
+		const qreal outerW = qreal(roleMetric(QStringLiteral("focus"), QStringLiteral("outer"), 2));
+		const qreal innerW = qreal(roleMetric(QStringLiteral("focus"), QStringLiteral("inner"), 1));
+		drawFluentFocusRing(painter, option->rect, radius, outer, inner, outerW, innerW);
 		return;
 	}
 
@@ -987,13 +1058,14 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 
 			const QColor bg =
 				roleColor(QStringLiteral("button"), bgRole, btn->palette.color(QPalette::Button));
-			const bool focused = (btn->state & State_HasFocus) && enabled;
+			// Fluent: Default/Accent chrome uses accent stroke; keyboard focus uses PE_FrameFocusRect
+			// (dual ring), not a thickened accent border on ordinary buttons.
 			const QColor border =
 				roleColor(QStringLiteral("button"),
-						  focused || isDefault ? QStringLiteral("border.focus") : QStringLiteral("border"),
+						  isDefault ? QStringLiteral("border.focus") : QStringLiteral("border"),
 						  btn->palette.color(QPalette::Mid));
 			const int radius = roleMetric(QStringLiteral("button"), QStringLiteral("radius"), 4);
-			drawRounded(painter, btn->rect, radius, bg, border, focused || isDefault ? 2.0 : 1.0);
+			drawRounded(painter, btn->rect, radius, bg, border, isDefault ? 2.0 : 1.0);
 			return;
 		}
 	}

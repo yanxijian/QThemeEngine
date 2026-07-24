@@ -266,6 +266,7 @@
     "tab": { "radius": 0, "height": 32 },
     "scroll": { "thickness": 12, "radius": 0 },
     "menu": { "radius": 0, "itemHeight": 32, "itemInset": 2, "itemRadius": 0 },
+    "focus": { "radius": 0, "outer": 2, "inner": 1, "margin": 1 },
     "toolbar": { "radius": 0, "padding": 4, "handleExtent": 8, "itemSpacing": 4, "frameWidth": 1 },
     "combo": { "radius": 0 },
     "spin": { "radius": 0, "buttonWidth": 20 },

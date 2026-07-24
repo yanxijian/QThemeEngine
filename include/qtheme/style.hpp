@@ -34,6 +34,8 @@ public:
 						   const QWidget* widget = nullptr) const override;
 	QRect subControlRect(ComplexControl control, const QStyleOptionComplex* option, SubControl subControl,
 						 const QWidget* widget = nullptr) const override;
+	QRect subElementRect(SubElement element, const QStyleOption* option,
+						 const QWidget* widget = nullptr) const override;
 	QPalette standardPalette() const override;
 
 	void polish(QWidget* widget) override;

@@ -20,9 +20,12 @@
 #include <QPixmap>
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QSettings>
 #include <QStyle>
 #include <QStyleOption>
+#include <QStyleOptionButton>
+#include <QStyleOptionFocusRect>
 #include <QStyleOptionFrame>
 #include <QStyleOptionMenuItem>
 #include <QTemporaryDir>
@@ -44,6 +47,7 @@ private slots:
 	void pack_t0ChromeTokensPresent();
 	void style_dpiScaleAffectsMetrics();
 	void style_menuRoundedPanelClearsCorners();
+	void style_fluentFocusRingAndCheckFocusRect();
 	void accent_patchUpdatesHighlight();
 	void accent_systemHighContrastApi();
 	void engine_switchFluentSkins();
@@ -302,6 +306,50 @@ void ThemeSmokeTest::style_menuRoundedPanelClearsCorners()
 	QMenu hcMenu;
 	hcStyle.polish(&hcMenu);
 	QVERIFY(!hcMenu.testAttribute(Qt::WA_TranslucentBackground));
+}
+
+void ThemeSmokeTest::style_fluentFocusRingAndCheckFocusRect()
+{
+	auto light = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), light.get()));
+	qtheme::QThemeStyle style(light);
+
+	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("outer"), -1), 2);
+	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("inner"), -1), 1);
+	QCOMPARE(light->metric(QStringLiteral("focus"), QStringLiteral("radius"), -1), 4);
+
+	QCheckBox box(QStringLiteral("Unchecked"));
+	box.resize(160, 32);
+	QStyleOptionButton opt;
+	opt.initFrom(&box);
+	opt.rect = box.rect();
+	opt.text = box.text();
+	opt.state |= QStyle::State_Enabled | QStyle::State_HasFocus;
+	const QRect focusRect = style.subElementRect(QStyle::SE_CheckBoxFocusRect, &opt, &box);
+	QVERIFY(focusRect.width() > box.fontMetrics().horizontalAdvance(box.text()) + 8);
+	QVERIFY(focusRect.height() >= box.height() - 4);
+
+	QRadioButton radio(QStringLiteral("Option"));
+	radio.resize(160, 32);
+	QStyleOptionButton ropt;
+	ropt.initFrom(&radio);
+	ropt.rect = radio.rect();
+	const QRect radioFocus = style.subElementRect(QStyle::SE_RadioButtonFocusRect, &ropt, &radio);
+	QVERIFY(radioFocus.width() > 40);
+
+	// Focus ring paints opaque ink near the rim; center stays clear of the dual stroke.
+	QImage img(120, 40, QImage::Format_ARGB32_Premultiplied);
+	img.fill(Qt::transparent);
+	{
+		QPainter p(&img);
+		QStyleOptionFocusRect fr;
+		fr.rect = img.rect().adjusted(2, 2, -2, -2);
+		fr.state = QStyle::State_Enabled | QStyle::State_KeyboardFocusChange;
+		fr.backgroundColor = Qt::transparent;
+		style.drawPrimitive(QStyle::PE_FrameFocusRect, &fr, &p, nullptr);
+	}
+	QVERIFY(qAlpha(img.pixel(3, 3)) > 0);
+	QVERIFY(qAlpha(img.pixel(img.width() / 2, img.height() / 2)) < 16);
 }
 
 void ThemeSmokeTest::accent_patchUpdatesHighlight()

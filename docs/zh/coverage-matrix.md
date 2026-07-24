@@ -16,7 +16,7 @@
 | 按钮 | `QPushButton` | ● Fluent | ● | ● | N/H/P/D + Default accent |
 | 命令链接 | `QCommandLinkButton` | ● | ○ | ● | `CE_PushButtonLabel` + `commandlink.*` |
 | 工具按钮 | `QToolButton` | ● Fluent | ● | ● | `CC_ToolButton` / height |
-| 勾选 | `QCheckBox` | ● | ● | ● | N/H/Checked/Disabled |
+| 勾选 | `QCheckBox` | ● | ● | ● | N/H/Checked/Disabled；焦点为整控件 Fluent 双描边 |
 | 单选 | `QRadioButton` | ● | ● | ● | 同 check |
 | 单行编辑 | `QLineEdit` | ● | ● | ● | N/H/Focus/Disabled；height/padding |
 | 多行编辑 | `QPlainTextEdit`/`QTextEdit` | ● Fluent | ◐ | ● | `textedit.*` + `PE_Frame` |
