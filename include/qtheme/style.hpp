@@ -26,6 +26,10 @@ public:
 							const QWidget* widget = nullptr) const override;
 	int pixelMetric(PixelMetric metric, const QStyleOption* option = nullptr,
 					const QWidget* widget = nullptr) const override;
+	QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& contentsSize,
+						   const QWidget* widget = nullptr) const override;
+	QRect subControlRect(ComplexControl control, const QStyleOptionComplex* option, SubControl subControl,
+						 const QWidget* widget = nullptr) const override;
 	QPalette standardPalette() const override;
 
 private:

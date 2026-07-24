@@ -108,6 +108,22 @@
       "arrow": "#5C5C5C",
       "arrow.disabled": "#A0A0A0"
     },
+    "spin": {
+      "bg": "#FFFFFF",
+      "bg.disabled": "#F5F5F5",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
+      "border": "#D1D1D1",
+      "border.focus": "#0078D4",
+      "border.hover": "#8A8A8A",
+      "border.disabled": "#E0E0E0",
+      "button": "#F5F5F5",
+      "button.hover": "#EBEBEB",
+      "button.pressed": "#E0E0E0",
+      "button.disabled": "#F9F9F9",
+      "arrow": "#5C5C5C",
+      "arrow.disabled": "#A0A0A0"
+    },
     "header": {
       "bg": "#F3F3F3",
       "bg.hover": "#EAEAEA",

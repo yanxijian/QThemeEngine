@@ -108,6 +108,22 @@
       "arrow": "#FFFFFF",
       "arrow.disabled": "#808080"
     },
+    "spin": {
+      "bg": "#000000",
+      "bg.disabled": "#000000",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "border": "#FFFFFF",
+      "border.focus": "#FFFF00",
+      "border.hover": "#FFFFFF",
+      "border.disabled": "#808080",
+      "button": "#1A1A1A",
+      "button.hover": "#333333",
+      "button.pressed": "#4D4D4D",
+      "button.disabled": "#000000",
+      "arrow": "#FFFFFF",
+      "arrow.disabled": "#808080"
+    },
     "header": {
       "bg": "#000000",
       "bg.hover": "#1A1A1A",
@@ -133,6 +149,7 @@
     "menu": { "radius": 0, "itemHeight": 32 },
     "toolbar": { "radius": 0 },
     "combo": { "radius": 0 },
+    "spin": { "radius": 0, "buttonWidth": 20 },
     "header": { "radius": 0, "height": 32 },
     "DemoButton": { "borderRadius": 0 }
   }

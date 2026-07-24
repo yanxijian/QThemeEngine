@@ -117,6 +117,10 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QVERIFY(s.hasColor(QStringLiteral("check"), QStringLiteral("bg.disabled")));
 	QVERIFY(s.hasColor(QStringLiteral("tab"), QStringLiteral("fg.disabled")));
 	QVERIFY(s.hasColor(QStringLiteral("scroll"), QStringLiteral("handle.disabled")));
+	QVERIFY(s.hasColor(QStringLiteral("spin"), QStringLiteral("button.hover")));
+	QVERIFY(s.hasColor(QStringLiteral("spin"), QStringLiteral("border.focus")));
+	QCOMPARE(s.metric(QStringLiteral("spin"), QStringLiteral("buttonWidth"), -1), 20);
+	QCOMPARE(s.metric(QStringLiteral("button"), QStringLiteral("height"), -1), 32);
 
 	qtheme::ThemeStore dark;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), &dark));

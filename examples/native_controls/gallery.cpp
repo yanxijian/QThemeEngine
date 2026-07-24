@@ -363,6 +363,123 @@ QWidget* pageInput(QWidget* parent)
 	return wrapScroll(root, parent);
 }
 
+QWidget* pageStates(QWidget* parent)
+{
+	auto* root = new QWidget;
+	auto* layout = new QVBoxLayout(root);
+
+	layout->addWidget(new QLabel(
+		QStringLiteral("Enabled vs Disabled / Default — Fluent state acceptance"), root));
+
+	{
+		auto* box = makeGroup(QStringLiteral("Buttons"), root);
+		auto* grid = new QGridLayout;
+		grid->addWidget(new QLabel(QStringLiteral("Enabled"), box), 0, 1, Qt::AlignCenter);
+		grid->addWidget(new QLabel(QStringLiteral("Disabled"), box), 0, 2, Qt::AlignCenter);
+
+		grid->addWidget(new QLabel(QStringLiteral("QPushButton"), box), 1, 0);
+		grid->addWidget(new QPushButton(QStringLiteral("Normal"), box), 1, 1);
+		auto* disBtn = new QPushButton(QStringLiteral("Normal"), box);
+		disBtn->setEnabled(false);
+		grid->addWidget(disBtn, 1, 2);
+
+		grid->addWidget(new QLabel(QStringLiteral("DefaultButton"), box), 2, 0);
+		auto* def = new QPushButton(QStringLiteral("OK"), box);
+		def->setDefault(true);
+		grid->addWidget(def, 2, 1);
+		auto* defDis = new QPushButton(QStringLiteral("OK"), box);
+		defDis->setDefault(true);
+		defDis->setEnabled(false);
+		grid->addWidget(defDis, 2, 2);
+
+		grid->addWidget(new QLabel(QStringLiteral("QToolButton"), box), 3, 0);
+		auto* tool = new QToolButton(box);
+		tool->setText(QStringLiteral("Tool"));
+		grid->addWidget(tool, 3, 1);
+		auto* toolDis = new QToolButton(box);
+		toolDis->setText(QStringLiteral("Tool"));
+		toolDis->setEnabled(false);
+		grid->addWidget(toolDis, 3, 2);
+
+		static_cast<QVBoxLayout*>(box->layout())->addLayout(grid);
+		layout->addWidget(box);
+	}
+
+	{
+		auto* box = makeGroup(QStringLiteral("Check / Radio"), root);
+		auto* row = new QHBoxLayout;
+		auto* cOn = new QCheckBox(QStringLiteral("Checked"), box);
+		cOn->setChecked(true);
+		auto* cOff = new QCheckBox(QStringLiteral("Unchecked"), box);
+		auto* cDis = new QCheckBox(QStringLiteral("Checked+Disabled"), box);
+		cDis->setChecked(true);
+		cDis->setEnabled(false);
+		auto* rOn = new QRadioButton(QStringLiteral("Selected"), box);
+		rOn->setChecked(true);
+		auto* rDis = new QRadioButton(QStringLiteral("Disabled"), box);
+		rDis->setEnabled(false);
+		row->addWidget(cOn);
+		row->addWidget(cOff);
+		row->addWidget(cDis);
+		row->addWidget(rOn);
+		row->addWidget(rDis);
+		row->addStretch(1);
+		static_cast<QVBoxLayout*>(box->layout())->addLayout(row);
+		layout->addWidget(box);
+	}
+
+	{
+		auto* box = makeGroup(QStringLiteral("Input"), root);
+		auto* form = new QFormLayout;
+		auto* line = new QLineEdit(QStringLiteral("Editable"), box);
+		auto* lineDis = new QLineEdit(QStringLiteral("Disabled"), box);
+		lineDis->setEnabled(false);
+		form->addRow(QStringLiteral("QLineEdit"), line);
+		form->addRow(QStringLiteral("QLineEdit disabled"), lineDis);
+
+		auto* combo = new QComboBox(box);
+		combo->addItems({QStringLiteral("One"), QStringLiteral("Two")});
+		auto* comboDis = new QComboBox(box);
+		comboDis->addItems({QStringLiteral("One"), QStringLiteral("Two")});
+		comboDis->setEnabled(false);
+		form->addRow(QStringLiteral("QComboBox"), combo);
+		form->addRow(QStringLiteral("QComboBox disabled"), comboDis);
+
+		auto* spin = new QSpinBox(box);
+		spin->setValue(7);
+		auto* spinDis = new QSpinBox(box);
+		spinDis->setValue(7);
+		spinDis->setEnabled(false);
+		form->addRow(QStringLiteral("QSpinBox"), spin);
+		form->addRow(QStringLiteral("QSpinBox disabled"), spinDis);
+
+		auto* dspin = new QDoubleSpinBox(box);
+		dspin->setValue(1.25);
+		auto* dspinDis = new QDoubleSpinBox(box);
+		dspinDis->setValue(1.25);
+		dspinDis->setEnabled(false);
+		form->addRow(QStringLiteral("QDoubleSpinBox"), dspin);
+		form->addRow(QStringLiteral("QDoubleSpinBox disabled"), dspinDis);
+
+		static_cast<QVBoxLayout*>(box->layout())->addLayout(form);
+		layout->addWidget(box);
+	}
+
+	{
+		auto* box = makeGroup(QStringLiteral("TabBar"), root);
+		auto* bar = new QTabBar(box);
+		bar->addTab(QStringLiteral("Active"));
+		bar->addTab(QStringLiteral("Other"));
+		const int dis = bar->addTab(QStringLiteral("Disabled"));
+		bar->setTabEnabled(dis, false);
+		static_cast<QVBoxLayout*>(box->layout())->addWidget(bar);
+		layout->addWidget(box);
+	}
+
+	layout->addStretch(1);
+	return wrapScroll(root, parent);
+}
+
 QWidget* pageDisplay(QWidget* parent)
 {
 	auto* root = new QWidget;

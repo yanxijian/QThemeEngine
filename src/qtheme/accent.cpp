@@ -80,6 +80,7 @@ void applyAccentPatch(ThemeStore* store, const QColor& accent)
 	store->setColor(QStringLiteral("button"), QStringLiteral("border.focus"), accent);
 	store->setColor(QStringLiteral("edit"), QStringLiteral("border.focus"), accent);
 	store->setColor(QStringLiteral("combo"), QStringLiteral("border.focus"), accent);
+	store->setColor(QStringLiteral("spin"), QStringLiteral("border.focus"), accent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("bg.checked"), accent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("border.checked"), accent);
 	store->setColor(QStringLiteral("check"), QStringLiteral("indicator"), onAccent);

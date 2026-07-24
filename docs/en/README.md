@@ -13,8 +13,9 @@ Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md
 |-----------|--------|--------|
 | **M0** | Store seeds + `Engine::apply` + QThemeStyle; native `QPushButton` recolors without QSS | **Done** |
 | **M0.5** | Fluent packs (light/dark/hc) + Accent/ColorScheme + pack merge + T0 drawing | **Done** |
-| M1 | Load `.theme.xml` | Scaffold (`ThemeLoader::setupXml` TODO) |
-| M2+ | Expand coverage matrix | In progress |
+| M1 | Load `.theme.xml` (optional; JSON packs are SSOT) | Scaffold |
+| **M2** | Button/Edit/Check/Combo/Spin/Menu/Tab/Header/ToolBar + state gallery | **Done** |
+| M3+ | Slider/Progress/GroupBox/ToolTip, DPI, ItemViews | Planned |
 
 ## Build
 

@@ -11,6 +11,7 @@ namespace gallery {
 
 [[nodiscard]] QWidget* pageButtons(QWidget* parent = nullptr);
 [[nodiscard]] QWidget* pageInput(QWidget* parent = nullptr);
+[[nodiscard]] QWidget* pageStates(QWidget* parent = nullptr);
 [[nodiscard]] QWidget* pageDisplay(QWidget* parent = nullptr);
 [[nodiscard]] QWidget* pageContainers(QWidget* parent = nullptr);
 [[nodiscard]] QWidget* pageItemViews(QWidget* parent = nullptr);

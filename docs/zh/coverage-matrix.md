@@ -14,21 +14,21 @@
 |--------|--------|------|-----------------|---------|------|
 | 应用级 | `QApplication` | — | — | ● seed | `standardPalette` |
 | 按钮 | `QPushButton` | ● Fluent | ● | ● | N/H/P/D + Default accent |
-| 工具按钮 | `QToolButton` | ● Fluent | ◐ | ● | `CC_ToolButton` / `PE_PanelButtonTool` |
+| 工具按钮 | `QToolButton` | ● Fluent | ● | ● | `CC_ToolButton` / height |
 | 勾选 | `QCheckBox` | ● | ● | ● | N/H/Checked/Disabled |
 | 单选 | `QRadioButton` | ● | ● | ● | 同 check |
-| 单行编辑 | `QLineEdit` | ● | ◐ | ● | N/H/Focus/Disabled |
-| 数字框 | `QSpinBox` | — | — | ● | M2+ |
-| 下拉 | `QComboBox` | ● Fluent | ◐ | ● | N/H/P/D/Focus |
+| 单行编辑 | `QLineEdit` | ● | ● | ● | N/H/Focus/Disabled；height/padding |
+| 数字框 | `QSpinBox`/`QDoubleSpinBox` | ● Fluent | ● | ● | N/H/Focus/Disabled + 上下按钮 |
+| 下拉 | `QComboBox` | ● Fluent | ● | ● | N/H/P/D/Focus |
 | 标签 | `QLabel` | ○ | ○ | ● | 多靠 Palette |
 | 滚动条 | `QScrollBar` | ● | ● | — | handle + arrows；N/H/P/D |
 | 滑块 | `QSlider` | — | — | — | M3 |
 | 进度 | `QProgressBar` | — | — | — | M3 |
-| 标签页 | `QTabBar`/`QTabWidget` | ● | ◐ | — | N/H/Selected/Disabled |
+| 标签页 | `QTabBar`/`QTabWidget` | ● | ● | — | N/H/Selected/Disabled；tab.height |
 | 工具栏 | `QToolBar` | ● | ◐ | — | `CE_ToolBar` |
-| 菜单 | `QMenu`/`QMenuBar` | ● | ◐ | — | item / bar / separator |
+| 菜单 | `QMenu`/`QMenuBar` | ● | ● | — | itemHeight / bar / separator |
 | 视图 | `QTreeView`/`QTableView`/`QListView` | — | — | — | M4 |
-| 表头 | `QHeaderView` | ● | ◐ | — | section + label；N/H/P/D |
+| 表头 | `QHeaderView` | ● | ● | — | section + label；header.height |
 | 分组 | `QGroupBox` | — | — | — | M3 |
 | 提示 | `QToolTip` | — | — | — | M3 |
 
@@ -48,6 +48,7 @@
 | `menu.*` | 菜单 / 菜单栏 |
 | `toolbar.*` | 工具栏 |
 | `combo.*` | 下拉框 |
+| `spin.*` | 数字框 / 日期时间步进 |
 | `header.*` | 表头 |
 | `view.*` | ItemView |
 

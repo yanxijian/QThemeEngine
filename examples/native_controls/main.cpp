@@ -145,6 +145,7 @@ int main(int argc, char** argv)
 	auto* tabs = new QTabWidget(&window);
 	tabs->addTab(gallery::pageButtons(tabs), QStringLiteral("Buttons"));
 	tabs->addTab(gallery::pageInput(tabs), QStringLiteral("Input"));
+	tabs->addTab(gallery::pageStates(tabs), QStringLiteral("States"));
 	tabs->addTab(gallery::pageDisplay(tabs), QStringLiteral("Display"));
 	tabs->addTab(gallery::pageContainers(tabs), QStringLiteral("Containers"));
 	tabs->addTab(gallery::pageMdi(tabs), QStringLiteral("MDI"));

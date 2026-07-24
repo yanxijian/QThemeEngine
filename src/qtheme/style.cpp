@@ -10,6 +10,7 @@
 #include <QStyleOptionHeader>
 #include <QStyleOptionMenuItem>
 #include <QStyleOptionSlider>
+#include <QStyleOptionSpinBox>
 #include <QStyleOptionTab>
 #include <QStyleOptionToolButton>
 
@@ -189,9 +190,97 @@ int QThemeStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, con
 		return 4;
 	case PM_ToolBarItemMargin:
 		return roleMetric(QStringLiteral("toolbar"), QStringLiteral("padding"), 4);
+	case PM_SpinBoxFrameWidth:
+		return 1;
+	case PM_TabBarTabVSpace:
+		return 6;
+	case PM_ButtonDefaultIndicator:
+		return 0;
 	default:
 		return QProxyStyle::pixelMetric(metric, option, widget);
 	}
+}
+
+QSize QThemeStyle::sizeFromContents(ContentsType type, const QStyleOption* option,
+									const QSize& contentsSize, const QWidget* widget) const
+{
+	QSize sz = QProxyStyle::sizeFromContents(type, option, contentsSize, widget);
+	switch (type)
+	{
+	case CT_PushButton:
+	case CT_ToolButton:
+	{
+		const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
+		sz.setHeight(qMax(sz.height(), h));
+		break;
+	}
+	case CT_LineEdit:
+	{
+		const int pad = roleMetric(QStringLiteral("edit"), QStringLiteral("padding"), 6);
+		const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
+		sz.setHeight(qMax(sz.height(), h));
+		sz.setWidth(sz.width() + pad);
+		break;
+	}
+	case CT_ComboBox:
+	case CT_SpinBox:
+	{
+		const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
+		sz.setHeight(qMax(sz.height(), h));
+		break;
+	}
+	case CT_TabBarTab:
+	{
+		const int h = roleMetric(QStringLiteral("tab"), QStringLiteral("height"), sz.height());
+		sz.setHeight(qMax(sz.height(), h));
+		break;
+	}
+	case CT_HeaderSection:
+	{
+		const int h = roleMetric(QStringLiteral("header"), QStringLiteral("height"), sz.height());
+		sz.setHeight(qMax(sz.height(), h));
+		break;
+	}
+	case CT_MenuItem:
+	{
+		const int h = roleMetric(QStringLiteral("menu"), QStringLiteral("itemHeight"), sz.height());
+		sz.setHeight(qMax(sz.height(), h));
+		break;
+	}
+	default:
+		break;
+	}
+	return sz;
+}
+
+QRect QThemeStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* option,
+								  SubControl subControl, const QWidget* widget) const
+{
+	if (control == CC_SpinBox)
+	{
+		const auto* spin = qstyleoption_cast<const QStyleOptionSpinBox*>(option);
+		if (spin)
+		{
+			QRect r = spin->rect;
+			const int bw = roleMetric(QStringLiteral("spin"), QStringLiteral("buttonWidth"), 20);
+			const int frame = pixelMetric(PM_SpinBoxFrameWidth, spin, widget);
+			switch (subControl)
+			{
+			case SC_SpinBoxFrame:
+				return r;
+			case SC_SpinBoxEditField:
+				return r.adjusted(frame, frame, -(bw + frame), -frame);
+			case SC_SpinBoxUp:
+				return QRect(r.right() - bw - frame + 1, r.top() + frame, bw, (r.height() - 2 * frame) / 2);
+			case SC_SpinBoxDown:
+				return QRect(r.right() - bw - frame + 1, r.top() + frame + (r.height() - 2 * frame) / 2, bw,
+							 (r.height() - 2 * frame) - (r.height() - 2 * frame) / 2);
+			default:
+				break;
+			}
+		}
+	}
+	return QProxyStyle::subControlRect(control, option, subControl, widget);
 }
 
 void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter,
@@ -312,10 +401,13 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 	}
 
 	if (element == PE_IndicatorArrowDown || element == PE_IndicatorArrowUp
-		|| element == PE_IndicatorArrowLeft || element == PE_IndicatorArrowRight)
+		|| element == PE_IndicatorArrowLeft || element == PE_IndicatorArrowRight
+		|| element == PE_IndicatorSpinUp || element == PE_IndicatorSpinDown
+		|| element == PE_IndicatorSpinPlus || element == PE_IndicatorSpinMinus)
 	{
 		Qt::ArrowType type = Qt::DownArrow;
-		if (element == PE_IndicatorArrowUp)
+		if (element == PE_IndicatorArrowUp || element == PE_IndicatorSpinUp
+			|| element == PE_IndicatorSpinPlus)
 		{
 			type = Qt::UpArrow;
 		}
@@ -328,9 +420,11 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 			type = Qt::RightArrow;
 		}
 		const bool enabled = option->state & State_Enabled;
+		const bool fromSpin = element == PE_IndicatorSpinUp || element == PE_IndicatorSpinDown
+							  || element == PE_IndicatorSpinPlus || element == PE_IndicatorSpinMinus;
+		const QString group = fromSpin ? QStringLiteral("spin") : QStringLiteral("combo");
 		const QColor color =
-			roleColor(QStringLiteral("combo"),
-					  enabled ? QStringLiteral("arrow") : QStringLiteral("arrow.disabled"),
+			roleColor(group, enabled ? QStringLiteral("arrow") : QStringLiteral("arrow.disabled"),
 					  option->palette.color(QPalette::WindowText));
 		drawArrow(painter, option->rect, type, color);
 		return;
@@ -759,11 +853,70 @@ void QThemeStyle::drawComplexControl(ComplexControl control, const QStyleOptionC
 						  enabled ? QStringLiteral("arrow") : QStringLiteral("arrow.disabled"),
 						  combo->palette.color(QPalette::WindowText));
 			drawArrow(painter, arrowRect, Qt::DownArrow, arrow);
+			return;
+		}
+	}
 
-			if (combo->editable)
+	if (control == CC_SpinBox)
+	{
+		const auto* spin = qstyleoption_cast<const QStyleOptionSpinBox*>(option);
+		if (spin && painter)
+		{
+			const bool enabled = spin->state & State_Enabled;
+			QString borderRole = QStringLiteral("border");
+			if (!enabled)
 			{
-				// Frame already drawn; edit field uses PE_FrameLineEdit.
+				borderRole = QStringLiteral("border.disabled");
 			}
+			else if (spin->state & State_HasFocus)
+			{
+				borderRole = QStringLiteral("border.focus");
+			}
+			else if (spin->state & State_MouseOver)
+			{
+				borderRole = QStringLiteral("border.hover");
+			}
+			const QColor bg = roleColor(QStringLiteral("spin"),
+										enabled ? QStringLiteral("bg") : QStringLiteral("bg.disabled"),
+										spin->palette.color(QPalette::Base));
+			const QColor border =
+				roleColor(QStringLiteral("spin"), borderRole, spin->palette.mid().color());
+			const int radius = roleMetric(QStringLiteral("spin"), QStringLiteral("radius"), 4);
+			const qreal bw = (borderRole == QStringLiteral("border.focus")) ? 2.0 : 1.0;
+			drawRounded(painter, spin->rect, radius, bg, border, bw);
+
+			auto paintButton = [&](SubControl sc, bool up)
+			{
+				if (!(spin->subControls & sc))
+				{
+					return;
+				}
+				QRect br = subControlRect(CC_SpinBox, spin, sc, widget);
+				QString btnRole = QStringLiteral("button");
+				const bool active = spin->activeSubControls & sc;
+				if (!enabled)
+				{
+					btnRole = QStringLiteral("button.disabled");
+				}
+				else if (active && (spin->state & State_Sunken))
+				{
+					btnRole = QStringLiteral("button.pressed");
+				}
+				else if (active || (spin->state & State_MouseOver))
+				{
+					btnRole = QStringLiteral("button.hover");
+				}
+				const QColor btnBg =
+					roleColor(QStringLiteral("spin"), btnRole, spin->palette.button().color());
+				painter->fillRect(br.adjusted(1, 1, -1, -1), btnBg);
+				const QColor arrow =
+					roleColor(QStringLiteral("spin"),
+							  enabled ? QStringLiteral("arrow") : QStringLiteral("arrow.disabled"),
+							  spin->palette.color(QPalette::WindowText));
+				drawArrow(painter, br, up ? Qt::UpArrow : Qt::DownArrow, arrow);
+			};
+			paintButton(SC_SpinBoxUp, true);
+			paintButton(SC_SpinBoxDown, false);
 			return;
 		}
 	}
