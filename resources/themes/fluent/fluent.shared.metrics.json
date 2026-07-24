@@ -10,6 +10,10 @@
     "combo": { "radius": 4 },
     "spin": { "radius": 4, "buttonWidth": 20 },
     "header": { "radius": 0, "height": 28 },
+    "slider": { "groove": 4, "handle": 16, "radius": 8 },
+    "progress": { "height": 6, "radius": 3 },
+    "groupbox": { "radius": 4, "padding": 8 },
+    "tooltip": { "radius": 4, "padding": 6 },
     "DemoButton": { "borderRadius": 4 }
   }
 }

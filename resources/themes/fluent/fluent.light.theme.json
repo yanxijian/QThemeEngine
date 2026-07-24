@@ -132,6 +132,38 @@
       "fg.disabled": "#A0A0A0",
       "border": "#E0E0E0"
     },
+    "slider": {
+      "groove": "#E0E0E0",
+      "groove.disabled": "#F0F0F0",
+      "fill": "#0078D4",
+      "fill.disabled": "#C8C8C8",
+      "handle": "#FFFFFF",
+      "handle.hover": "#F5F5F5",
+      "handle.pressed": "#EBEBEB",
+      "handle.disabled": "#F9F9F9",
+      "handle.border": "#D1D1D1",
+      "handle.border.focus": "#0078D4"
+    },
+    "progress": {
+      "groove": "#E0E0E0",
+      "groove.disabled": "#F0F0F0",
+      "chunk": "#0078D4",
+      "chunk.disabled": "#C8C8C8",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0",
+      "border": "#E0E0E0"
+    },
+    "groupbox": {
+      "bg": "#F3F3F3",
+      "border": "#D1D1D1",
+      "fg": "#1A1A1A",
+      "fg.disabled": "#A0A0A0"
+    },
+    "tooltip": {
+      "bg": "#FFFFFF",
+      "fg": "#1A1A1A",
+      "border": "#D1D1D1"
+    },
     "DemoButton": {
       "background": "#FFFFFF",
       "background.hover": "#F5F5F5",

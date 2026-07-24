@@ -9,6 +9,7 @@
 #include <QStyleOptionComplex>
 #include <QStyleOptionHeader>
 #include <QStyleOptionMenuItem>
+#include <QStyleOptionProgressBar>
 #include <QStyleOptionSlider>
 #include <QStyleOptionSpinBox>
 #include <QStyleOptionTab>
@@ -85,6 +86,15 @@ void QThemeStyle::setStore(std::shared_ptr<ThemeStore> store)
 	store_ = std::move(store);
 }
 
+void QThemeStyle::setDpiScale(qreal scale)
+{
+	if (scale <= 0.0)
+	{
+		scale = 1.0;
+	}
+	dpiScale_ = scale;
+}
+
 QColor QThemeStyle::roleColor(const QString& group, const QString& role, const QColor& fallback) const
 {
 	if (!store_)
@@ -95,13 +105,24 @@ QColor QThemeStyle::roleColor(const QString& group, const QString& role, const Q
 	return cv.ok ? cv.value : fallback;
 }
 
+int QThemeStyle::scaleMetric(int logicalPx) const
+{
+	if (logicalPx <= 0)
+	{
+		return logicalPx;
+	}
+	return qRound(logicalPx * dpiScale_);
+}
+
 int QThemeStyle::roleMetric(const QString& group, const QString& role, int fallback) const
 {
 	if (!store_)
 	{
-		return fallback;
+		return scaleMetric(fallback);
 	}
-	return store_->metric(group, role, fallback);
+	bool ok = false;
+	const int v = store_->metric(group, role, fallback, &ok);
+	return scaleMetric(ok ? v : fallback);
 }
 
 QPalette QThemeStyle::standardPalette() const
@@ -154,6 +175,19 @@ QPalette QThemeStyle::standardPalette() const
 	{
 		pal.setColor(QPalette::Disabled, QPalette::Text, editFgDis.value);
 	}
+
+	const ColorValue tipBg = store_->color(QStringLiteral("tooltip"), QStringLiteral("bg"));
+	if (tipBg.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::ToolTipBase, tipBg.value);
+		pal.setColor(QPalette::Inactive, QPalette::ToolTipBase, tipBg.value);
+	}
+	const ColorValue tipFg = store_->color(QStringLiteral("tooltip"), QStringLiteral("fg"));
+	if (tipFg.ok)
+	{
+		pal.setColor(QPalette::Active, QPalette::ToolTipText, tipFg.value);
+		pal.setColor(QPalette::Inactive, QPalette::ToolTipText, tipFg.value);
+	}
 	return pal;
 }
 
@@ -196,6 +230,14 @@ int QThemeStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, con
 		return 6;
 	case PM_ButtonDefaultIndicator:
 		return 0;
+	case PM_SliderThickness:
+		return roleMetric(QStringLiteral("slider"), QStringLiteral("handle"), 16);
+	case PM_SliderLength:
+		return roleMetric(QStringLiteral("slider"), QStringLiteral("handle"), 16);
+	case PM_SliderControlThickness:
+		return roleMetric(QStringLiteral("slider"), QStringLiteral("handle"), 16);
+	case PM_ProgressBarChunkWidth:
+		return roleMetric(QStringLiteral("progress"), QStringLiteral("height"), 6);
 	default:
 		return QProxyStyle::pixelMetric(metric, option, widget);
 	}
@@ -455,6 +497,30 @@ void QThemeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 		{
 			drawRounded(painter, option->rect, radius, bg, border);
 		}
+		return;
+	}
+
+	if (element == PE_FrameGroupBox)
+	{
+		const bool enabled = option->state & State_Enabled;
+		const QColor bg = roleColor(QStringLiteral("groupbox"), QStringLiteral("bg"),
+									option->palette.color(QPalette::Window));
+		const QColor border = roleColor(QStringLiteral("groupbox"), QStringLiteral("border"),
+										option->palette.mid().color());
+		const int radius = roleMetric(QStringLiteral("groupbox"), QStringLiteral("radius"), 4);
+		Q_UNUSED(enabled);
+		drawRounded(painter, option->rect, radius, bg, border);
+		return;
+	}
+
+	if (element == PE_PanelTipLabel)
+	{
+		const QColor bg = roleColor(QStringLiteral("tooltip"), QStringLiteral("bg"),
+									option->palette.color(QPalette::ToolTipBase));
+		const QColor border = roleColor(QStringLiteral("tooltip"), QStringLiteral("border"),
+										option->palette.mid().color());
+		const int radius = roleMetric(QStringLiteral("tooltip"), QStringLiteral("radius"), 4);
+		drawRounded(painter, option->rect, radius, bg, border);
 		return;
 	}
 
@@ -766,6 +832,87 @@ void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option
 		}
 	}
 
+	if (element == CE_ProgressBarGroove)
+	{
+		const bool enabled = option->state & State_Enabled;
+		const QColor groove =
+			roleColor(QStringLiteral("progress"),
+					  enabled ? QStringLiteral("groove") : QStringLiteral("groove.disabled"),
+					  option->palette.mid().color());
+		const QColor border =
+			roleColor(QStringLiteral("progress"), QStringLiteral("border"), option->palette.mid().color());
+		const int radius = roleMetric(QStringLiteral("progress"), QStringLiteral("radius"), 3);
+		drawRounded(painter, option->rect, radius, groove, border);
+		return;
+	}
+
+	if (element == CE_ProgressBarContents)
+	{
+		const auto* prog = qstyleoption_cast<const QStyleOptionProgressBar*>(option);
+		if (prog && painter)
+		{
+			if (prog->minimum == prog->maximum || prog->progress < prog->minimum)
+			{
+				return;
+			}
+			const bool enabled = prog->state & State_Enabled;
+			QRect full = prog->rect;
+			const int range = qMax(1, prog->maximum - prog->minimum);
+			const int value = qBound(0, prog->progress - prog->minimum, range);
+			const bool horizontal = prog->state & QStyle::State_Horizontal;
+			QRect chunk = full;
+			if (horizontal)
+			{
+				chunk.setWidth(qRound(full.width() * (qreal(value) / range)));
+			}
+			else
+			{
+				const int h = qRound(full.height() * (qreal(value) / range));
+				chunk.setTop(full.bottom() - h + 1);
+				chunk.setHeight(h);
+			}
+			if (prog->invertedAppearance)
+			{
+				if (horizontal)
+				{
+					chunk.moveRight(full.right());
+				}
+				else
+				{
+					chunk.moveTop(full.top());
+				}
+			}
+			const QColor fill =
+				roleColor(QStringLiteral("progress"),
+						  enabled ? QStringLiteral("chunk") : QStringLiteral("chunk.disabled"),
+						  prog->palette.color(QPalette::Highlight));
+			const int radius = roleMetric(QStringLiteral("progress"), QStringLiteral("radius"), 3);
+			if (chunk.isValid() && chunk.width() > 0 && chunk.height() > 0)
+			{
+				drawRounded(painter, chunk, radius, fill, fill);
+			}
+			return;
+		}
+	}
+
+	if (element == CE_ProgressBarLabel)
+	{
+		const auto* prog = qstyleoption_cast<const QStyleOptionProgressBar*>(option);
+		if (prog && painter)
+		{
+			const bool enabled = prog->state & State_Enabled;
+			const QColor fg =
+				roleColor(QStringLiteral("progress"),
+						  enabled ? QStringLiteral("fg") : QStringLiteral("fg.disabled"),
+						  prog->palette.color(QPalette::WindowText));
+			QStyleOptionProgressBar copy = *prog;
+			copy.palette.setColor(QPalette::WindowText, fg);
+			copy.palette.setColor(QPalette::Text, fg);
+			QProxyStyle::drawControl(element, &copy, painter, widget);
+			return;
+		}
+	}
+
 	QProxyStyle::drawControl(element, option, painter, widget);
 }
 
@@ -810,6 +957,89 @@ void QThemeStyle::drawComplexControl(ComplexControl control, const QStyleOptionC
 			const bool horiz = sb->orientation == Qt::Horizontal;
 			drawArrow(painter, sub, horiz ? Qt::LeftArrow : Qt::UpArrow, arrow);
 			drawArrow(painter, add, horiz ? Qt::RightArrow : Qt::DownArrow, arrow);
+			return;
+		}
+	}
+
+	if (control == CC_Slider)
+	{
+		const auto* slider = qstyleoption_cast<const QStyleOptionSlider*>(option);
+		if (slider && painter)
+		{
+			const bool enabled = slider->state & State_Enabled;
+			const QRect grooveRect = subControlRect(CC_Slider, slider, SC_SliderGroove, widget);
+			const QRect handleRect = subControlRect(CC_Slider, slider, SC_SliderHandle, widget);
+			const int grooveThickness = roleMetric(QStringLiteral("slider"), QStringLiteral("groove"), 4);
+			QRect groove = grooveRect;
+			if (slider->orientation == Qt::Horizontal)
+			{
+				groove.setTop(grooveRect.center().y() - grooveThickness / 2);
+				groove.setHeight(grooveThickness);
+			}
+			else
+			{
+				groove.setLeft(grooveRect.center().x() - grooveThickness / 2);
+				groove.setWidth(grooveThickness);
+			}
+
+			const QColor grooveColor =
+				roleColor(QStringLiteral("slider"),
+						  enabled ? QStringLiteral("groove") : QStringLiteral("groove.disabled"),
+						  slider->palette.mid().color());
+			const int radius = roleMetric(QStringLiteral("slider"), QStringLiteral("radius"), 8);
+			drawRounded(painter, groove, qMin(radius, grooveThickness), grooveColor, grooveColor);
+
+			QRect fill = groove;
+			if (slider->orientation == Qt::Horizontal)
+			{
+				if (slider->upsideDown)
+				{
+					fill.setLeft(handleRect.center().x());
+				}
+				else
+				{
+					fill.setRight(handleRect.center().x());
+				}
+			}
+			else
+			{
+				if (slider->upsideDown)
+				{
+					fill.setTop(handleRect.center().y());
+				}
+				else
+				{
+					fill.setBottom(handleRect.center().y());
+				}
+			}
+			const QColor fillColor =
+				roleColor(QStringLiteral("slider"),
+						  enabled ? QStringLiteral("fill") : QStringLiteral("fill.disabled"),
+						  slider->palette.color(QPalette::Highlight));
+			drawRounded(painter, fill, qMin(radius, grooveThickness), fillColor, fillColor);
+
+			QString handleRole = QStringLiteral("handle");
+			if (!enabled)
+			{
+				handleRole = QStringLiteral("handle.disabled");
+			}
+			else if (slider->state & State_Sunken)
+			{
+				handleRole = QStringLiteral("handle.pressed");
+			}
+			else if (slider->state & State_MouseOver)
+			{
+				handleRole = QStringLiteral("handle.hover");
+			}
+			const QColor handleBg =
+				roleColor(QStringLiteral("slider"), handleRole, slider->palette.button().color());
+			const bool focused = (slider->state & State_HasFocus) && enabled;
+			const QColor handleBorder =
+				roleColor(QStringLiteral("slider"),
+						  focused ? QStringLiteral("handle.border.focus")
+								  : QStringLiteral("handle.border"),
+						  slider->palette.mid().color());
+			drawRounded(painter, handleRect, radius, handleBg, handleBorder, focused ? 2.0 : 1.0);
 			return;
 		}
 	}

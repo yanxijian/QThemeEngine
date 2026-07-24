@@ -18,6 +18,10 @@ public:
 	void setStore(std::shared_ptr<ThemeStore> store);
 	[[nodiscard]] std::shared_ptr<ThemeStore> store() const { return store_; }
 
+	/// Logical-pixel scale (1.0 = 96 DPI). Metrics from ThemeStore are multiplied by this.
+	void setDpiScale(qreal scale);
+	[[nodiscard]] qreal dpiScale() const { return dpiScale_; }
+
 	void drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter,
 					   const QWidget* widget = nullptr) const override;
 	void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter,
@@ -36,8 +40,10 @@ private:
 	[[nodiscard]] QColor roleColor(const QString& group, const QString& role,
 								   const QColor& fallback) const;
 	[[nodiscard]] int roleMetric(const QString& group, const QString& role, int fallback) const;
+	[[nodiscard]] int scaleMetric(int logicalPx) const;
 
 	std::shared_ptr<ThemeStore> store_;
+	qreal dpiScale_ = 1.0;
 };
 
 } // namespace qtheme

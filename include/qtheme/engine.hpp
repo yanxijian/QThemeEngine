@@ -70,6 +70,7 @@ private:
 	void applyAccentToStore();
 	void installOsHooks(QGuiApplication* app);
 	void syncFromOsAppearance(bool forcePackReload);
+	void updateDpiScale();
 
 	std::shared_ptr<ThemeStore> store_;
 	std::unique_ptr<PackRegistry> packs_;

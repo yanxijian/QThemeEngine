@@ -132,6 +132,38 @@
       "fg.disabled": "#777777",
       "border": "#3F3F3F"
     },
+    "slider": {
+      "groove": "#3F3F3F",
+      "groove.disabled": "#2A2A2A",
+      "fill": "#60CDFF",
+      "fill.disabled": "#4A4A4A",
+      "handle": "#2C2C2C",
+      "handle.hover": "#323232",
+      "handle.pressed": "#1F1F1F",
+      "handle.disabled": "#282828",
+      "handle.border": "#6B6B6B",
+      "handle.border.focus": "#60CDFF"
+    },
+    "progress": {
+      "groove": "#3F3F3F",
+      "groove.disabled": "#2A2A2A",
+      "chunk": "#60CDFF",
+      "chunk.disabled": "#4A4A4A",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#777777",
+      "border": "#3F3F3F"
+    },
+    "groupbox": {
+      "bg": "#202020",
+      "border": "#3F3F3F",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#777777"
+    },
+    "tooltip": {
+      "bg": "#2C2C2C",
+      "fg": "#FFFFFF",
+      "border": "#3F3F3F"
+    },
     "DemoButton": {
       "background": "#2C2C2C",
       "background.hover": "#323232",

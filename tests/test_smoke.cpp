@@ -3,6 +3,7 @@
 #include "qtheme/engine.hpp"
 #include "qtheme/pack.hpp"
 #include "qtheme/store.hpp"
+#include "qtheme/style.hpp"
 #include "qtheme/types.hpp"
 #include "theme/themeloader.hpp"
 
@@ -21,6 +22,7 @@ private slots:
 	void pack_materializeLightFromJson();
 	void pack_userSampleDerivesFromLight();
 	void pack_t0ChromeTokensPresent();
+	void style_dpiScaleAffectsMetrics();
 	void accent_patchUpdatesHighlight();
 	void accent_systemHighContrastApi();
 	void engine_switchFluentSkins();
@@ -121,6 +123,11 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QVERIFY(s.hasColor(QStringLiteral("spin"), QStringLiteral("border.focus")));
 	QCOMPARE(s.metric(QStringLiteral("spin"), QStringLiteral("buttonWidth"), -1), 20);
 	QCOMPARE(s.metric(QStringLiteral("button"), QStringLiteral("height"), -1), 32);
+	QVERIFY(s.hasColor(QStringLiteral("slider"), QStringLiteral("fill")));
+	QVERIFY(s.hasColor(QStringLiteral("progress"), QStringLiteral("chunk")));
+	QVERIFY(s.hasColor(QStringLiteral("groupbox"), QStringLiteral("border")));
+	QVERIFY(s.hasColor(QStringLiteral("tooltip"), QStringLiteral("bg")));
+	QCOMPARE(s.metric(QStringLiteral("slider"), QStringLiteral("handle"), -1), 16);
 
 	qtheme::ThemeStore dark;
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentDark), &dark));
@@ -129,6 +136,22 @@ void ThemeSmokeTest::pack_t0ChromeTokensPresent()
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), &hc));
 	QCOMPARE(hc.metric(QStringLiteral("combo"), QStringLiteral("radius"), -1), 0);
 	QCOMPARE(hc.metric(QStringLiteral("menu"), QStringLiteral("radius"), -1), 0);
+	QCOMPARE(hc.metric(QStringLiteral("slider"), QStringLiteral("radius"), -1), 0);
+}
+
+void ThemeSmokeTest::style_dpiScaleAffectsMetrics()
+{
+	auto store = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), store.get()));
+	qtheme::QThemeStyle style(store);
+	style.setDpiScale(1.0);
+	QCOMPARE(style.pixelMetric(QStyle::PM_SliderLength), 16);
+	style.setDpiScale(2.0);
+	QCOMPARE(style.pixelMetric(QStyle::PM_SliderLength), 32);
+	style.setDpiScale(1.0);
+	QCOMPARE(style.pixelMetric(QStyle::PM_ButtonMargin), 10);
+	style.setDpiScale(1.5);
+	QCOMPARE(style.pixelMetric(QStyle::PM_ButtonMargin), 15);
 }
 
 void ThemeSmokeTest::accent_patchUpdatesHighlight()

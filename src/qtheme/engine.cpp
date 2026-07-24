@@ -7,6 +7,7 @@
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QPalette>
+#include <QScreen>
 #include <QStyleHints>
 #include <QWidget>
 
@@ -63,6 +64,31 @@ void Engine::installOsHooks(QGuiApplication* app)
 	if (QStyleHints* hints = app->styleHints())
 	{
 		connect(hints, &QStyleHints::colorSchemeChanged, this, &Engine::onOsColorSchemeChanged);
+	}
+	if (QScreen* screen = app->primaryScreen())
+	{
+		connect(screen, &QScreen::logicalDotsPerInchChanged, this,
+				[this](qreal)
+				{
+					updateDpiScale();
+					refreshUi();
+				});
+	}
+}
+
+void Engine::updateDpiScale()
+{
+	qreal scale = 1.0;
+	if (auto* app = qobject_cast<QGuiApplication*>(QCoreApplication::instance()))
+	{
+		if (QScreen* screen = app->primaryScreen())
+		{
+			scale = screen->logicalDotsPerInch() / 96.0;
+		}
+	}
+	if (style_)
+	{
+		style_->setDpiScale(scale);
 	}
 }
 
@@ -127,6 +153,7 @@ void Engine::onOsColorSchemeChanged(Qt::ColorScheme /*scheme*/)
 
 void Engine::refreshUi()
 {
+	updateDpiScale();
 	if (style_)
 	{
 		style_->setStore(store_);
@@ -250,6 +277,7 @@ void Engine::apply(QApplication* app, bool clearStyleSheets)
 		style_->setStore(store_);
 	}
 
+	updateDpiScale();
 	app->setStyle(style_);
 	app->setPalette(style_->standardPalette());
 	setDefault(this);

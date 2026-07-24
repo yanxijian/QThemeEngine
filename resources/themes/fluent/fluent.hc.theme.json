@@ -132,6 +132,38 @@
       "fg.disabled": "#808080",
       "border": "#FFFFFF"
     },
+    "slider": {
+      "groove": "#FFFFFF",
+      "groove.disabled": "#808080",
+      "fill": "#FFFF00",
+      "fill.disabled": "#808080",
+      "handle": "#000000",
+      "handle.hover": "#1A1A1A",
+      "handle.pressed": "#333333",
+      "handle.disabled": "#000000",
+      "handle.border": "#FFFFFF",
+      "handle.border.focus": "#FFFF00"
+    },
+    "progress": {
+      "groove": "#000000",
+      "groove.disabled": "#000000",
+      "chunk": "#FFFF00",
+      "chunk.disabled": "#808080",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080",
+      "border": "#FFFFFF"
+    },
+    "groupbox": {
+      "bg": "#000000",
+      "border": "#FFFFFF",
+      "fg": "#FFFFFF",
+      "fg.disabled": "#808080"
+    },
+    "tooltip": {
+      "bg": "#000000",
+      "fg": "#FFFFFF",
+      "border": "#FFFFFF"
+    },
     "DemoButton": {
       "background": "#000000",
       "background.hover": "#1A1A1A",
@@ -151,6 +183,10 @@
     "combo": { "radius": 0 },
     "spin": { "radius": 0, "buttonWidth": 20 },
     "header": { "radius": 0, "height": 32 },
+    "slider": { "groove": 4, "handle": 16, "radius": 0 },
+    "progress": { "height": 6, "radius": 0 },
+    "groupbox": { "radius": 0, "padding": 8 },
+    "tooltip": { "radius": 0, "padding": 6 },
     "DemoButton": { "borderRadius": 0 }
   }
 }
