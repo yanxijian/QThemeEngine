@@ -234,7 +234,7 @@ engine.scanPackSearchPaths();
 |--------|------|------|
 | **M0** | Store API + 可编程 seed + Engine::apply + QThemeStyle 骨架 | **已交付**：无 QSS；原生 QPushButton 随 seed 换色 |
 | **M0.5** | Fluent Pack 族 + Accent/HC 策略 + Pack 注册/merge + T0 绘制扩展 | **已交付**：单一 QThemeStyle + 多 Pack |
-| **M1** | Format 加载 `.theme.xml` + light/dark Golden | 可选/兼容；JSON Pack 为 SSOT |
+| **M1** | Format 加载 `.theme.xml`（可选兼容层） | JSON Pack 为唯一产品数据源；`theme::ThemeLoader` 仍为 stub |
 | **M2** | Button / Edit / Check / Combo / Spin / Menu / Tab / Header / ToolBar | **已交付**（含状态页验收） |
 | **M3** | Slider / Progress / GroupBox / ToolTip + DPI | **已交付**：度量 × `dpiScale`（96DPI=1.0） |
 | **M4** | ItemView 选中/hover/交替行 | **已交付**：`view.*` + PE_PanelItemView* / CE_ItemViewItem |

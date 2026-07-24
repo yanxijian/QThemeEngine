@@ -13,7 +13,7 @@ Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md
 |-----------|--------|--------|
 | **M0** | Store seeds + `Engine::apply` + QThemeStyle; native `QPushButton` recolors without QSS | **Done** |
 | **M0.5** | Fluent packs (light/dark/hc) + Accent/ColorScheme + pack merge + T0 drawing | **Done** |
-| M1 | Load `.theme.xml` (optional; JSON packs are SSOT) | Scaffold |
+| M1 | Optional XML Format stub (`theme::ThemeLoader`); JSON packs are SSOT | Stub only |
 | **M2** | Button/Edit/Check/Combo/Spin/Menu/Tab/Header/ToolBar + state gallery | **Done** |
 | **M3** | Slider/Progress/GroupBox/ToolTip + dpiScale | **Done** |
 | **M4** | ItemView selected/hover/alternate rows | **Done** |

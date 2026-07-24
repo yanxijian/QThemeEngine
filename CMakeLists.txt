@@ -94,8 +94,14 @@ set_target_properties(qtheme_engine PROPERTIES
 if(QTE_BUILD_EXAMPLES)
   add_executable(qtheme_demo
     examples/native_controls/main.cpp
-    examples/native_controls/gallery.cpp
+    examples/native_controls/gallery_internal.cpp
+    examples/native_controls/gallery_pages_basic.cpp
+    examples/native_controls/gallery_pages_shell.cpp
+    examples/native_controls/gallery_pages_views.cpp
+    examples/native_controls/gallery_pages_misc.cpp
+    examples/native_controls/gallery_session.cpp
     examples/native_controls/gallery.hpp
+    examples/native_controls/gallery_internal.hpp
   )
   target_link_libraries(qtheme_demo PRIVATE qtheme_engine)
   if(TARGET Qt6::OpenGLWidgets)

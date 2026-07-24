@@ -19,20 +19,21 @@ English：[docs/en/architecture.md](docs/en/architecture.md)
 |----|------|------|
 | **M0** | Store seed + `Engine::apply` + QThemeStyle 骨架；原生 `QPushButton` 无 QSS 换色 | **已落地** |
 | **M0.5** | Fluent Pack（light/dark/hc）+ Accent/ColorScheme + Pack 注册/merge + T0 绘制扩展 | **已落地** |
-| M1 | `.theme.xml` Format 加载（可选；JSON Pack 为 SSOT） | 脚手架 |
+| M1 | `.theme.xml` Format（可选兼容 stub；JSON Pack 为 SSOT） | stub only |
 | **M2–M4** | 常用控件 Fluent 绘制（含 Spin/Menu/Slider/ItemView 等） | **已落地** |
 | **M5** | 偏好持久化、Pack 搜索目录、`find_package(QThemeEngine)` 安装 | **已落地** |
 
 ## 目录
 
 ```text
-include/qtheme/              公共 API（Store / Style / Engine / api）
+include/qtheme/              公共 API（Store / Style / Engine / Pack / Settings）
 src/qtheme/                  实现
-include/theme/ + src/        M1 Format 脚手架（过渡）
+include/theme/ + src/        可选 M1 XML 兼容 stub（非产品主路径）
 widgets/                     自绘 DemoButton（支线示例）
-examples/native_controls/    原生控件 + 换肤演示
-resources/                   Golden theme XML（M1）
+examples/native_controls/    Fluent 画廊（按页拆分的 gallery_*.cpp）
+resources/themes/fluent/     Fluent Theme Pack JSON（SSOT）
 docs/zh|en/
+cmake/                       QThemeEngineConfig.cmake.in
 ```
 
 ## 最小用法

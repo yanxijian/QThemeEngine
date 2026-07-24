@@ -10,6 +10,8 @@
 
 namespace theme
 {
+	/// Optional M1 XML Format stub (compatibility only).
+	/// Product path uses JSON Theme Packs via `qtheme::PackRegistry` / `qtheme::Engine`.
 	class ThemeLoader final : public IThemeLoader
 	{
 	public:

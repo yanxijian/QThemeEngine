@@ -8,9 +8,14 @@
 #include "qtheme/types.hpp"
 #include "theme/themeloader.hpp"
 
+#include <QApplication>
+#include <QCheckBox>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
+#include <QImage>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QSettings>
 #include <QTemporaryDir>
 #include <QtTest>
@@ -35,7 +40,9 @@ private slots:
 	void engine_setColorSchemeSystemPreserved();
 	void settings_appearancePrefsRoundTrip();
 	void pack_registerDirectory();
-	void setupXml_deferredToM1();
+	void style_pushButtonLightDiffersFromDark();
+	void style_checkBoxCheckedNearAccent();
+	void setupXml_deferredToM1_compatStub();
 };
 
 void ThemeSmokeTest::colorLiteral_rrggbbaa()
@@ -288,8 +295,68 @@ void ThemeSmokeTest::pack_registerDirectory()
 			 QColor(QStringLiteral("#FF00AA")));
 }
 
-void ThemeSmokeTest::setupXml_deferredToM1()
+void ThemeSmokeTest::style_pushButtonLightDiffersFromDark()
 {
+	auto* app = qobject_cast<QApplication*>(QCoreApplication::instance());
+	QVERIFY(app);
+	qtheme::Engine engine;
+	engine.apply(app);
+	QVERIFY(engine.setAccentFollowSystem(false));
+	QVERIFY(engine.setAccent(QColor(QStringLiteral("#0078D4"))));
+
+	QPushButton btn(QStringLiteral("Sample"));
+	btn.resize(160, 36);
+
+	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::Light));
+	btn.ensurePolished();
+	const QColor lightBg = btn.grab().toImage().pixelColor(80, 18);
+
+	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::Dark));
+	btn.ensurePolished();
+	const QColor darkBg = btn.grab().toImage().pixelColor(80, 18);
+
+	QVERIFY(lightBg != darkBg);
+	QVERIFY(lightBg.lightness() > darkBg.lightness());
+}
+
+void ThemeSmokeTest::style_checkBoxCheckedNearAccent()
+{
+	auto* app = qobject_cast<QApplication*>(QCoreApplication::instance());
+	QVERIFY(app);
+	qtheme::Engine engine;
+	engine.apply(app);
+	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::Light));
+	QVERIFY(engine.setAccentFollowSystem(false));
+	const QColor accent(QStringLiteral("#0078D4"));
+	QVERIFY(engine.setAccent(accent));
+
+	QCheckBox box(QStringLiteral("On"));
+	box.setChecked(true);
+	box.resize(120, 28);
+	box.ensurePolished();
+	const QImage img = box.grab().toImage().convertToFormat(QImage::Format_ARGB32);
+
+	bool found = false;
+	for (int y = 0; y < img.height() && !found; ++y)
+	{
+		for (int x = 0; x < qMin(28, img.width()); ++x)
+		{
+			const QColor c = img.pixelColor(x, y);
+			const int dist = qAbs(c.red() - accent.red()) + qAbs(c.green() - accent.green())
+							 + qAbs(c.blue() - accent.blue());
+			if (dist < 100)
+			{
+				found = true;
+				break;
+			}
+		}
+	}
+	QVERIFY(found);
+}
+
+void ThemeSmokeTest::setupXml_deferredToM1_compatStub()
+{
+	// M1 XML Format remains an optional compatibility stub; JSON Theme Packs are SSOT.
 	theme::ThemeLoader loader;
 	theme::ThemeError err = theme::ThemeError::None;
 	const bool ok = loader.setupXml(QStringLiteral(":/theme/app.theme.xml"), QStringLiteral("light"), {}, &err);
