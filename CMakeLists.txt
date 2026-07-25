@@ -34,6 +34,18 @@ set(QTE_ENGINE_SOURCES
   src/qtheme/store.cpp
   src/qtheme/pack.cpp
   src/qtheme/accent.cpp
+  src/qtheme/style/style_ctx.cpp
+  src/qtheme/style/style_paint_util.cpp
+  src/qtheme/style/style_edit.cpp
+  src/qtheme/style/style_check.cpp
+  src/qtheme/style/style_focus.cpp
+  src/qtheme/style/style_button.cpp
+  src/qtheme/style/style_menu.cpp
+  src/qtheme/style/style_itemview.cpp
+  src/qtheme/style/style_tab_header.cpp
+  src/qtheme/style/style_progress.cpp
+  src/qtheme/style/style_chrome.cpp
+  src/qtheme/style/style_complex.cpp
   src/qtheme/style.cpp
   src/qtheme/engine.cpp
   src/qtheme/settings.cpp
@@ -75,6 +87,8 @@ target_include_directories(qtheme_engine
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/qtheme>
 )
 if(QTE_BUILD_WIDGETS)
   target_include_directories(qtheme_engine PUBLIC

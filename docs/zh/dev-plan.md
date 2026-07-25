@@ -2,7 +2,7 @@
 
 > **English**：[../en/dev-plan.md](../en/dev-plan.md)  
 > **地位**：近中期投入与架构姿态的备忘；**不**替代 [architecture.md](architecture.md)。  
-> **更新**：2026-07-25（`codebase-design` + `improve-codebase-architecture` 评审结论入库；细节待下次讨论）
+> **更新**：2026-07-25（Style 绘制路径按控件族加深落地）
 
 ---
 
@@ -18,17 +18,15 @@
 
 ---
 
-## 2. 加深候选（已记录，待择机讨论）
+## 2. 加深候选
 
-强度来自 2026-07-25 架构扫描（热点：`src/qtheme/style.cpp`、Fluent packs）。
-
-| 强度 | 候选 | 要点 |
+| 强度 | 候选 | 状态 |
 |------|------|------|
-| **Strong** | 按控件族拆分 `QThemeStyle` **内部**实现 | 外部仍是一个 `QStyle` seam；改善 locality / AI 导航；不换公开 Interface |
-| Worth exploring | Format 从 ThemeStore 剥离 | `loadBuiltinPack` 等不再让 Store 构造 `PackRegistry` |
-| Speculative | 隔离或默认构建去掉 `theme::` stub | ThemeLoader / SkinManager / ThemeApi 删除测试几乎不搬产品复杂度；第二 Format adapter 出现前 seam 仍是假想 |
+| **Strong** | 按控件族拆分 `QThemeStyle` **内部**实现 | **绘制路径已加深**（`src/qtheme/style/*`）；公开 `QStyle` seam 不变。**度量 / subElement 仍在** `style.cpp`，待后续按需再拆 |
+| Worth exploring | Format 从 ThemeStore 剥离 | 待讨论 |
+| Speculative | 隔离或默认构建去掉 `theme::` stub | 待讨论 |
 
-**近中期若只做 Fluent**：优先考虑 Strong 项（Style 内拆），与热点一致。
+内部布局备忘：`StyleCtx` + `style_paint_util`；族文件含 edit / check / focus / button / menu / itemview / tab_header / progress / chrome / complex；`style.cpp` 负责分发与 polish / palette / metrics。
 
 ---
 

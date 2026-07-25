@@ -2,7 +2,7 @@
 
 > **中文主文档**：[../zh/dev-plan.md](../zh/dev-plan.md)  
 > Status: near/mid-term investment notes — does **not** replace [architecture.md](architecture.md).  
-> Updated: 2026-07-25 (`codebase-design` + `improve-codebase-architecture`; discuss later)
+> Updated: 2026-07-25 (Style paint-path family split landed)
 
 ---
 
@@ -16,15 +16,15 @@
 
 M0–M6 are done. No new M7 id. Non-goals remain in architecture §9.
 
-## Deepening candidates (recorded, deferred)
+## Deepening candidates
 
-| Strength | Candidate |
-|----------|-----------|
-| **Strong** | Carve `QThemeStyle` **internals** by control family (external `QStyle` seam unchanged) |
-| Worth exploring | Peel Format out of ThemeStore (`PackRegistry` ownership) |
-| Speculative | Quarantine / drop `theme::` stubs until a second Format adapter exists |
+| Strength | Candidate | Status |
+|----------|-----------|--------|
+| **Strong** | Carve `QThemeStyle` **internals** by control family | **Paint path done** (`src/qtheme/style/*`); public `QStyle` seam unchanged. **Metrics / subElement still in** `style.cpp` |
+| Worth exploring | Peel Format out of ThemeStore | Deferred |
+| Speculative | Quarantine / drop `theme::` stubs | Deferred |
 
-If the next weeks are Fluent-only, prefer the Strong Style carve — matches commit hot spots.
+Internals: `StyleCtx` + paint util; family files for edit / check / focus / button / menu / itemview / tab_header / progress / chrome / complex; `style.cpp` dispatches + polish / palette / metrics.
 
 ## Explicitly not now
 
