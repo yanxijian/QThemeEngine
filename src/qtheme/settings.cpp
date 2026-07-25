@@ -20,9 +20,9 @@ namespace qtheme
 		}
 	}
 
-	ColorScheme colorSchemeFromString(const QString& s, ColorScheme fallback)
+	ColorScheme colorSchemeFromString(QStringView s, ColorScheme fallback)
 	{
-		const QString v = s.trimmed().toLower();
+		const QString v = s.toString().trimmed().toLower();
 		if (v == QLatin1String("dark"))
 		{
 			return ColorScheme::Dark;

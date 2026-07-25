@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QString>
 #include <QStringList>
+#include <QStringView>
 
 class QSettings;
 
@@ -39,7 +40,7 @@ namespace qtheme
 	[[nodiscard]] bool loadAppearancePrefs(QSettings* settings, AppearancePrefs* out);
 
 	[[nodiscard]] QString colorSchemeToString(ColorScheme scheme);
-	[[nodiscard]] ColorScheme colorSchemeFromString(const QString& s, ColorScheme fallback = ColorScheme::Light);
+	[[nodiscard]] ColorScheme colorSchemeFromString(QStringView s, ColorScheme fallback = ColorScheme::Light);
 } // namespace qtheme
 
 #endif // __QTHEME_ENGINE_SETTINGS_H__

@@ -1,0 +1,43 @@
+---
+description: C++/Qt function parameter passing (new code + reviews)
+globs: "**/*.{h,hpp,hxx,hh,c,cc,cpp,cxx}"
+alwaysApply: false
+---
+
+# Parameter passing
+
+Default recommendations for **new and touched** APIs. Not a mandate to mass-rewrite stable public surfaces.
+
+## Quick table
+
+| Case | Prefer | Avoid |
+|------|--------|--------|
+| Scalars, enums, raw pointers | by value `T` | needless `const int&` |
+| Large read-only (STL containers, big structs) | `const T&` | accidental deep copy by value |
+| New **parse/match** string APIs | `QStringView` / `std::string_view` **by value** | `const QStringView&`; storing views in members without lifetime proof |
+| Sync Qt COW read-only (`QString`, `QByteArray`, …) | `const T&` is fine | forced whole-repo `QStringView` churn |
+| Sink / store into member (ctors, take-ownership helpers) | `QString` / `std::string` **by value** + `std::move` | `const QString&` then copy into member when a sink is clearer |
+| Mutate caller's object | `T&` | out-params that are never null disguised as pointers |
+| `QObject` / `QWidget` | `T*` (null-check if allowed) | by-value; don't invent `shared_ptr<QWidget>` without real shared ownership |
+| Exclusive ownership handoff | `std::unique_ptr<T>` by value | naked `new` with unclear deleter |
+| Shared long-term hold | `std::shared_ptr<T>` by value | by-value `shared_ptr` on hot read-only observe paths → prefer `T*` / `const shared_ptr&` |
+| Queued / cross-thread signals | copyable args or `shared_ptr` for big payloads | non-const `T&` "out" params |
+
+## Hard rules (correctness)
+
+1. Never pass `QObject` by value.
+2. Do not store `QStringView` / `string_view` in members unless the buffer outlives the object.
+3. Cross-thread signal parameters must be meta-type friendly; no non-const reference mutation across threads.
+4. When reviewing, prioritize **correctness / lifetime / cross-thread copies** over style nits.
+
+## Do not
+
+- Convert every `const QString&` setter to `QStringView` "for modernity".
+- Treat `const int&` → `int` as a merge-blocking fix outside hot paths.
+- Rewrite sink ctors that already take `QString` by value into `const QString&`.
+
+## Review output (when asked)
+
+1. Findings with severity (correctness > lifetime > cross-thread > style).
+2. Suggested signatures only.
+3. Explicitly list items left alone and why.

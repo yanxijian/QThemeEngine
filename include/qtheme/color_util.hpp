@@ -2,12 +2,12 @@
 #define __QTHEME_ENGINE_QTHEME_COLOR_UTIL_H__
 
 #include <QColor>
-#include <QString>
+#include <QStringView>
 
 namespace qtheme
 {
-	[[nodiscard]] QColor parseColorLiteral(const QString& s);
-	[[nodiscard]] QColor colorFromRgbaHex(const QString& hex);
+	[[nodiscard]] QColor parseColorLiteral(QStringView s);
+	[[nodiscard]] QColor colorFromRgbaHex(QStringView hex);
 	[[nodiscard]] bool hasUtf8Bom(const QByteArray& bytes);
 
 	/// WCAG relative luminance in [0, 1] (sRGB).

@@ -2,7 +2,7 @@
 
 namespace theme
 {
-	QColor parseColorLiteral(const QString& s)
+	QColor parseColorLiteral(QStringView s)
 	{
 		if (s.isEmpty() || !s.startsWith(QLatin1Char('#')))
 		{
@@ -33,7 +33,7 @@ namespace theme
 		return {};
 	}
 
-	QColor themeColorFromRgbaHex(const QString& hex)
+	QColor themeColorFromRgbaHex(QStringView hex)
 	{
 		return parseColorLiteral(hex);
 	}
