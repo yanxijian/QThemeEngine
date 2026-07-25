@@ -10,9 +10,12 @@
 
 #include <QApplication>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
+#include <QFontComboBox>
+#include <QFrame>
 #include <QImage>
 #include <QLineEdit>
 #include <QMenu>
@@ -22,6 +25,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSettings>
+#include <QStatusBar>
 #include <QStyle>
 #include <QStyleOption>
 #include <QStyleOptionButton>
@@ -29,6 +33,7 @@
 #include <QStyleOptionFrame>
 #include <QStyleOptionMenuItem>
 #include <QTemporaryDir>
+#include <QTextDocument>
 #include <QtTest>
 
 #include <memory>
@@ -59,6 +64,7 @@ private slots:
 	void style_pushButtonLightDiffersFromDark();
 	void style_checkBoxCheckedNearAccent();
 	void style_m6MetricsFromPack();
+	void style_textEditFrameAndStatusMetrics();
 	void style_textEditFrameLightDiffersFromDark();
 	void setupXml_deferredToM1_compatStub();
 };
@@ -368,6 +374,68 @@ void ThemeSmokeTest::style_fluentFocusRingAndCheckFocusRect()
 	QVERIFY(qAlpha(img.pixel(3, 3)) > 0);
 	QVERIFY(qAlpha(img.pixel(img.width() / 2, img.height() / 2)) < 16);
 
+	// Chrome-owned focus: input controls skip PE_FrameFocusRect (no dual ring).
+	auto assertNoFocusRing = [&](QWidget* w) {
+		QImage blank(80, 32, QImage::Format_ARGB32_Premultiplied);
+		blank.fill(Qt::transparent);
+		{
+			QPainter p(&blank);
+			QStyleOptionFocusRect fr;
+			fr.initFrom(w);
+			fr.rect = blank.rect().adjusted(2, 2, -2, -2);
+			fr.state |= QStyle::State_Enabled | QStyle::State_HasFocus | QStyle::State_KeyboardFocusChange;
+			style.drawPrimitive(QStyle::PE_FrameFocusRect, &fr, &p, w);
+		}
+		QVERIFY2(qAlpha(blank.pixel(3, 3)) == 0, w->metaObject()->className());
+	};
+	QLineEdit lineEdit;
+	assertNoFocusRing(&lineEdit);
+	QPlainTextEdit plainEdit;
+	assertNoFocusRing(&plainEdit);
+	QFontComboBox fontCombo;
+	assertNoFocusRing(&fontCombo);
+	QComboBox combo;
+	assertNoFocusRing(&combo);
+
+	// Frameless PE_PanelLineEdit (editable Combo/Spin): fill only — no border.focus stroke.
+	{
+		QImage panel(64, 28, QImage::Format_ARGB32_Premultiplied);
+		panel.fill(Qt::transparent);
+		{
+			QPainter p(&panel);
+			QStyleOptionFrame opt;
+			opt.rect = panel.rect();
+			opt.lineWidth = 0;
+			opt.state = QStyle::State_Enabled | QStyle::State_HasFocus | QStyle::State_Sunken;
+			opt.palette = QApplication::palette();
+			style.drawPrimitive(QStyle::PE_PanelLineEdit, &opt, &p, nullptr);
+		}
+		const QRgb center = panel.pixel(panel.width() / 2, panel.height() / 2);
+		const QRgb rim = panel.pixel(1, panel.height() / 2);
+		QCOMPARE(rim, center);
+	}
+
+	// Nested LineEdit under Combo: no square fill (would punch through rounded chrome).
+	{
+		QComboBox editable;
+		editable.setEditable(true);
+		QVERIFY(editable.lineEdit());
+		style.polish(&editable);
+		QImage nested(64, 28, QImage::Format_ARGB32_Premultiplied);
+		nested.fill(Qt::transparent);
+		{
+			QPainter p(&nested);
+			QStyleOptionFrame opt;
+			opt.initFrom(editable.lineEdit());
+			opt.rect = nested.rect();
+			opt.lineWidth = 0;
+			opt.state = QStyle::State_Enabled | QStyle::State_HasFocus | QStyle::State_Sunken;
+			style.drawPrimitive(QStyle::PE_PanelLineEdit, &opt, &p, editable.lineEdit());
+		}
+		QVERIFY(qAlpha(nested.pixel(1, nested.height() / 2)) == 0);
+		QVERIFY(!editable.lineEdit()->autoFillBackground());
+	}
+
 	auto hc = std::make_shared<qtheme::ThemeStore>();
 	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentHc), hc.get()));
 	QCOMPARE(hc->metric(QStringLiteral("focus"), QStringLiteral("derive"), -1), 0);
@@ -574,6 +642,40 @@ void ThemeSmokeTest::style_m6MetricsFromPack()
 	style.setDpiScale(2.0);
 	QCOMPARE(style.pixelMetric(QStyle::PM_ToolTipLabelFrameWidth), 12);
 	QCOMPARE(style.pixelMetric(QStyle::PM_SplitterWidth), 12);
+}
+
+void ThemeSmokeTest::style_textEditFrameAndStatusMetrics()
+{
+	auto store = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), store.get()));
+	qtheme::QThemeStyle style(store);
+	style.setDpiScale(1.0);
+
+	QPlainTextEdit edit;
+	QFrame frame;
+	frame.setFrameShape(QFrame::StyledPanel);
+	QCOMPARE(style.pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, &edit), 1);
+	QCOMPARE(style.pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, &frame), 1);
+
+	style.setDpiScale(2.0);
+	QCOMPARE(style.pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, &edit), 2);
+	QCOMPARE(style.pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, &frame), 2);
+	style.setDpiScale(1.0);
+
+	style.polish(&edit);
+	QVERIFY(edit.document());
+	QCOMPARE(edit.document()->documentMargin(), 6.0);
+
+	QStatusBar bar;
+	style.polish(&bar);
+	QCOMPARE(bar.minimumHeight(), 24);
+	QCOMPARE(bar.contentsMargins().left(), 4);
+	QCOMPARE(bar.contentsMargins().right(), 4);
+
+	style.setDpiScale(2.0);
+	style.polish(&bar);
+	QCOMPARE(bar.minimumHeight(), 48);
+	QCOMPARE(bar.contentsMargins().left(), 8);
 }
 
 void ThemeSmokeTest::style_textEditFrameLightDiffersFromDark()

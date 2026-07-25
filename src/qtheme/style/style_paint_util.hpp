@@ -21,6 +21,9 @@ namespace qtheme::style_detail
 
 	[[nodiscard]] bool isTextEditLike(const QWidget* widget);
 
+	/// Input chrome already paints focus via border.focus; skip PE_FrameFocusRect dual ring.
+	[[nodiscard]] bool chromeOwnsFocusStroke(const QWidget* widget);
+
 	void clearPopupToTransparent(QPainter* painter, const QRect& rect);
 } // namespace qtheme::style_detail
 

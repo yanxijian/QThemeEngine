@@ -2,13 +2,23 @@
 
 #include "style/style_ctx.hpp"
 #include "style/style_families.hpp"
+#include "style/style_paint_util.hpp"
 
+#include <QAbstractScrollArea>
+#include <QAbstractSpinBox>
+#include <QComboBox>
+#include <QFrame>
+#include <QLineEdit>
 #include <QMenu>
+#include <QPlainTextEdit>
+#include <QStatusBar>
 #include <QStyleFactory>
 #include <QStyleOption>
 #include <QStyleOptionComboBox>
 #include <QStyleOptionComplex>
 #include <QStyleOptionSpinBox>
+#include <QTextDocument>
+#include <QTextEdit>
 #include <QVariant>
 #include <QtMath>
 
@@ -67,10 +77,65 @@ namespace qtheme
 
 	void QThemeStyle::polish(QWidget* widget)
 	{
-		if (widget && m_store && (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel")))
+		if (widget && m_store)
 		{
-			const QString group = qobject_cast<QMenu*>(widget) ? QStringLiteral("menu") : QStringLiteral("tooltip");
-			polishRoundedPopup(widget, roleMetric(group, QStringLiteral("radius"), 4));
+			if (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel"))
+			{
+				const QString group = qobject_cast<QMenu*>(widget) ? QStringLiteral("menu") : QStringLiteral("tooltip");
+				polishRoundedPopup(widget, roleMetric(group, QStringLiteral("radius"), 4));
+			}
+			if (style_detail::isTextEditLike(widget))
+			{
+				const int pad = roleMetric(QStringLiteral("textedit"), QStringLiteral("padding"), 6);
+				if (auto* te = qobject_cast<QTextEdit*>(widget))
+				{
+					if (te->document())
+					{
+						te->document()->setDocumentMargin(pad);
+					}
+				}
+				else if (auto* pe = qobject_cast<QPlainTextEdit*>(widget))
+				{
+					if (pe->document())
+					{
+						pe->document()->setDocumentMargin(pad);
+					}
+				}
+				// Viewport square autofill would cover PE_Frame's rounded fill at the corners.
+				widget->setAutoFillBackground(false);
+				widget->setAttribute(Qt::WA_OpaquePaintEvent, false);
+				if (auto* scroll = qobject_cast<QAbstractScrollArea*>(widget))
+				{
+					scroll->viewport()->setAutoFillBackground(false);
+				}
+			}
+			if (auto* spin = qobject_cast<QAbstractSpinBox*>(widget))
+			{
+				Q_UNUSED(spin);
+				widget->setAttribute(Qt::WA_Hover, true);
+				widget->setAttribute(Qt::WA_OpaquePaintEvent, false);
+				if (QLineEdit* edit = widget->findChild<QLineEdit*>())
+				{
+					edit->setFrame(false);
+					edit->setAutoFillBackground(false);
+				}
+			}
+			if (auto* combo = qobject_cast<QComboBox*>(widget))
+			{
+				widget->setAttribute(Qt::WA_Hover, true);
+				widget->setAttribute(Qt::WA_OpaquePaintEvent, false);
+				if (QLineEdit* edit = combo->lineEdit())
+				{
+					edit->setAutoFillBackground(false);
+				}
+			}
+			if (auto* bar = qobject_cast<QStatusBar*>(widget))
+			{
+				const int h = roleMetric(QStringLiteral("status"), QStringLiteral("height"), 24);
+				const int pad = roleMetric(QStringLiteral("status"), QStringLiteral("padding"), 4);
+				bar->setMinimumHeight(h);
+				bar->setContentsMargins(pad, 0, pad, 0);
+			}
 		}
 		QProxyStyle::polish(widget);
 	}
@@ -83,6 +148,35 @@ namespace qtheme
 			widget->setProperty("qtheme.popupRadius", QVariant());
 			widget->setAttribute(Qt::WA_TranslucentBackground, false);
 			widget->setAttribute(Qt::WA_NoSystemBackground, false);
+		}
+		if (style_detail::isTextEditLike(widget))
+		{
+			widget->setAttribute(Qt::WA_OpaquePaintEvent, false);
+			if (auto* scroll = qobject_cast<QAbstractScrollArea*>(widget))
+			{
+				scroll->viewport()->setAutoFillBackground(true);
+			}
+		}
+		if (qobject_cast<QAbstractSpinBox*>(widget))
+		{
+			widget->setAttribute(Qt::WA_Hover, false);
+			if (QLineEdit* edit = widget->findChild<QLineEdit*>())
+			{
+				edit->setAutoFillBackground(true);
+			}
+		}
+		if (auto* combo = qobject_cast<QComboBox*>(widget))
+		{
+			widget->setAttribute(Qt::WA_Hover, false);
+			if (QLineEdit* edit = combo->lineEdit())
+			{
+				edit->setAutoFillBackground(true);
+			}
+		}
+		if (auto* bar = qobject_cast<QStatusBar*>(widget))
+		{
+			bar->setMinimumHeight(0);
+			bar->setContentsMargins(0, 0, 0, 0);
 		}
 		QProxyStyle::unpolish(widget);
 	}
@@ -242,7 +336,15 @@ namespace qtheme
 		case PM_TabBarTabHSpace:
 			return 16;
 		case PM_DefaultFrameWidth:
-			return 1;
+			if (style_detail::isTextEditLike(widget))
+			{
+				return roleMetric(QStringLiteral("textedit"), QStringLiteral("frameWidth"), 1);
+			}
+			if (qobject_cast<const QFrame*>(widget))
+			{
+				return roleMetric(QStringLiteral("frame"), QStringLiteral("lineWidth"), 1);
+			}
+			return roleMetric(QStringLiteral("frame"), QStringLiteral("lineWidth"), 1);
 		case PM_MenuBarHMargin:
 		case PM_MenuBarVMargin:
 			return 4;

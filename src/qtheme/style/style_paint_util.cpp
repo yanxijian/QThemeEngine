@@ -1,5 +1,8 @@
 #include "style/style_paint_util.hpp"
 
+#include <QAbstractSpinBox>
+#include <QComboBox>
+#include <QLineEdit>
 #include <QPainterPath>
 #include <QPlainTextEdit>
 #include <QTextEdit>
@@ -116,6 +119,20 @@ namespace qtheme::style_detail
 	bool isTextEditLike(const QWidget* widget)
 	{
 		return qobject_cast<const QTextEdit*>(widget) || qobject_cast<const QPlainTextEdit*>(widget);
+	}
+
+	bool chromeOwnsFocusStroke(const QWidget* widget)
+	{
+		// Walk parents: TextEdit focus often targets the viewport; editable Combo uses an inner LineEdit.
+		for (const QWidget* w = widget; w; w = w->parentWidget())
+		{
+			if (qobject_cast<const QLineEdit*>(w) || qobject_cast<const QComboBox*>(w) || qobject_cast<const QAbstractSpinBox*>(w)
+				|| isTextEditLike(w))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void clearPopupToTransparent(QPainter* painter, const QRect& rect)

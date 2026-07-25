@@ -13,6 +13,11 @@ namespace qtheme::style_detail
 	{
 		if (element == QStyle::PE_FrameFocusRect)
 		{
+			// LineEdit / TextEdit / Combo / Spin already stroke border.focus on chrome.
+			if (chromeOwnsFocusStroke(widget))
+			{
+				return true;
+			}
 			QColor ambient;
 			if (const auto* fr = qstyleoption_cast<const QStyleOptionFocusRect*>(option))
 			{

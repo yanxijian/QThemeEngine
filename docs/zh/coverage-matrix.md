@@ -19,7 +19,7 @@
 | 勾选 | `QCheckBox` | ● | ● | ● | N/H/Checked/Disabled；焦点为整控件 Fluent 双描边 |
 | 单选 | `QRadioButton` | ● | ● | ● | 同 check |
 | 单行编辑 | `QLineEdit` | ● | ● | ● | N/H/Focus/Disabled；height/padding |
-| 多行编辑 | `QPlainTextEdit`/`QTextEdit` | ● Fluent | ◐ | ● | `textedit.*` + `PE_Frame` |
+| 多行编辑 | `QPlainTextEdit`/`QTextEdit` | ● Fluent | ● | ● | `textedit.*` + `PE_Frame`；`padding`→documentMargin，`frameWidth`→`PM_DefaultFrameWidth` |
 | 数字框 | `QSpinBox`/`QDoubleSpinBox` | ● Fluent | ● | ● | N/H/Focus/Disabled + 上下按钮 |
 | 日期时间 | `QDateEdit`/`QTimeEdit`/`QDateTimeEdit` | ● | ● | ● | 复用 `CC_SpinBox` / spin 帧 |
 | 月历 | `QCalendarWidget` | ● | ○ | ● | `calendar.*` 面板 + view 格子 |
@@ -36,11 +36,11 @@
 | 表头 | `QHeaderView` | ● | ● | — | section + label；header.height |
 | 分组 | `QGroupBox` | ● | ● | — | `PE_FrameGroupBox` + `CT_GroupBox` padding |
 | 提示 | `QToolTip` | ● | ● | ● | `PE_PanelTipLabel` + `PM_ToolTipLabelFrameWidth` |
-| 线框 | `QFrame` | ● | ◐ | — | StyledPanel / HLine / VLine |
+| 线框 | `QFrame` | ● | ● | — | StyledPanel / HLine / VLine；`frame.lineWidth`→`PM_DefaultFrameWidth` |
 | 滚动区 | `QScrollArea` | ● | ○ | — | 外框走 `textedit`/`PE_Frame` |
 | 分割条 | `QSplitter` | ● | ● | — | `CE_Splitter` + `PM_SplitterWidth` |
 | 停靠 | `QDockWidget` | ● | ● | — | title / frame / resize handle |
-| 状态栏 | `QStatusBar` | ● | ◐ | — | `PE_PanelStatusBar` / item |
+| 状态栏 | `QStatusBar` | ● | ● | — | `PE_PanelStatusBar` / item；`status.height`/`padding`→polish |
 | 对话框按钮 | `QDialogButtonBox` | ○ | ○ | ● | 复用 Button；间距靠布局 |
 
 ---
@@ -53,7 +53,7 @@
 | `button.*` | 按钮面/文/边/圆角/边距 / `bg.accent*` / `fg.accent*` |
 | `commandlink.*` | 命令链接标题/说明 |
 | `edit.*` | 输入框（含 `fg.placeholder` → `QPalette::PlaceholderText`） |
-| `textedit.*` | 多行编辑 / 滚动区外框（含 `fg.placeholder`） |
+| `textedit.*` | 多行编辑 / 滚动区外框（含 `fg.placeholder`、`padding`、`frameWidth`） |
 | `check.*` | 复选 / 单选指示器（含 `bg.checked.hover`） |
 | `scroll.*` | 滚动条 |
 | `tab.*` | 标签页 |
