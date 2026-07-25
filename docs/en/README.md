@@ -6,7 +6,8 @@ Canonical architecture (Chinese): [../zh/architecture.md](../zh/architecture.md)
 English summary: [architecture.md](architecture.md)  
 Development plan: [../zh/dev-plan.md](../zh/dev-plan.md) · [dev-plan.md](dev-plan.md)  
 Coverage matrix: [../zh/coverage-matrix.md](../zh/coverage-matrix.md)  
-Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md) · [qt-widgets-inventory.md](qt-widgets-inventory.md)
+Widgets inventory: [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md) · [qt-widgets-inventory.md](qt-widgets-inventory.md)  
+CI: [../zh/ci.md](../zh/ci.md) · [ci.md](ci.md)
 
 ## Status
 

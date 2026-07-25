@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: qte-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check formatting
+        run: python scripts/format_source.py --check
+
+  windows-qt:
+    name: Windows MSVC + Qt (tests)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - uses: seanmiddleditch/gha-setup-ninja@v5
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.3"
+          cache: true
+          arch: win64_msvc2022_64
+          modules: ""
+      - name: Configure
+        shell: cmd
+        run: |
+          cmake -S . -B build -G Ninja ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_PREFIX_PATH=%QT_ROOT_DIR% ^
+            -DQTE_BUILD_TESTS=ON ^
+            -DQTE_BUILD_EXAMPLES=ON
+      - name: Build
+        shell: cmd
+        run: cmake --build build --config Release
+      - name: Test
+        shell: cmd
+        run: |
+          set PATH=%QT_ROOT_DIR%\bin;%PATH%
+          ctest --test-dir build --output-on-failure --no-tests=error
+
+  ubuntu-qt:
+    name: Ubuntu + Qt (tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libgl1-mesa-dev
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.3"
+          cache: true
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" \
+            -DQTE_BUILD_TESTS=ON \
+            -DQTE_BUILD_EXAMPLES=ON
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Test
+        run: |
+          export PATH="${QT_ROOT_DIR}/bin:${PATH}"
+          # Offscreen for headless widget tests
+          export QT_QPA_PLATFORM=offscreen
+          ctest --test-dir build --output-on-failure --no-tests=error
