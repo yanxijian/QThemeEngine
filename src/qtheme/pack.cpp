@@ -8,14 +8,11 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-namespace
+// Q_INIT_RESOURCE must be at file scope (no namespace): the macro declares qInitResources_* globally.
+static void initThemeResource()
 {
-	// Q_INIT_RESOURCE must not live inside a C++ namespace (looks up qInitResources_* globally).
-	void initThemeResource()
-	{
-		Q_INIT_RESOURCE(theme);
-	}
-} // namespace
+	Q_INIT_RESOURCE(theme);
+}
 
 namespace qtheme
 {

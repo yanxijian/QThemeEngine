@@ -375,7 +375,8 @@ void ThemeSmokeTest::style_fluentFocusRingAndCheckFocusRect()
 	QVERIFY(qAlpha(img.pixel(img.width() / 2, img.height() / 2)) < 16);
 
 	// Chrome-owned focus: input controls skip PE_FrameFocusRect (no dual ring).
-	auto assertNoFocusRing = [&](QWidget* w) {
+	auto assertNoFocusRing = [&](QWidget* w)
+	{
 		QImage blank(80, 32, QImage::Format_ARGB32_Premultiplied);
 		blank.fill(Qt::transparent);
 		{
