@@ -34,7 +34,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - uses: seanmiddleditch/gha-setup-ninja@v5
+      - uses: seanmiddleditch/gha-setup-ninja@v6
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
