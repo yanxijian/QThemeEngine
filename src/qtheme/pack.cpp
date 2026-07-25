@@ -8,6 +8,15 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+namespace
+{
+	// Q_INIT_RESOURCE must not live inside a C++ namespace (looks up qInitResources_* globally).
+	void initThemeResource()
+	{
+		Q_INIT_RESOURCE(theme);
+	}
+} // namespace
+
 namespace qtheme
 {
 	namespace
@@ -203,7 +212,7 @@ namespace qtheme
 
 	bool PackRegistry::registerBuiltinFluentPacks(Error* err)
 	{
-		Q_INIT_RESOURCE(theme);
+		initThemeResource();
 
 		const QStringList paths = {
 			QStringLiteral(":/theme/fluent/fluent.light.theme.json"),
