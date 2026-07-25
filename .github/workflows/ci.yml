@@ -7,9 +7,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  # PR: one active run per PR (cancel stale). Push: unique per SHA so reruns/long builds are not cancelled.
-  group: qte-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: qte-ci-${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   format:
