@@ -222,7 +222,8 @@ namespace qtheme
 			return QString::fromUtf8(kPackFluentDark);
 		case ColorScheme::HighContrast:
 			return QString::fromUtf8(kPackFluentHc);
-		case ColorScheme::System: {
+		case ColorScheme::System:
+		{
 			if (m_followOsHighContrast && AccentResolver::systemHighContrast())
 			{
 				return QString::fromUtf8(kPackFluentHc);

@@ -21,10 +21,10 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 # Do not insert a blank line right after `namespace {` / before `}`.
 WrapNamespaceBodyWithEmptyLines: Never
 
-# Braces: break after type/function/control; else/catch on their own lines.
+# Braces: break after type/function/control/case; else/catch on their own lines.
 BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterCaseLabel: false
+  AfterCaseLabel: true
   AfterClass: true
   AfterControlStatement: Always
   AfterEnum: true

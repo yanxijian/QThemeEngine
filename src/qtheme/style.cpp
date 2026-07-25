@@ -408,12 +408,14 @@ namespace qtheme
 		QSize sz = QProxyStyle::sizeFromContents(type, option, contentsSize, widget);
 		switch (type)
 		{
-		case CT_PushButton: {
+		case CT_PushButton:
+		{
 			const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
 			break;
 		}
-		case CT_ToolButton: {
+		case CT_ToolButton:
+		{
 			// AutoRaise (Ribbon / QAT / toolbar) keeps denser height.tool floor.
 			if (option && (option->state & QStyle::State_AutoRaise))
 			{
@@ -427,7 +429,8 @@ namespace qtheme
 			}
 			break;
 		}
-		case CT_LineEdit: {
+		case CT_LineEdit:
+		{
 			const int pad = roleMetric(QStringLiteral("edit"), QStringLiteral("padding"), 6);
 			const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
@@ -435,32 +438,38 @@ namespace qtheme
 			break;
 		}
 		case CT_ComboBox:
-		case CT_SpinBox: {
+		case CT_SpinBox:
+		{
 			const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
 			break;
 		}
-		case CT_TabBarTab: {
+		case CT_TabBarTab:
+		{
 			const int h = roleMetric(QStringLiteral("tab"), QStringLiteral("height"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
 			break;
 		}
-		case CT_HeaderSection: {
+		case CT_HeaderSection:
+		{
 			const int h = roleMetric(QStringLiteral("header"), QStringLiteral("height"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
 			break;
 		}
-		case CT_MenuItem: {
+		case CT_MenuItem:
+		{
 			const int h = roleMetric(QStringLiteral("menu"), QStringLiteral("itemHeight"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
 			break;
 		}
-		case CT_ItemViewItem: {
+		case CT_ItemViewItem:
+		{
 			const int h = roleMetric(QStringLiteral("view"), QStringLiteral("itemHeight"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
 			break;
 		}
-		case CT_GroupBox: {
+		case CT_GroupBox:
+		{
 			const int pad = roleMetric(QStringLiteral("groupbox"), QStringLiteral("padding"), 8);
 			sz += QSize(pad * 2, pad);
 			break;
