@@ -121,7 +121,8 @@ Pack 是可注册的主题数据单元（内置 qrc 或用户文件），加载�
 
 **稳定语义 Token（跨皮同名，与 JSON/`ThemeStore` 一致）**：`palette.window` / `base` / `text` / `accent` / `accent.text` / `stroke` / `highlight` / `canvas` / `surface` …  
 **控件 Role**：`button.*` / `edit.*` / `check.*` / `tab.*` / `scroll.*` / `menu.*` / `toolbar.*` / `combo.*` / `spin.*` / `slider.*` / `progress.*` / `groupbox.*` / `tooltip.*` / `header.*` / `view.*`  
-**度量 Role**：逻辑像素；`QThemeStyle` 统一 × `dpiScale`（Engine 按主屏 `logicalDotsPerInch/96` 更新）。
+**扩展度量**：`ribbon.*`（供 QFluentRibbon 壳；逻辑像素，宿主侧用 `api::scaledMetric`）  
+**度量 Role**：逻辑像素；`QThemeStyle` 统一 × `dpiScale`（Engine 按主屏 `logicalDotsPerInch/96` 更新）；`api::scaledMetric` 供自绘壳同步同一比例。`Engine::dpiScaleChanged` 在比例变化时发出。
 
 校验：缺必需 Token 时 `Engine` 报错并保持旧 Store；缺可选 Role 时 Style 回退基类。
 

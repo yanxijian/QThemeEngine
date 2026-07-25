@@ -1,8 +1,13 @@
 #include "qtheme/api.hpp"
 
 #include "qtheme/engine.hpp"
+#include "qtheme/style.hpp"
 
+#include <QCoreApplication>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QStyle>
+#include <QtMath>
 
 namespace qtheme
 {
@@ -48,6 +53,28 @@ namespace qtheme
 				return def;
 			}
 			return e->store()->metric(group, role, def);
+		}
+
+		qreal dpiScale()
+		{
+			Engine* e = engine();
+			if (e && e->style())
+			{
+				return e->style()->dpiScale();
+			}
+			if (auto* app = qobject_cast<QGuiApplication*>(QCoreApplication::instance()))
+			{
+				if (QScreen* screen = app->primaryScreen())
+				{
+					return screen->logicalDotsPerInch() / 96.0;
+				}
+			}
+			return 1.0;
+		}
+
+		int scaledMetric(const QString& group, const QString& role, int def)
+		{
+			return qRound(static_cast<qreal>(metric(group, role, def)) * dpiScale());
 		}
 
 		QString className(const QObject* obj)

@@ -106,6 +106,8 @@ namespace qtheme
 		void skinChanged(const QString& previous, const QString& current);
 		void accentChanged(const QColor& accent);
 		void colorSchemeChanged();
+		/// Emitted when logical DPI scale applied to QThemeStyle changes (1.0 = 96 DPI).
+		void dpiScaleChanged(qreal scale);
 
 	private slots:
 		void onOsPaletteChanged(const QPalette& palette);

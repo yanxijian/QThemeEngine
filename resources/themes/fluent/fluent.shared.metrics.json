@@ -1,6 +1,6 @@
 {
   "metrics": {
-    "button": { "radius": 4, "padding": 10, "height": 32 },
+    "button": { "radius": 4, "padding": 10, "height": 32, "height.tool": 24 },
     "edit": { "radius": 4, "padding": 6 },
     "check": { "indicator": 18, "radius": 3, "focusWidth": 1 },
     "tab": { "radius": 4, "height": 32 },
@@ -22,6 +22,22 @@
     "status": { "height": 24, "padding": 4 },
     "dial": { "thickness": 8 },
     "view": { "itemHeight": 28, "indent": 20, "contentPadLeft": 8, "contentPadRight": 8, "focusWidth": 1 },
-    "DemoButton": { "borderRadius": 4 }
+    "DemoButton": { "borderRadius": 4 },
+    "ribbon": {
+      "tab.height": 32,
+      "group.height": 88,
+      "group.height.simplified": 40,
+      "group.padding": 6,
+      "group.titleHeight": 18,
+      "border.width": 1,
+      "accent.underline": 3,
+      "icon.large": 32,
+      "icon.medium": 16,
+      "icon.small": 16,
+      "qat.height": 26,
+      "backstage.nav.width": 180,
+      "gallery.item.width": 56,
+      "gallery.item.height": 64
+    }
   }
 }

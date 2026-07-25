@@ -21,6 +21,10 @@ namespace qtheme
 
 		QColor color(const QString& group, const QString& role, const QColor& def = QColor());
 		int metric(const QString& group, const QString& role, int def = 0);
+		/// Logical-pixel scale from the bound Engine's QThemeStyle (1.0 = 96 DPI).
+		[[nodiscard]] qreal dpiScale();
+		/// ThemeStore metric multiplied by dpiScale(); for owner-drawn chrome (e.g. Ribbon).
+		[[nodiscard]] int scaledMetric(const QString& group, const QString& role, int def = 0);
 
 		QString className(const QObject* obj);
 		void setClassName(QObject* obj, const QString& name);

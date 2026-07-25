@@ -31,6 +31,8 @@
       "bg": "#000000",
       "bg.hover": "#1A1A1A",
       "bg.pressed": "#333333",
+      "bg.checked": "#333333",
+      "bg.checked.hover": "#4D4D4D",
       "bg.disabled": "#000000",
       "fg": "#FFFFFF",
       "fg.disabled": "#808080",

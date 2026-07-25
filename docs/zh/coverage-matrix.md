@@ -15,7 +15,7 @@
 | 应用级 | `QApplication` | — | — | ● seed | `standardPalette` |
 | 按钮 | `QPushButton` | ● Fluent | ● | ● | N/H/P/D + Default accent |
 | 命令链接 | `QCommandLinkButton` | ● | ○ | ● | `CE_PushButtonLabel` + `commandlink.*` |
-| 工具按钮 | `QToolButton` | ● Fluent | ● | ● | `CC_ToolButton` / height |
+| 工具按钮 | `QToolButton` | ● Fluent | ● | ● | checked≠pressed；AutoRaise 用 `height.tool` |
 | 勾选 | `QCheckBox` | ● | ● | ● | N/H/Checked/Disabled；焦点为整控件 Fluent 双描边 |
 | 单选 | `QRadioButton` | ● | ● | ● | 同 check |
 | 单行编辑 | `QLineEdit` | ● | ● | ● | N/H/Focus/Disabled；height/padding |
@@ -50,7 +50,8 @@
 | 前缀 | 用途 |
 |------|------|
 | `palette.*` | 全局语义 Token（含 `text.tertiary` / `accent.*` / `focus.outer|inner`） |
-| `button.*` | 按钮面/文/边/圆角/边距 / `bg.accent*` / `fg.accent*` |
+| `button.*` | 按钮面/文/边/圆角/边距 / `bg.accent*` / `fg.accent*` / `bg.checked*` / `height.tool` |
+| `ribbon.*` | Ribbon 壳度量（供 QFluentRibbon）；色仍可由宿主 Bridge 从 `palette.*` 派生 |
 | `commandlink.*` | 命令链接标题/说明 |
 | `edit.*` | 输入框（含 `fg.placeholder` → `QPalette::PlaceholderText`） |
 | `textedit.*` | 多行编辑 / 滚动区外框（含 `fg.placeholder`、`padding`、`frameWidth`） |

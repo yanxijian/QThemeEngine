@@ -408,10 +408,23 @@ namespace qtheme
 		QSize sz = QProxyStyle::sizeFromContents(type, option, contentsSize, widget);
 		switch (type)
 		{
-		case CT_PushButton:
-		case CT_ToolButton: {
+		case CT_PushButton: {
 			const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
 			sz.setHeight(qMax(sz.height(), h));
+			break;
+		}
+		case CT_ToolButton: {
+			// AutoRaise (Ribbon / QAT / toolbar) keeps denser height.tool floor.
+			if (option && (option->state & QStyle::State_AutoRaise))
+			{
+				const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height.tool"), 24);
+				sz.setHeight(qMax(sz.height(), h));
+			}
+			else
+			{
+				const int h = roleMetric(QStringLiteral("button"), QStringLiteral("height"), sz.height());
+				sz.setHeight(qMax(sz.height(), h));
+			}
 			break;
 		}
 		case CT_LineEdit: {

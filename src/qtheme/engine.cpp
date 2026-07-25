@@ -89,9 +89,15 @@ namespace qtheme
 				scale = screen->logicalDotsPerInch() / 96.0;
 			}
 		}
-		if (m_style)
+		if (!m_style)
 		{
-			m_style->setDpiScale(scale);
+			return;
+		}
+		const qreal previous = m_style->dpiScale();
+		m_style->setDpiScale(scale);
+		if (!qFuzzyCompare(previous, scale))
+		{
+			emit dpiScaleChanged(scale);
 		}
 	}
 

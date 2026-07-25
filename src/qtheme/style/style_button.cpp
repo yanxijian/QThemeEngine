@@ -15,16 +15,23 @@ namespace qtheme::style_detail
 			return false;
 		}
 		const bool enabled = option->state & QStyle::State_Enabled;
+		const bool on = option->state & QStyle::State_On;
+		const bool sunken = option->state & QStyle::State_Sunken;
+		const bool hover = option->state & QStyle::State_MouseOver;
 		QString bgRole = QStringLiteral("bg");
 		if (!enabled)
 		{
 			bgRole = QStringLiteral("bg.disabled");
 		}
-		else if (option->state & (QStyle::State_Sunken | QStyle::State_On))
+		else if (sunken)
 		{
 			bgRole = QStringLiteral("bg.pressed");
 		}
-		else if (option->state & QStyle::State_MouseOver)
+		else if (on)
+		{
+			bgRole = hover ? QStringLiteral("bg.checked.hover") : QStringLiteral("bg.checked");
+		}
+		else if (hover)
 		{
 			bgRole = QStringLiteral("bg.hover");
 		}
