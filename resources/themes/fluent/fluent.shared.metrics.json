@@ -17,6 +17,7 @@
     "tooltip": { "radius": 4, "padding": 6 },
     "textedit": { "radius": 4, "padding": 6, "frameWidth": 1 },
     "frame": { "radius": 4, "lineWidth": 1 },
+    "window": { "radius": 8, "borderWidth": 1 },
     "splitter": { "width": 6 },
     "dock": { "titleHeight": 28, "frameWidth": 1, "separator": 4, "handle": 10 },
     "status": { "height": 24, "padding": 4 },

@@ -3,8 +3,10 @@
 #include "qtheme/accent.hpp"
 #include "qtheme/pack.hpp"
 #include "qtheme/settings.hpp"
+#include "qtheme/types.hpp"
 
 #include <QApplication>
+#include <QColor>
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QPalette>
@@ -18,6 +20,29 @@ namespace qtheme
 	namespace
 	{
 		Engine* g_default = nullptr;
+
+		void publishWindowChromeProperties(QApplication* app, const ThemeStore* store)
+		{
+			if (!app || !store)
+			{
+				return;
+			}
+			const int radius = store->metric(QStringLiteral("window"), QStringLiteral("radius"), 8);
+			const int borderWidth = store->metric(QStringLiteral("window"), QStringLiteral("borderWidth"), 1);
+			app->setProperty(kWindowRadiusProperty, radius);
+			app->setProperty(kWindowBorderWidthProperty, borderWidth);
+
+			ColorValue border = store->color(QStringLiteral("window"), QStringLiteral("border"));
+			if (!border.ok)
+			{
+				border = store->color(QStringLiteral("frame"), QStringLiteral("border"));
+			}
+			if (!border.ok)
+			{
+				border = store->color(QStringLiteral("palette"), QStringLiteral("stroke"), QColor(0xd1, 0xd1, 0xd1));
+			}
+			app->setProperty(kWindowBorderProperty, border.ok ? border.value : QColor(0xd1, 0xd1, 0xd1));
+		}
 	} // namespace
 
 	Engine::Engine(QObject* parent)
@@ -173,6 +198,7 @@ namespace qtheme
 			{
 				app->setPalette(m_style->standardPalette());
 			}
+			publishWindowChromeProperties(app, m_store.get());
 			for (QWidget* w : app->topLevelWidgets())
 			{
 				if (w)
@@ -289,6 +315,7 @@ namespace qtheme
 		updateDpiScale();
 		app->setStyle(m_style);
 		app->setPalette(m_style->standardPalette());
+		publishWindowChromeProperties(app, m_store.get());
 		setDefault(this);
 		m_inited = true;
 		refreshUi();

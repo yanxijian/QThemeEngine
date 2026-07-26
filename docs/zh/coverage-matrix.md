@@ -37,6 +37,7 @@
 | 分组 | `QGroupBox` | ● | ● | — | `PE_FrameGroupBox` + `CT_GroupBox` padding |
 | 提示 | `QToolTip` | ● | ● | ● | `PE_PanelTipLabel` + `PM_ToolTipLabelFrameWidth` |
 | 线框 | `QFrame` | ● | ● | — | StyledPanel / HLine / VLine；`frame.lineWidth`→`PM_DefaultFrameWidth` |
+| 顶层窗 chrome | frameless `QMainWindow`/`QDialog` | ◐ | ● `window.*` | ● border via props | **壳必须不透明**（Win 分层窗 + `SetParent` 嵌入会在 Create Client 后毁掉命中）；圆角用逻辑 `setMask`；描边内侧绘制 `window.border`/`button.border` |
 | 滚动区 | `QScrollArea` | ● | ○ | — | 外框走 `textedit`/`PE_Frame` |
 | 分割条 | `QSplitter` | ● | ● | — | `CE_Splitter` + `PM_SplitterWidth` |
 | 停靠 | `QDockWidget` | ● | ● | — | title / frame / resize handle |
@@ -70,6 +71,7 @@
 | `header.*` | 表头 |
 | `view.*` | ItemView（含 `bg.selected.hover`） |
 | `frame.*` | QFrame 面板与分隔线 |
+| `window.*` | 无边框顶层窗圆角/描边度量（`radius`/`borderWidth`）；色可走 `window.border` 或回退 `frame.border` |
 | `splitter.*` | 分割条 |
 | `dock.*` | 停靠窗 |
 | `status.*` | 状态栏 |

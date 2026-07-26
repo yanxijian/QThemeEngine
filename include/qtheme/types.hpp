@@ -9,6 +9,10 @@ namespace qtheme
 {
 	/// Qt dynamic property for owner-drawn widgets (secondary path).
 	inline constexpr char kClassProperty[] = "qtheme.class";
+	/// Frameless top-level chrome (Engine::apply publishes these on QApplication).
+	inline constexpr char kWindowRadiusProperty[] = "qtheme.window.radius";
+	inline constexpr char kWindowBorderWidthProperty[] = "qtheme.window.borderWidth";
+	inline constexpr char kWindowBorderProperty[] = "qtheme.window.border";
 
 	inline constexpr char kPackFluentLight[] = "fluent.light";
 	inline constexpr char kPackFluentDark[] = "fluent.dark";

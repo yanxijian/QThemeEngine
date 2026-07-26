@@ -201,6 +201,9 @@
       "border": "#D1D1D1",
       "line": "#F0F0F0"
     },
+    "window": {
+      "border": "#D1D1D1"
+    },
     "splitter": {
       "bg": "#F3F3F3",
       "handle": "#868686",
