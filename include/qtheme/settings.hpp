@@ -1,4 +1,4 @@
-#ifndef __QTHEME_ENGINE_SETTINGS_H__
+﻿#ifndef __QTHEME_ENGINE_SETTINGS_H__
 #define __QTHEME_ENGINE_SETTINGS_H__
 
 #include "types.hpp"
@@ -7,6 +7,7 @@
 #include <QString>
 #include <QStringList>
 #include <QStringView>
+#include <qtheme/qtheme_export.hpp>
 
 class QSettings;
 
@@ -36,11 +37,11 @@ namespace qtheme
 		inline constexpr char kExtraPackFiles[] = "extraPackFiles";
 	} // namespace SettingsKeys
 
-	[[nodiscard]] bool saveAppearancePrefs(QSettings* settings, const AppearancePrefs& prefs);
-	[[nodiscard]] bool loadAppearancePrefs(QSettings* settings, AppearancePrefs* out);
+	[[nodiscard]] QTE_EXPORT bool saveAppearancePrefs(QSettings* settings, const AppearancePrefs& prefs);
+	[[nodiscard]] QTE_EXPORT bool loadAppearancePrefs(QSettings* settings, AppearancePrefs* out);
 
-	[[nodiscard]] QString colorSchemeToString(ColorScheme scheme);
-	[[nodiscard]] ColorScheme colorSchemeFromString(QStringView s, ColorScheme fallback = ColorScheme::Light);
+	[[nodiscard]] QTE_EXPORT QString colorSchemeToString(ColorScheme scheme);
+	[[nodiscard]] QTE_EXPORT ColorScheme colorSchemeFromString(QStringView s, ColorScheme fallback = ColorScheme::Light);
 } // namespace qtheme
 
 #endif // __QTHEME_ENGINE_SETTINGS_H__

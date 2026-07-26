@@ -1,16 +1,17 @@
-#ifndef __QTHEME_ENGINE_SKINMANAGER_H__
+﻿#ifndef __QTHEME_ENGINE_SKINMANAGER_H__
 #define __QTHEME_ENGINE_SKINMANAGER_H__
 
 #include "iskinmanager.hpp"
 #include "themeloader.hpp"
 
 #include <QObject>
+#include <qtheme/qtheme_export.hpp>
 
 #include <memory>
 
 namespace theme
 {
-	class SkinManager final : public QObject, public ISkinManager
+	class QTE_EXPORT SkinManager final : public QObject, public ISkinManager
 	{
 		Q_OBJECT
 	public:

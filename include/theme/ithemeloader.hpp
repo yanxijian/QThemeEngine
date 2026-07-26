@@ -1,9 +1,10 @@
-#ifndef __QTHEME_ENGINE_ITHEMELOADER_H__
+﻿#ifndef __QTHEME_ENGINE_ITHEMELOADER_H__
 #define __QTHEME_ENGINE_ITHEMELOADER_H__
 
 #include <QColor>
 #include <QString>
 #include <QStringList>
+#include <qtheme/qtheme_export.hpp>
 
 namespace theme
 {
@@ -32,7 +33,7 @@ namespace theme
 		SkinNotFound,
 	};
 
-	class IThemeLoader
+	class QTE_EXPORT IThemeLoader
 	{
 	public:
 		virtual ~IThemeLoader() = default;

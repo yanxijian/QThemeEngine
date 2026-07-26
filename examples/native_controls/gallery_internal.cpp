@@ -1,4 +1,4 @@
-#include "gallery_internal.hpp"
+﻿#include "gallery_internal.hpp"
 
 #include <QMouseEvent>
 #include <QPainter>

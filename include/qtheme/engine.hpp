@@ -1,4 +1,4 @@
-#ifndef __QTHEME_ENGINE_ENGINE_H__
+﻿#ifndef __QTHEME_ENGINE_ENGINE_H__
 #define __QTHEME_ENGINE_ENGINE_H__
 
 #include "settings.hpp"
@@ -9,6 +9,7 @@
 #include <QColor>
 #include <QObject>
 #include <QStringList>
+#include <qtheme/qtheme_export.hpp>
 
 #include <memory>
 
@@ -21,7 +22,7 @@ namespace qtheme
 	class PackRegistry;
 
 	/// Process-facing session: packs, accent, color scheme, QThemeStyle, preferences.
-	class Engine final : public QObject
+	class QTE_EXPORT Engine final : public QObject
 	{
 		Q_OBJECT
 	public:

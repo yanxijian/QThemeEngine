@@ -1,9 +1,10 @@
-#ifndef __QTHEME_ENGINE_ISKINMANAGER_H__
+﻿#ifndef __QTHEME_ENGINE_ISKINMANAGER_H__
 #define __QTHEME_ENGINE_ISKINMANAGER_H__
 
 #include "ithemeloader.hpp"
 
 #include <QString>
+#include <qtheme/qtheme_export.hpp>
 
 namespace theme
 {
@@ -13,7 +14,7 @@ namespace theme
 		QString themeFilePath; // main .theme.xml
 	};
 
-	class ISkinManager
+	class QTE_EXPORT ISkinManager
 	{
 	public:
 		virtual ~ISkinManager() = default;

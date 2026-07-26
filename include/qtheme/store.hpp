@@ -1,4 +1,4 @@
-#ifndef __QTHEME_ENGINE_STORE_H__
+﻿#ifndef __QTHEME_ENGINE_STORE_H__
 #define __QTHEME_ENGINE_STORE_H__
 
 #include "types.hpp"
@@ -6,13 +6,14 @@
 #include <QHash>
 #include <QString>
 #include <QStringList>
+#include <qtheme/qtheme_export.hpp>
 
 #include <cstdint>
 
 namespace qtheme
 {
 	/// Table: (group, role) → color / metric. Prefer batching mutations via beginUpdate/endUpdate.
-	class ThemeStore
+	class QTE_EXPORT ThemeStore
 	{
 	public:
 		void clear();

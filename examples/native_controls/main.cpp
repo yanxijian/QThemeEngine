@@ -1,4 +1,4 @@
-#include "gallery.hpp"
+﻿#include "gallery.hpp"
 #include "qtheme/engine.hpp"
 #include "qtheme/types.hpp"
 

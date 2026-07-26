@@ -1,10 +1,11 @@
-#ifndef __QTHEME_ENGINE_THEMELOADER_H__
+﻿#ifndef __QTHEME_ENGINE_THEMELOADER_H__
 #define __QTHEME_ENGINE_THEMELOADER_H__
 
 #include "ithemeloader.hpp"
 
 #include <QHash>
 #include <QString>
+#include <qtheme/qtheme_export.hpp>
 
 #include <memory>
 
@@ -12,7 +13,7 @@ namespace theme
 {
 	/// Optional M1 XML Format stub (compatibility only).
 	/// Product path uses JSON Theme Packs via `qtheme::PackRegistry` / `qtheme::Engine`.
-	class ThemeLoader final : public IThemeLoader
+	class QTE_EXPORT ThemeLoader final : public IThemeLoader
 	{
 	public:
 		ThemeLoader();

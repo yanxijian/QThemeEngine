@@ -1,16 +1,17 @@
-#ifndef __QTHEME_ENGINE_STYLE_H__
+﻿#ifndef __QTHEME_ENGINE_STYLE_H__
 #define __QTHEME_ENGINE_STYLE_H__
 
 #include "store.hpp"
 
 #include <QProxyStyle>
+#include <qtheme/qtheme_export.hpp>
 
 #include <memory>
 
 namespace qtheme
 {
 	/// Theme-table-driven style (Fluent-inspired metrics/drawing via ThemeStore).
-	class QThemeStyle final : public QProxyStyle
+	class QTE_EXPORT QThemeStyle final : public QProxyStyle
 	{
 		Q_OBJECT
 	public:

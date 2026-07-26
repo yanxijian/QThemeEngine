@@ -1,4 +1,4 @@
-#include "qtheme/settings.hpp"
+﻿#include "qtheme/settings.hpp"
 
 #include <QSettings>
 

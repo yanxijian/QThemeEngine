@@ -1,4 +1,4 @@
-#ifndef __QTHEME_ENGINE_STYLE_PAINT_UTIL_H__
+﻿#ifndef __QTHEME_ENGINE_STYLE_PAINT_UTIL_H__
 #define __QTHEME_ENGINE_STYLE_PAINT_UTIL_H__
 
 #include <QColor>

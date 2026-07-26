@@ -1,4 +1,4 @@
-#ifndef __QTHEME_DEMO_GALLERY_INTERNAL_H__
+﻿#ifndef __QTHEME_DEMO_GALLERY_INTERNAL_H__
 #define __QTHEME_DEMO_GALLERY_INTERNAL_H__
 
 #include <QGroupBox>

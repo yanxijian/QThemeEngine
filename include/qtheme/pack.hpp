@@ -1,4 +1,4 @@
-#ifndef __QTHEME_ENGINE_PACK_H__
+﻿#ifndef __QTHEME_ENGINE_PACK_H__
 #define __QTHEME_ENGINE_PACK_H__
 
 #include "store.hpp"
@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QString>
 #include <QStringList>
+#include <qtheme/qtheme_export.hpp>
 
 namespace qtheme
 {
@@ -19,7 +20,7 @@ namespace qtheme
 	};
 
 	/// Load / register / materialize Theme Packs (JSON) into ThemeStore.
-	class PackRegistry
+	class QTE_EXPORT PackRegistry
 	{
 	public:
 		[[nodiscard]] bool registerPackFile(const QString& pathOrQrc, Error* err = nullptr);

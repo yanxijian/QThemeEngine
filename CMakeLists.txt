@@ -16,9 +16,10 @@ if(MSVC)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
+option(QTE_BUILD_SHARED "Build qtheme_engine as a shared library" ON)
 option(QTE_BUILD_TESTS "Build unit tests" ON)
 option(QTE_BUILD_EXAMPLES "Build example apps" ON)
-option(QTE_BUILD_WIDGETS "Build owner-drawn sample widgets" ON)
+option(QTE_BUILD_WIDGETS "Build owner-drawn sample widgets (separate target)" ON)
 option(QTE_INSTALL "Install library, headers, and CMake package" ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
@@ -28,6 +29,7 @@ if(QTE_BUILD_TESTS)
 endif()
 
 include(GNUInstallDirs)
+include(GenerateExportHeader)
 
 set(QTE_ENGINE_SOURCES
   src/qtheme/color_util.cpp
@@ -73,28 +75,29 @@ set(QTE_ENGINE_SOURCES
   include/theme/color_util.hpp
 )
 
-if(QTE_BUILD_WIDGETS)
-  list(APPEND QTE_ENGINE_SOURCES
-    widgets/demobutton.cpp
-    widgets/demobutton.hpp
-  )
+if(QTE_BUILD_SHARED)
+  add_library(qtheme_engine SHARED ${QTE_ENGINE_SOURCES})
+else()
+  add_library(qtheme_engine STATIC ${QTE_ENGINE_SOURCES})
 endif()
-
-add_library(qtheme_engine ${QTE_ENGINE_SOURCES})
 add_library(QThemeEngine::engine ALIAS qtheme_engine)
+
+set(QTE_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/include")
+file(MAKE_DIRECTORY "${QTE_GENERATED_INCLUDE_DIR}/qtheme")
+generate_export_header(qtheme_engine
+  BASE_NAME QTE
+  EXPORT_MACRO_NAME QTE_EXPORT
+  EXPORT_FILE_NAME "${QTE_GENERATED_INCLUDE_DIR}/qtheme/qtheme_export.hpp"
+)
 
 target_include_directories(qtheme_engine
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${QTE_GENERATED_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/qtheme>
 )
-if(QTE_BUILD_WIDGETS)
-  target_include_directories(qtheme_engine PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/widgets>
-  )
-endif()
 
 target_link_libraries(qtheme_engine PUBLIC Qt6::Widgets)
 
@@ -103,7 +106,20 @@ set_target_properties(qtheme_engine PROPERTIES
   OUTPUT_NAME qtheme_engine
   VERSION ${PROJECT_VERSION}
   SOVERSION ${PROJECT_VERSION_MAJOR}
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
 )
+
+if(QTE_BUILD_WIDGETS)
+  add_library(qtheme_demowidgets STATIC
+    widgets/demobutton.cpp
+    widgets/demobutton.hpp
+  )
+  target_include_directories(qtheme_demowidgets PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/widgets>
+  )
+  target_link_libraries(qtheme_demowidgets PUBLIC qtheme_engine Qt6::Widgets)
+endif()
 
 if(QTE_BUILD_EXAMPLES)
   add_executable(qtheme_demo
@@ -118,6 +134,9 @@ if(QTE_BUILD_EXAMPLES)
     examples/native_controls/gallery_internal.hpp
   )
   target_link_libraries(qtheme_demo PRIVATE qtheme_engine)
+  if(TARGET qtheme_demowidgets)
+    target_link_libraries(qtheme_demo PRIVATE qtheme_demowidgets)
+  endif()
   if(TARGET Qt6::OpenGLWidgets)
     target_link_libraries(qtheme_demo PRIVATE Qt6::OpenGLWidgets)
     target_compile_definitions(qtheme_demo PRIVATE QTE_HAS_OPENGLWIDGETS=1)
@@ -130,7 +149,6 @@ if(QTE_BUILD_EXAMPLES)
     set_target_properties(qtheme_demo PROPERTIES WIN32_EXECUTABLE TRUE)
   endif()
 
-  # Deploy Qt (+ CRT) beside the demo so double-click works without PATH.
   if(NOT WINDEPLOYQT_EXECUTABLE)
     find_program(WINDEPLOYQT_EXECUTABLE
       NAMES windeployqt windeployqt.exe
@@ -142,15 +160,25 @@ if(QTE_BUILD_EXAMPLES)
   endif()
   if(WIN32 AND WINDEPLOYQT_EXECUTABLE)
     add_custom_command(TARGET qtheme_demo POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              $<TARGET_FILE:qtheme_engine>
+              $<TARGET_FILE_DIR:qtheme_demo>
       COMMAND "${WINDEPLOYQT_EXECUTABLE}"
               --release
               --no-translations
               --compiler-runtime
               "$<TARGET_FILE:qtheme_demo>"
-      COMMENT "windeployqt: deploy Qt runtime beside qtheme_demo"
+      COMMENT "Deploy qtheme_engine.dll + Qt runtime beside qtheme_demo"
       VERBATIM
     )
   elseif(WIN32)
+    add_custom_command(TARGET qtheme_demo POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              $<TARGET_FILE:qtheme_engine>
+              $<TARGET_FILE_DIR:qtheme_demo>
+      COMMENT "Copy qtheme_engine.dll beside qtheme_demo"
+      VERBATIM
+    )
     message(WARNING "windeployqt not found; qtheme_demo needs QTDIR/bin on PATH to run")
   endif()
 endif()
@@ -159,6 +187,15 @@ if(QTE_BUILD_TESTS)
   enable_testing()
   add_executable(qtheme_tests tests/test_smoke.cpp)
   target_link_libraries(qtheme_tests PRIVATE qtheme_engine Qt6::Test)
+  if(WIN32 AND QTE_BUILD_SHARED)
+    add_custom_command(TARGET qtheme_tests POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              $<TARGET_FILE:qtheme_engine>
+              $<TARGET_FILE_DIR:qtheme_tests>
+      COMMENT "Copy qtheme_engine.dll beside qtheme_tests"
+      VERBATIM
+    )
+  endif()
   add_test(NAME qtheme_tests COMMAND qtheme_tests)
 endif()
 
@@ -176,6 +213,13 @@ if(QTE_INSTALL)
   install(DIRECTORY include/qtheme
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.hpp"
+  )
+  install(DIRECTORY include/theme
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.hpp"
+  )
+  install(FILES "${QTE_GENERATED_INCLUDE_DIR}/qtheme/qtheme_export.hpp"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/qtheme
   )
 
   install(EXPORT QThemeEngineTargets
@@ -204,4 +248,4 @@ if(QTE_INSTALL)
 endif()
 
 message(STATUS "QThemeEngine ${PROJECT_VERSION}")
-message(STATUS "  QTE_BUILD_EXAMPLES=${QTE_BUILD_EXAMPLES} QTE_BUILD_TESTS=${QTE_BUILD_TESTS} QTE_BUILD_WIDGETS=${QTE_BUILD_WIDGETS} QTE_INSTALL=${QTE_INSTALL}")
+message(STATUS "  QTE_BUILD_SHARED=${QTE_BUILD_SHARED} QTE_BUILD_EXAMPLES=${QTE_BUILD_EXAMPLES} QTE_BUILD_TESTS=${QTE_BUILD_TESTS} QTE_BUILD_WIDGETS=${QTE_BUILD_WIDGETS} QTE_INSTALL=${QTE_INSTALL}")

@@ -1,0 +1,15 @@
+# EditorConfig — handwritten C/C++ (UTF-8 BOM + CRLF)
+# Matches Cursor rule cpp-source-encoding.mdc / clang-format LineEnding: CRLF
+
+root = true
+
+[*.{c,cpp,cxx,cc,h,hpp,hxx,inl}]
+charset = utf-8-bom
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cmake,txt,md,py,json,yml,yaml}]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true

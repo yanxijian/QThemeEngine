@@ -1,0 +1,15 @@
+---
+description: C/C++ sources must be UTF-8 with BOM and CRLF line endings (Windows)
+globs: **/*.{c,cpp,cxx,cc,h,hpp,hxx,inl}
+alwaysApply: true
+---
+
+# C/C++ 源文件编码与换行（硬性）
+
+手写 C/C++ 必须为 **UTF-8 with BOM** + **CRLF**。
+
+- `clang-format` 的 `LineEnding: CRLF` 只管换行，**不管 BOM**。
+- 新建/改写/format 后若变成无 BOM 或 LF，必须纠正。
+- 排除：`build*/`、`*_autogen/`、`*.pb.cc`/`*.pb.h`、第三方。
+
+全局详规：`C:/Users/Dana/.cursor/rules/cpp-source-encoding.mdc`。

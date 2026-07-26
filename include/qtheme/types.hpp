@@ -1,8 +1,9 @@
-#ifndef __QTHEME_ENGINE_TYPES_H__
+﻿#ifndef __QTHEME_ENGINE_TYPES_H__
 #define __QTHEME_ENGINE_TYPES_H__
 
 #include <QColor>
 #include <QString>
+#include <qtheme/qtheme_export.hpp>
 
 namespace qtheme
 {
