@@ -41,15 +41,19 @@ engine.switchSkin(QStringLiteral("dark"));
 
 ## 构建
 
+本地共享库惯例使用构建目录 **`build-shared`**（与 `install_stack` / 旁路消费方一致）。CI 仍可能用 `-B build`。
+
 ```bat
 :: 先 vcvars x64；默认 SHARED，安装到本地 prefix
-cmake -S . -B build -G Ninja ^
+:: QTDIR = Qt 6.8+ 前缀；PREFIX = 安装根（常与三仓同级的 prefix/）
+set PREFIX=<install-prefix>
+cmake -S . -B build-shared -G Ninja ^
   -DCMAKE_PREFIX_PATH=%QTDIR% ^
-  -DCMAKE_INSTALL_PREFIX=D:\Codes\prefix ^
+  -DCMAKE_INSTALL_PREFIX=%PREFIX% ^
   -DQTE_BUILD_SHARED=ON -DQTE_INSTALL=ON
-cmake --build build
-cmake --install build
-build\qte_demo.exe
+cmake --build build-shared
+cmake --install build-shared
+build-shared\qte_demo.exe
 ```
 
 Windows 上编 `qte_demo` 会拷贝 `qte_engine.dll` 并跑 `windeployqt`。

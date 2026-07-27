@@ -41,14 +41,31 @@ Do not mix `setStyleSheet` on UI themed by this engine. Color literals are `#RRG
 
 ## Build
 
+Local shared-library convention uses **`build-shared`** (CI may still use `-B build`).
+
 ```bat
-cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=%QTDIR%
-cmake --build build
-ctest --test-dir build --output-on-failure
+:: vcvars x64 first; default SHARED, install to a local prefix
+:: QTDIR = Qt 6.8+ prefix; PREFIX = install root (often sibling prefix/ of the three repos)
+set PREFIX=<install-prefix>
+cmake -S . -B build-shared -G Ninja ^
+  -DCMAKE_PREFIX_PATH=%QTDIR% ^
+  -DCMAKE_INSTALL_PREFIX=%PREFIX% ^
+  -DQTE_BUILD_SHARED=ON -DQTE_INSTALL=ON
+cmake --build build-shared
+cmake --install build-shared
+ctest --test-dir build-shared --output-on-failure
+build-shared\qte_demo.exe
 ```
 
-CMake options: `QTE_BUILD_EXAMPLES`, `QTE_BUILD_TESTS`, `QTE_BUILD_WIDGETS`, `QTE_INSTALL`.  
-Artifacts: library `qte_engine` (`QThemeEngine::engine`), demo `qte_demo`, tests `qte_tests`.  
+| CMake option | Role |
+|--------------|------|
+| `QTE_BUILD_SHARED` | Shared library (default ON); output name `qte_engine` |
+| `QTE_BUILD_EXAMPLES` | Demo (`qte_demo`) |
+| `QTE_BUILD_TESTS` | Unit tests (`qte_tests`) |
+| `QTE_BUILD_WIDGETS` | Sample widgets target `qte_demowidgets` |
+| `QTE_INSTALL` | Install + Config package (`QThemeEngine::engine`) |
+
+Artifacts: `qte_engine` DLL / import lib, `qte_demo`, `qte_tests`.  
 CI: [ci.md](ci.md).
 
 ## Documentation

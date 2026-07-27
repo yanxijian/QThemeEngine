@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
-MUX = Path(r"D:\Codes\microsoft-ui-xaml\controls\dev\CommonStyles\Common_themeresources_any.xaml")
-TEXTBOX = Path(r"D:\Codes\microsoft-ui-xaml\controls\dev\CommonStyles\TextBox_themeresources.xaml")
-QTE_DARK = Path(r"D:\Codes\QThemeEngine\resources\themes\fluent\fluent.dark.theme.json")
-QTE_LIGHT = Path(r"D:\Codes\QThemeEngine\resources\themes\fluent\fluent.light.theme.json")
+QTE_ROOT = Path(__file__).resolve().parents[1]
+CODES = QTE_ROOT.parent
+MUX_ROOT = Path(os.environ["MUX_ROOT"]) if os.environ.get("MUX_ROOT") else (CODES / "microsoft-ui-xaml")
+MUX = MUX_ROOT / "controls" / "dev" / "CommonStyles" / "Common_themeresources_any.xaml"
+TEXTBOX = MUX_ROOT / "controls" / "dev" / "CommonStyles" / "TextBox_themeresources.xaml"
+QTE_DARK = QTE_ROOT / "resources" / "themes" / "fluent" / "fluent.dark.theme.json"
+QTE_LIGHT = QTE_ROOT / "resources" / "themes" / "fluent" / "fluent.light.theme.json"
 
 
 def parse_theme_colors(xaml: str, block_key: str) -> dict[str, str]:
@@ -70,6 +74,11 @@ def rgb(h: str) -> tuple[int, int, int]:
 
 
 def main() -> None:
+	if not MUX.is_file():
+		raise SystemExit(
+			f"error: microsoft-ui-xaml not found at {MUX}\n"
+			"Clone it as a sibling of QThemeEngine, or set MUX_ROOT."
+		)
 	xaml = MUX.read_text(encoding="utf-8")
 	dark_mux = parse_theme_colors(xaml, "Default")
 	light_mux = parse_theme_colors(xaml, "Light")

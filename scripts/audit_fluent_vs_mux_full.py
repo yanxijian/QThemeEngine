@@ -7,14 +7,17 @@ Reverse: Common Color tokens and key control StaticResources that no QTE mapping
 from __future__ import annotations
 
 import json
+import os
 import re
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(r"D:\Codes")
-MUX = ROOT / "microsoft-ui-xaml"
-QTE = ROOT / "QThemeEngine" / "resources" / "themes" / "fluent"
-OUT = ROOT / "QThemeEngine" / "docs" / "zh" / "fluent-mux-audit.md"
+QTE_ROOT = Path(__file__).resolve().parents[1]
+CODES = QTE_ROOT.parent
+MUX_ROOT = Path(os.environ["MUX_ROOT"]) if os.environ.get("MUX_ROOT") else (CODES / "microsoft-ui-xaml")
+MUX = MUX_ROOT
+QTE = QTE_ROOT / "resources" / "themes" / "fluent"
+OUT = QTE_ROOT / "docs" / "zh" / "fluent-mux-audit.md"
 COMMON = MUX / "controls" / "dev" / "CommonStyles" / "Common_themeresources_any.xaml"
 
 CONTROL_FILES = [
@@ -431,6 +434,11 @@ def resolve_common(
 
 
 def main() -> None:
+	if not COMMON.is_file():
+		raise SystemExit(
+			f"error: microsoft-ui-xaml not found at {COMMON}\n"
+			"Clone it as a sibling of QThemeEngine, or set MUX_ROOT."
+		)
 	common_xaml = COMMON.read_text(encoding="utf-8")
 	dark_colors = parse_colors(parse_theme_block(common_xaml, "Default"))
 	light_colors = parse_colors(parse_theme_block(common_xaml, "Light"))
@@ -559,8 +567,10 @@ def main() -> None:
 	lines = []
 	lines.append("# Fluent Pack ↔ microsoft-ui-xaml 全量色审计")
 	lines.append("")
-	lines.append(f"- Common: `{COMMON}`")
-	lines.append(f"- QTE: `{QTE}/fluent.{{light,dark}}.theme.json`")
+	lines.append(
+		"- Common: `microsoft-ui-xaml/controls/dev/CommonStyles/Common_themeresources_any.xaml`"
+	)
+	lines.append("- QTE: `resources/themes/fluent/fluent.{light,dark}.theme.json`")
 	lines.append(f"- 对照角色数（有映射）: {len(MAPPINGS)}")
 	lines.append(f"- QTE 角色总数: {len(all_qte_keys)}；无映射: {len(unmapped)}")
 	lines.append("")

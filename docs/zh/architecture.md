@@ -207,7 +207,7 @@ resources/               内置 fallback 主题
 cmake/                   QThemeEngineConfig.cmake.in（find_package）
 ```
 
-CMake 选项：`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGETS`、`QTE_INSTALL`。
+CMake 选项：`QTE_BUILD_SHARED`（默认 ON，产物 `qte_engine`）、`QTE_BUILD_EXAMPLES`、`QTE_BUILD_TESTS`、`QTE_BUILD_WIDGETS`、`QTE_INSTALL`。本地共享库惯例构建目录为 `build-shared`。
 
 ### 产品集成（M5）
 

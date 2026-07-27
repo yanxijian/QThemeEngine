@@ -1,7 +1,7 @@
 # Fluent Pack ↔ microsoft-ui-xaml 全量色审计
 
-- Common: `D:\Codes\microsoft-ui-xaml\controls\dev\CommonStyles\Common_themeresources_any.xaml`
-- QTE: `D:\Codes\QThemeEngine\resources\themes\fluent/fluent.{light,dark}.theme.json`
+- Common: `microsoft-ui-xaml/controls/dev/CommonStyles/Common_themeresources_any.xaml`
+- QTE: `resources/themes/fluent/fluent.{light,dark}.theme.json`
 - 对照角色数（有映射）: 204
 - QTE 角色总数: 204；无映射: 0
 

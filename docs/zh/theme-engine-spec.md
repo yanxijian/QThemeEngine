@@ -1613,6 +1613,8 @@ theme_engine/
 
 ### T6.3 最小 `CMakeLists.txt`（示意）
 
+> **历史示意**：目标名 `theme_lib` / `theme_demo` / `theme_tests` 为 L0 草案。当前仓库产物为 **`qte_engine` / `qte_demo` / `qte_tests`**（CMake ≥ 3.21，默认 SHARED）。
+
 ```cmake
 cmake_minimum_required(VERSION 3.16)
 project(theme_engine LANGUAGES CXX)
