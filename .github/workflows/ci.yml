@@ -15,8 +15,8 @@ jobs:
     name: clang-format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install clang-format 20
@@ -31,11 +31,11 @@ jobs:
     name: Windows MSVC + Qt (tests)
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - uses: seanmiddleditch/gha-setup-ninja@v5
+      - uses: seanmiddleditch/gha-setup-ninja@v6
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -64,7 +64,7 @@ jobs:
     name: Ubuntu + Qt (tests)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install Ninja
         run: sudo apt-get update && sudo apt-get install -y ninja-build libgl1-mesa-dev
       - name: Install Qt
