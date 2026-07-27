@@ -12,21 +12,22 @@ Do **not** use `#pragma once`. Use:
 __{TARGET}_{FILENAME}_H__
 ```
 
-- **TARGET**: CMake 库/可执行目标名，大写（`qtheme_engine` → `QTHEME_ENGINE`，`qtheme_demo` → `QTHEME_DEMO`）
-- **FILENAME**: 文件名 stem 大写（`engine.hpp` → `ENGINE`）；同目标下重名时加父目录（如 `QTHEME_COLOR_UTIL` / `THEME_COLOR_UTIL`）
+- **TARGET**: CMake 库/可执行目标名，大写（`qte_engine` → `QTE_ENGINE`，`qte_demo` → `QTE_DEMO`）
+- **FILENAME**: 文件名 stem 大写（`engine.hpp` → `ENGINE`）；同目标下重名时加父目录
 - 后缀统一 `_H__`（含 `.hpp`）
 - 形如 `__…_H__`（双下划线前缀/后缀）为本仓库约定
+- 既有 `include/qtheme/**` 公共头仍使用历史前缀 `__QTHEME_*`，勿为对齐目标名而批量改守卫
 
 ## Examples
 
 ```cpp
-// include/qtheme/engine.hpp  (target: qtheme_engine)
+// include/qtheme/engine.hpp  (historical guard; target: qte_engine)
 #ifndef __QTHEME_ENGINE_ENGINE_H__
 #define __QTHEME_ENGINE_ENGINE_H__
 // ...
 #endif  // __QTHEME_ENGINE_ENGINE_H__
 
-// examples/native_controls/gallery.hpp  (target: qtheme_demo)
+// examples/native_controls/gallery.hpp  (historical; target: qte_demo)
 #ifndef __QTHEME_DEMO_GALLERY_H__
 #define __QTHEME_DEMO_GALLERY_H__
 ```

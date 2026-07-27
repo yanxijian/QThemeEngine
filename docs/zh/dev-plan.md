@@ -32,7 +32,7 @@
 
 ## 3. 明确暂不做
 
-- 为「将来接 MultiProcessShell」预重构 Host 集成层  
+- 为空想集成场景预重构 Host 层  
 - 空抽第二主题 Format adapter（one adapter = hypothetical seam）  
 - 把 Engine 拆成多个公开门面（除非 Interface 继续明显膨胀）
 

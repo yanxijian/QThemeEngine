@@ -48,6 +48,7 @@ ctest --test-dir build --output-on-failure
 ```
 
 CMake options: `QTE_BUILD_EXAMPLES`, `QTE_BUILD_TESTS`, `QTE_BUILD_WIDGETS`, `QTE_INSTALL`.  
+Artifacts: library `qte_engine` (`QThemeEngine::engine`), demo `qte_demo`, tests `qte_tests`.  
 CI: [ci.md](ci.md).
 
 ## Documentation

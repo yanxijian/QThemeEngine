@@ -42,27 +42,25 @@ engine.switchSkin(QStringLiteral("dark"));
 ## 构建
 
 ```bat
-:: 先 vcvars x64；默认 SHARED，安装到本地 prefix 供 QFR/MPS find_package
+:: 先 vcvars x64；默认 SHARED，安装到本地 prefix
 cmake -S . -B build -G Ninja ^
   -DCMAKE_PREFIX_PATH=%QTDIR% ^
   -DCMAKE_INSTALL_PREFIX=D:\Codes\prefix ^
   -DQTE_BUILD_SHARED=ON -DQTE_INSTALL=ON
 cmake --build build
 cmake --install build
-build\qtheme_demo.exe
+build\qte_demo.exe
 ```
 
-Windows 上编 `qtheme_demo` 会拷贝 `qtheme_engine.dll` 并跑 `windeployqt`。
+Windows 上编 `qte_demo` 会拷贝 `qte_engine.dll` 并跑 `windeployqt`。
 
 | CMake 选项 | 作用 |
 |------------|------|
-| `QTE_BUILD_SHARED` | 动态库（默认 ON） |
-| `QTE_BUILD_EXAMPLES` | Demo / 画廊 |
-| `QTE_BUILD_TESTS` | 单测 |
-| `QTE_BUILD_WIDGETS` | 自绘样例控件独立目标 `qtheme_demowidgets` |
-| `QTE_INSTALL` | 安装与 Config 包 |
-
-三仓一键安装见 MultiProcessShell：`python scripts/install_stack.py`。
+| `QTE_BUILD_SHARED` | 动态库（默认 ON）；产物名 `qte_engine` |
+| `QTE_BUILD_EXAMPLES` | Demo（`qte_demo`） |
+| `QTE_BUILD_TESTS` | 单测（`qte_tests`） |
+| `QTE_BUILD_WIDGETS` | 自绘样例控件独立目标 `qte_demowidgets` |
+| `QTE_INSTALL` | 安装与 Config 包（`QThemeEngine::engine`） |
 
 CI 说明：[docs/zh/ci.md](docs/zh/ci.md) · 本地格式：`python scripts/format_source.py --check`
 

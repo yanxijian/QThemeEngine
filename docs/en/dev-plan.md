@@ -28,6 +28,6 @@ Internals: `StyleCtx` + paint util; family files for edit / check / focus / butt
 
 ## Explicitly not now
 
-- Pre-refactoring for a future MultiProcessShell Host integration  
+- Pre-refactoring Host layers for speculative integrations  
 - Inventing a second Format adapter “for the seam”  
 - Splitting `Engine` into multiple public façades without Interface pressure

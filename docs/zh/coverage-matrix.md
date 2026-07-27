@@ -52,7 +52,7 @@
 |------|------|
 | `palette.*` | 全局语义 Token（含 `text.tertiary` / `accent.*` / `focus.outer|inner`） |
 | `button.*` | 按钮面/文/边/圆角/边距 / `bg.accent*` / `fg.accent*` / `bg.checked*` / `height.tool` |
-| `ribbon.*` | Ribbon 壳度量（供 QFluentRibbon）；色仍可由宿主 Bridge 从 `palette.*` 派生 |
+| `ribbon.*` | Ribbon 壳度量扩展键；色仍可由宿主 Bridge 从 `palette.*` 派生 |
 | `commandlink.*` | 命令链接标题/说明 |
 | `edit.*` | 输入框（含 `fg.placeholder` → `QPalette::PlaceholderText`） |
 | `textedit.*` | 多行编辑 / 滚动区外框（含 `fg.placeholder`、`padding`、`frameWidth`） |
