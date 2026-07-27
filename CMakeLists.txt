@@ -52,11 +52,6 @@ set(QTE_ENGINE_SOURCES
   src/qtheme/engine.cpp
   src/qtheme/settings.cpp
   src/qtheme/api.cpp
-  # M1 Format stubs (XML loader)
-  src/themeloader.cpp
-  src/skinmanager.cpp
-  src/themeapi.cpp
-  src/color_util.cpp
   resources/theme.qrc
   include/qtheme/types.hpp
   include/qtheme/store.hpp
@@ -67,12 +62,6 @@ set(QTE_ENGINE_SOURCES
   include/qtheme/settings.hpp
   include/qtheme/api.hpp
   include/qtheme/color_util.hpp
-  include/theme/ithemeloader.hpp
-  include/theme/iskinmanager.hpp
-  include/theme/themeapi.hpp
-  include/theme/themeloader.hpp
-  include/theme/skinmanager.hpp
-  include/theme/color_util.hpp
 )
 
 if(QTE_BUILD_SHARED)
@@ -211,10 +200,6 @@ if(QTE_INSTALL)
   )
 
   install(DIRECTORY include/qtheme
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    FILES_MATCHING PATTERN "*.hpp"
-  )
-  install(DIRECTORY include/theme
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.hpp"
   )

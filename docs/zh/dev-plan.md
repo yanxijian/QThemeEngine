@@ -24,7 +24,6 @@
 |------|------|------|
 | **Strong** | 按控件族拆分 `QThemeStyle` **内部**实现 | **绘制路径已加深**（`src/qtheme/style/*`）；公开 `QStyle` seam 不变。**度量 / subElement 仍在** `style.cpp`，待后续按需再拆 |
 | Worth exploring | Format 从 ThemeStore 剥离 | 待讨论 |
-| Speculative | 隔离或默认构建去掉 `theme::` stub | 待讨论 |
 
 内部布局备忘：`StyleCtx` + `style_paint_util`；族文件含 edit / check / focus / button / menu / itemview / tab_header / progress / chrome / complex；`style.cpp` 负责分发与 polish / palette / metrics。
 
@@ -33,7 +32,7 @@
 ## 3. 明确暂不做
 
 - 为空想集成场景预重构 Host 层  
-- 空抽第二主题 Format adapter（one adapter = hypothetical seam）  
+- 空抽第二主题 Format adapter（含恢复 `.theme.xml`）  
 - 把 Engine 拆成多个公开门面（除非 Interface 继续明显膨胀）
 
 ---

@@ -6,7 +6,6 @@
 #include "qtheme/store.hpp"
 #include "qtheme/style.hpp"
 #include "qtheme/types.hpp"
-#include "theme/themeloader.hpp"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -66,7 +65,6 @@ private slots:
 	void style_m6MetricsFromPack();
 	void style_textEditFrameAndStatusMetrics();
 	void style_textEditFrameLightDiffersFromDark();
-	void setupXml_deferredToM1_compatStub();
 };
 
 void ThemeSmokeTest::colorLiteral_rrggbbaa()
@@ -711,15 +709,6 @@ void ThemeSmokeTest::style_textEditFrameLightDiffersFromDark()
 	const QColor darkPx = paintFrame(darkStore);
 	QVERIFY(lightPx != darkPx);
 	QVERIFY(lightPx.lightness() > darkPx.lightness());
-}
-
-void ThemeSmokeTest::setupXml_deferredToM1_compatStub()
-{
-	// M1 XML Format remains an optional compatibility stub; JSON Theme Packs are SSOT.
-	theme::ThemeLoader loader;
-	theme::ThemeError err = theme::ThemeError::None;
-	const bool ok = loader.setupXml(QStringLiteral(":/theme/app.theme.xml"), QStringLiteral("light"), {}, &err);
-	QVERIFY(!ok);
 }
 
 QTEST_MAIN(ThemeSmokeTest)

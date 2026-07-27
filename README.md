@@ -76,7 +76,6 @@ src/qtheme/               实现（含 style/* 按控件族拆分）
 resources/themes/fluent/  Fluent Theme Pack JSON（SSOT）
 examples/native_controls/ Fluent 画廊
 widgets/                  自绘 DemoButton（支线）
-include/theme/ + src/     可选 M1 XML 兼容 stub（非主路径）
 cmake/                    QThemeEngineConfig.cmake.in
 docs/zh|en/               中英文文档
 ```
@@ -89,7 +88,7 @@ docs/zh|en/               中英文文档
 | 开发计划 | [dev-plan.md](docs/zh/dev-plan.md) | [dev-plan.md](docs/en/dev-plan.md) |
 | 覆盖矩阵 | [coverage-matrix.md](docs/zh/coverage-matrix.md) | — |
 | 控件清单 | [qt-widgets-inventory.md](docs/zh/qt-widgets-inventory.md) | [qt-widgets-inventory.md](docs/en/qt-widgets-inventory.md) |
-| 格式 / Token | [theme-engine-spec.md](docs/zh/theme-engine-spec.md) | — |
+| 格式归档 | [theme-engine-spec.md](docs/zh/theme-engine-spec.md) | — |
 | CI | [ci.md](docs/zh/ci.md) | [ci.md](docs/en/ci.md) |
 
 日常以中文文档为准；英文为同步译本。
@@ -100,10 +99,11 @@ docs/zh|en/               中英文文档
 |----|------|------|
 | M0 | Store seed + `Engine::apply` + QThemeStyle；原生按钮无 QSS 换色 | 已落地 |
 | M0.5 | Fluent Pack + Accent / ColorScheme + Pack merge | 已落地 |
-| M1 | `.theme.xml` Format（可选兼容 stub；JSON Pack 为 SSOT） | stub only |
 | M2–M4 | 常用控件 Fluent 绘制（含 Spin / Menu / Slider / ItemView 等） | 已落地 |
 | M5 | 偏好持久化、Pack 搜索目录、`find_package` 安装 | 已落地 |
 | M6 | 覆盖加深（TextEdit / Frame / Splitter / Dock / Dial 等） | 已落地 |
+
+> 曾规划的 **M1**（`.theme.xml`）已取消；主题数据仅支持 JSON Pack。
 
 近中期姿态见 [dev-plan.md](docs/zh/dev-plan.md)。
 

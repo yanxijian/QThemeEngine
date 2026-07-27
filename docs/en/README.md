@@ -76,7 +76,7 @@ CI: [ci.md](ci.md).
 | Dev plan | [../zh/dev-plan.md](../zh/dev-plan.md) | [dev-plan.md](dev-plan.md) |
 | Coverage matrix | [../zh/coverage-matrix.md](../zh/coverage-matrix.md) | — |
 | Widgets inventory | [../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md) | [qt-widgets-inventory.md](qt-widgets-inventory.md) |
-| Format / tokens | [../zh/theme-engine-spec.md](../zh/theme-engine-spec.md) | — |
+| Format (archive) | [../zh/theme-engine-spec.md](../zh/theme-engine-spec.md) | — |
 | CI | [../zh/ci.md](../zh/ci.md) | [ci.md](ci.md) |
 
 ## Milestones
@@ -84,8 +84,9 @@ CI: [ci.md](ci.md).
 | ID | Deliverable | Status |
 |----|-------------|--------|
 | M0–M0.5 | Store, Engine, Fluent packs, Accent | Done |
-| M1 | Optional XML Format stub (JSON packs SSOT) | Stub only |
 | M2–M6 | Fluent drawing coverage + install/Config | Done |
+
+> Former **M1** (`.theme.xml` Format) was cancelled; JSON packs only.
 
 ## License
 

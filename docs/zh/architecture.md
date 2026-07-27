@@ -2,7 +2,7 @@
 
 > **English**：[../en/architecture.md](../en/architecture.md)  
 > **地位**：工程与产品方向的**权威说明**。  
-> **关系**：[`theme-engine-spec.md`](theme-engine-spec.md) 保留主题格式 / Token / 加载算法与历史 L0 细节；若与本文冲突，**以本文的产品目标与模块边界为准**。
+> **关系**：JSON Theme Pack 契约见本文 §4；[`theme-engine-spec.md`](theme-engine-spec.md) 仅保留「曾规划 XML Format、已移除」的归档说明。
 
 ---
 
@@ -23,7 +23,7 @@ QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
 
 | 原则 | 说明 |
 |------|------|
-| 数据与绘制分离 | XML/包只产 Store；绘制只在 QStyle / 自绘中查表 |
+| 数据与绘制分离 | Pack / JSON 只产 Store；绘制只在 QStyle / 自绘中查表 |
 | 单一数据源 | Palette、Style、自绘 API 读同一 Store |
 | 渐进覆盖 | 未实现的 CE_/PM_ 回退基类 Style；用覆盖矩阵管理 |
 | 可测试 | Store Golden 可不启 GUI；Style 度量可单测 |
@@ -36,9 +36,9 @@ QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
 
 ```text
                     ┌─────────────────┐
-                    │   Theme Pack    │  (.theme.xml / 资源)
+                    │   Theme Pack    │  (*.theme.json / qrc)
                     └────────┬────────┘
-                             │ Format / Loader
+                             │ PackRegistry
                              ▼
                     ┌─────────────────┐
                     │   ThemeStore    │  group + role → Color / Font / Metric
@@ -46,7 +46,7 @@ QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
            ┌─────────────────┼─────────────────┐
            ▼                 ▼                 ▼
     ┌────────────┐   ┌────────────┐   ┌──────────────┐
-    │ QThemeStyle│   │ ThemeApi   │   │ QPalette     │
+    │ QThemeStyle│   │ qtheme::api│   │ QPalette     │
     │ (主路径)   │   │ (自绘支线) │   │ from Store   │
     └─────┬──────┘   └────────────┘   └──────────────┘
           │
@@ -59,11 +59,11 @@ QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
 
 | 模块 | 职责 | 非职责 |
 |------|------|--------|
-| **Format** | 解析主题文件、import、relatedName | 不接触 QPainter |
+| **PackRegistry** | 解析 / 注册 JSON Pack，materialize 为 Store | 不接触 QPainter |
 | **ThemeStore** | 查询与换肤原子替换；Token 已展开 | 不实现 CE_* |
-| **QThemeStyle** | `draw*` / `pixelMetric` / `sizeFromContents` / `subElementRect`… | 不读磁盘 XML |
+| **QThemeStyle** | `draw*` / `pixelMetric` / `sizeFromContents` / `subElementRect`… | 不读盘解析主题文件 |
 | **Engine** | 加载肤、`apply`、信号、DPI 策略入口 | 不承载业务窗口 |
-| **ThemeApi** | 薄门面，供自绘 | 不替代 QStyle |
+| **qtheme::api** | 薄门面，供自绘 | 不替代 QStyle |
 
 ### 3.2 推荐命名空间与头文件
 
@@ -235,12 +235,13 @@ engine.scanPackSearchPaths();
 |--------|------|------|
 | **M0** | Store API + 可编程 seed + Engine::apply + QThemeStyle 骨架 | **已交付**：无 QSS；原生 QPushButton 随 seed 换色 |
 | **M0.5** | Fluent Pack 族 + Accent/HC 策略 + Pack 注册/merge + T0 绘制扩展 | **已交付**：单一 QThemeStyle + 多 Pack |
-| **M1** | Format 加载 `.theme.xml`（可选兼容层） | JSON Pack 为唯一产品数据源；`theme::ThemeLoader` 仍为 stub |
 | **M2** | Button / Edit / Check / Combo / Spin / Menu / Tab / Header / ToolBar | **已交付**（含状态页验收） |
 | **M3** | Slider / Progress / GroupBox / ToolTip + DPI | **已交付**：度量 × `dpiScale`（96DPI=1.0） |
 | **M4** | ItemView 选中/hover/交替行 | **已交付**：`view.*` + PE_PanelItemView* / CE_ItemViewItem |
 | **M5** | 皮肤包、扩展、持久化 | **已交付**：QSettings 偏好、Pack 搜索目录、CMake Config 安装 |
 | **M6** | 控件覆盖加深 | **已交付**：◐ 度量补齐；TextEdit / Frame / Splitter / Dock / Status / Dial / Calendar / CommandLink |
+
+> 曾编号 **M1**（`.theme.xml` Format）已取消：JSON Pack 为唯一格式，XML stub 已删除。
 
 ---
 
@@ -249,6 +250,7 @@ engine.scanPackSearchPaths();
 - 主题商城 / 在线运营  
 - Qt Quick Controls 主题（另案）  
 - 用 QSS 生成器「兼容旧皮肤」作为主路径  
+- 恢复或并行维护 `.theme.xml` Format / `theme::` 加载器  
 - 第一天 100% 像素复刻所有 CE_*  
 
 ---
@@ -257,11 +259,11 @@ engine.scanPackSearchPaths();
 
 | 文档 | 角色 |
 |------|------|
-| [architecture.md](architecture.md) | **本文：产品主路径** |
+| [architecture.md](architecture.md) | **本文：产品主路径**（含 JSON Pack 契约） |
 | [dev-plan.md](dev-plan.md) | 近中期投入与加深候选（备忘） |
 | [ci.md](ci.md) | GitHub Actions CI |
 | [coverage-matrix.md](coverage-matrix.md) | 控件覆盖矩阵（实现进度） |
 | [fluent-mux-audit.md](fluent-mux-audit.md) | Fluent Pack ↔ microsoft-ui-xaml 色审计（正向+反向遗漏） |
 | [qt-widgets-inventory.md](qt-widgets-inventory.md) | Qt Widgets 控件清单与主题优先级 |
-| [theme-engine-spec.md](theme-engine-spec.md) | 格式 / Token / 加载细节与历史 L0 |
+| [theme-engine-spec.md](theme-engine-spec.md) | 归档：曾规划 XML Format，已移除 |
 | [../en/architecture.md](../en/architecture.md) | English architecture summary |
