@@ -10,7 +10,7 @@ Industrial Qt Widgets theming runtime: **ThemeStore + custom `QThemeStyle`**, re
 ## Features
 
 - **No QSS theme path**: `Engine::apply` clears stylesheets; painting goes through `QThemeStyle` (`QProxyStyle` + Fusion)
-- **ThemeStore**: group/role → colors and metrics; Fluent packs (light / dark / hc) are SSOT
+- **ThemeStore**: group/role → colors and metrics; Fluent packs (light / dark / hc) are SSOT (`*.theme.json`)
 - **System integration**: Accent / ColorScheme, QSettings preferences, pack search paths
 - **Product packaging**: `find_package(QThemeEngine)` → `QThemeEngine::engine`
 - **Gallery demo**: Fluent control gallery under `examples/native_controls`
@@ -23,7 +23,9 @@ Industrial Qt Widgets theming runtime: **ThemeStore + custom `QThemeStyle`**, re
 | Toolchain | CMake 3.21+, Ninja; MSVC x64 (`vcvars`) on Windows |
 | Optional | `clang-format` 20 for local format checks |
 
-## Minimal usage
+## Quick start (Windows)
+
+Minimal usage:
 
 ```cpp
 QApplication app(argc, argv);
@@ -39,13 +41,11 @@ engine.switchSkin(QStringLiteral("dark"));
 
 Do not mix `setStyleSheet` on UI themed by this engine. Color literals are `#RRGGBB` / `#RRGGBBAA` (not Qt `#AARRGGBB`).
 
-## Build
-
 Local shared-library convention uses **`build-shared`** (CI may still use `-B build`).
 
 ```bat
 :: vcvars x64 first; default SHARED, install to a local prefix
-:: QTDIR = Qt 6.8+ prefix; PREFIX = install root (often sibling prefix/ of the three repos)
+set QTDIR=<Qt-6.8+-prefix>
 set PREFIX=<install-prefix>
 cmake -S . -B build-shared -G Ninja ^
   -DCMAKE_PREFIX_PATH=%QTDIR% ^
@@ -65,13 +65,24 @@ build-shared\qte_demo.exe
 | `QTE_BUILD_WIDGETS` | Sample widgets target `qte_demowidgets` |
 | `QTE_INSTALL` | Install + Config package (`QThemeEngine::engine`) |
 
-Artifacts: `qte_engine` DLL / import lib, `qte_demo`, `qte_tests`.  
-CI: [ci.md](ci.md).
+See [ci.md](ci.md). Local format: `python scripts/format_source.py --check`.
+
+## Layout
+
+```text
+include/qtheme/           Public API (Store / Style / Engine / Pack / Settings)
+src/qtheme/               Implementation (style/* by control family)
+resources/themes/fluent/  Fluent Theme Pack JSON (SSOT)
+examples/native_controls/ Fluent gallery
+widgets/                  Owner-drawn DemoButton (secondary)
+cmake/                    QThemeEngineConfig.cmake.in
+docs/zh|en/               Chinese + English docs
+```
 
 ## Documentation
 
-| Topic | 中文 | English |
-|-------|------|---------|
+| Topic | 中文（主） | English |
+|-------|------------|---------|
 | Architecture (canonical) | [../zh/architecture.md](../zh/architecture.md) | [architecture.md](architecture.md) |
 | Dev plan | [../zh/dev-plan.md](../zh/dev-plan.md) | [dev-plan.md](dev-plan.md) |
 | Coverage matrix | [../zh/coverage-matrix.md](../zh/coverage-matrix.md) | — |
@@ -79,12 +90,18 @@ CI: [ci.md](ci.md).
 | Format (archive) | [../zh/theme-engine-spec.md](../zh/theme-engine-spec.md) | — |
 | CI | [../zh/ci.md](../zh/ci.md) | [ci.md](ci.md) |
 
-## Milestones
+**Policy:** Prefer Chinese docs day-to-day. Product boundaries follow [architecture.md](../zh/architecture.md).
 
-| ID | Deliverable | Status |
-|----|-------------|--------|
-| M0–M0.5 | Store, Engine, Fluent packs, Accent | Done |
-| M2–M6 | Fluent drawing coverage + install/Config | Done |
+## Status
+
+| Capability | Status |
+|------------|--------|
+| Store seed + `Engine::apply` + QThemeStyle (M0) | Done |
+| Fluent packs + Accent / ColorScheme + pack merge (M0.5) | Done |
+| Common Fluent control painting (M2–M4) | Done |
+| Prefs, pack search paths, `find_package` install (M5) | Done |
+| Deeper coverage (TextEdit / Frame / Splitter / Dock / Dial, M6) | Done |
+| Near-term polish | See [dev-plan](dev-plan.md) |
 
 > Former **M1** (`.theme.xml` Format) was cancelled; JSON packs only.
 
