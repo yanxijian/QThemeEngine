@@ -1,5 +1,4 @@
 ﻿#include "qtheme/theme_style.hpp"
-
 #include "style/style_ctx.hpp"
 #include "style/style_families.hpp"
 #include "style/style_paint_util.hpp"

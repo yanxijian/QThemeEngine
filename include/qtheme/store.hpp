@@ -49,7 +49,6 @@ namespace qtheme
 		[[nodiscard]] static ThemeStore loadFluentLight();
 		[[nodiscard]] static ThemeStore loadFluentDark();
 
-
 	private:
 		void markDirty();
 		static QString key(const QString& group, const QString& role);

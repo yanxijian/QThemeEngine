@@ -1,6 +1,5 @@
-﻿#include "qtheme/pack_registry.hpp"
-
-#include "qtheme/color_util.hpp"
+﻿#include "qtheme/color_util.hpp"
+#include "qtheme/pack_registry.hpp"
 
 #include <QDir>
 #include <QFile>
