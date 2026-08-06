@@ -1,7 +1,7 @@
 ﻿#include "qtheme/api.hpp"
 
 #include "qtheme/engine.hpp"
-#include "qtheme/style.hpp"
+#include "qtheme/theme_style.hpp"
 
 #include <QCoreApplication>
 #include <QGuiApplication>
@@ -77,20 +77,20 @@ namespace qtheme
 			return qRound(static_cast<qreal>(metric(group, role, def)) * dpiScale());
 		}
 
-		QString className(const QObject* obj)
+		QString themeClass(const QObject* obj)
 		{
 			if (!obj)
 			{
 				return {};
 			}
-			return obj->property(kClassProperty).toString();
+			return obj->property(kThemeClassProperty).toString();
 		}
 
-		void setClassName(QObject* obj, const QString& name)
+		void setThemeClass(QObject* obj, const QString& name)
 		{
 			if (obj)
 			{
-				obj->setProperty(kClassProperty, name);
+				obj->setProperty(kThemeClassProperty, name);
 			}
 		}
 

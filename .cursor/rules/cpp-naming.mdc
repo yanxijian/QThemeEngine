@@ -8,8 +8,8 @@ alwaysApply: false
 
 ## Members
 
-- Data members use Qt-style **`m_` + camelCase**: `m_currentSkin`, `m_store`.
-- Do **not** use trailing-underscore Google style (`currentSkin_`).
+- Data members use Qt-style **`m_` + camelCase**: `m_currentPack`, `m_store`.
+- Do **not** use trailing-underscore Google style (`currentPack_`).
 - Do **not** invent a second prefix (`m_foo_`).
 
 ## Functions / parameters
@@ -31,7 +31,7 @@ Prefix follows whether the declaration **literally uses `static`**, not C++ link
 
 ## Constants
 
-- Any immutable / compile-time constant uses **`kCamelCase` only** (no `g`/`s`/`gs` prefix), even if it lives in an anonymous namespace: `kPackFluentLight`, `SettingsKeys::kSkinId`.
+- Any immutable / compile-time constant uses **`kCamelCase` only** (no `g`/`s`/`gs` prefix), even if it lives in an anonymous namespace: `kPackFluentLight`, `SettingsKeys::kPackId`.
 - Prefer `inline constexpr` over macros.
 
 ## Containers

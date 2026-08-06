@@ -27,6 +27,6 @@ Internals: `StyleCtx` + paint util; family files for edit / check / focus / butt
 
 ## Explicitly not now
 
-- Pre-refactoring Host layers for speculative integrations  
+- Pre-refactoring app-shell / host layers for speculative product integrations  
 - Inventing a second Format adapter (including restoring `.theme.xml`)  
 - Splitting `Engine` into multiple public façades without Interface pressure

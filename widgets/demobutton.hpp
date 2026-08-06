@@ -8,7 +8,7 @@
 #include <QString>
 #include <QWidget>
 
-namespace qtheme
+namespace qtheme::demo
 {
 	/// Owner-drawn sample control (secondary path). Prefers ThemeStore via api::.
 	class DemoButton final : public QWidget
@@ -29,12 +29,12 @@ namespace qtheme
 		void showEvent(QShowEvent* event) override;
 
 	private:
-		void ensureSkinConnection();
+		void ensurePackConnection();
 
 		QString m_text;
 		bool m_pressed = false;
-		bool m_skinConnected = false;
+		bool m_packConnected = false;
 	};
-} // namespace qtheme
+} // namespace qtheme::demo
 
 #endif // __QTHEME_ENGINE_DEMOBUTTON_H__

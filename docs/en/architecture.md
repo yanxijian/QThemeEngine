@@ -7,7 +7,7 @@
 Replace **Qt Style Sheets (QSS)** for Qt Widgets with a **theme-table-driven custom `QStyle`** (`QThemeStyle`).
 
 - No QSS as the theming channel.  
-- **ThemeStore** holds colors / fonts / metrics (roles).  
+- **ThemeStore** holds colors / metrics (roles) — not fonts.  
 - **QThemeStyle** paints and sizes built-in widgets by querying the store.  
 - Owner-drawn widgets may use the same store (secondary path).
 
@@ -19,6 +19,10 @@ JSON Theme Pack (*.theme.json) → PackRegistry → ThemeStore
   → qtheme::api (owner-draw)
   → QPalette
 ```
+
+`Engine` is the process-wide theme orchestrator (packs, accent, color scheme, QThemeStyle, preferences) — not a “session” object.
+
+Resource layout: disk `resources/themes/` and qrc `:/theme/` map to Pack ids. JSON `base` ↔ `ThemePackInfo::baseId`; see Chinese §4.4 for `displayName` / `sharedMetrics`. Pack id aliases: `dark` → `fluent.dark` (prefer `kPackFluentDark`).
 
 ## Milestones
 

@@ -4,7 +4,7 @@
 > **控件全集盘点**（含邻接模块与主题优先级）：[qt-widgets-inventory.md](qt-widgets-inventory.md)  
 > **图例**：`—` 未开始 · `◐` 进行中 / 部分 · `●` 已主题化（查表绘制或度量）· `○` 明确回退基类（可接受）
 
-换肤验收以 **无 QSS + 本表已标 ● 的控件** 为准；未标 ● 的允许 Fusion 默认观感。
+换 Pack 验收以 **无 QSS + 本表已标 ● 的控件** 为准；未标 ● 的允许 Fusion 默认观感。
 
 ---
 
@@ -37,7 +37,7 @@
 | 分组 | `QGroupBox` | ● | ● | — | `PE_FrameGroupBox` + `CT_GroupBox` padding |
 | 提示 | `QToolTip` | ● | ● | ● | `PE_PanelTipLabel` + `PM_ToolTipLabelFrameWidth` |
 | 线框 | `QFrame` | ● | ● | — | StyledPanel / HLine / VLine；`frame.lineWidth`→`PM_DefaultFrameWidth` |
-| 顶层窗 chrome | frameless `QMainWindow`/`QDialog` | ◐ | ● `window.*` | ● border via props | **壳必须不透明**（Win 分层窗 + `SetParent` 嵌入会在 Create Client 后毁掉命中）；圆角用逻辑 `setMask`；描边内侧绘制 `window.border`/`button.border` |
+| 顶层窗 chrome | frameless `QMainWindow`/`QDialog` | ◐ | ● `window.*` | ● border via props | **壳必须不透明**（Win 分层窗 + `SetParent` 嵌入会在嵌入子窗后毁掉命中）；圆角用逻辑 `setMask`；描边内侧绘制 `window.border`/`button.border` |
 | 滚动区 | `QScrollArea` | ● | ○ | — | 外框走 `textedit`/`PE_Frame` |
 | 分割条 | `QSplitter` | ● | ● | — | `CE_Splitter` + `PM_SplitterWidth` |
 | 停靠 | `QDockWidget` | ● | ● | — | title / frame / resize handle |
@@ -85,4 +85,4 @@
 
 1. 合并「接管某 CE_/PM_」的 PR 必须更新本表。  
 2. 新增 Role 须在主题 JSON Pack 与 Style 映射表一致（禁止 C++ 全量双轨）。  
-3. CI 可对 ● 行做冒烟（后续）：创建控件 → 无 stylesheet → 换肤 → 抽样色或 metric。
+3. CI 可对 ● 行做冒烟（后续）：创建控件 → 无 stylesheet → 换 Pack → 抽样色或 metric。

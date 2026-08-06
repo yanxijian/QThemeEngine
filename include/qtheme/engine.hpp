@@ -3,7 +3,7 @@
 
 #include "settings.hpp"
 #include "store.hpp"
-#include "style.hpp"
+#include "theme_style.hpp"
 #include "types.hpp"
 
 #include <QColor>
@@ -21,7 +21,7 @@ namespace qtheme
 {
 	class PackRegistry;
 
-	/// Process-facing session: packs, accent, color scheme, QThemeStyle, preferences.
+	/// Process-wide theme orchestrator: packs, accent, color scheme, QThemeStyle, preferences.
 	class QTE_EXPORT Engine final : public QObject
 	{
 		Q_OBJECT
@@ -31,10 +31,10 @@ namespace qtheme
 
 		void apply(QApplication* app, bool clearStyleSheets = true);
 
-		bool switchSkin(const QString& name, bool force = false);
-		[[nodiscard]] QString currentSkin() const
+		bool switchPack(const QString& name, bool force = false);
+		[[nodiscard]] QString currentPack() const
 		{
-			return m_currentSkin;
+			return m_currentPack;
 		}
 		[[nodiscard]] Error lastError() const
 		{
@@ -76,7 +76,7 @@ namespace qtheme
 		int scanPackSearchPaths();
 		[[nodiscard]] QStringList registeredPacks() const;
 
-		/// Snapshot / restore appearance (skin, scheme, accent, pack paths).
+		/// Snapshot / restore appearance (pack, scheme, accent, pack paths).
 		[[nodiscard]] AppearancePrefs appearancePrefs() const;
 		bool applyAppearancePrefs(const AppearancePrefs& prefs);
 		bool savePreferences(QSettings* settings = nullptr) const;
@@ -95,16 +95,20 @@ namespace qtheme
 		{
 			return m_style;
 		}
-		[[nodiscard]] PackRegistry* packs() const
+		[[nodiscard]] PackRegistry* packRegistry() const
 		{
 			return m_packs.get();
+		}
+		[[deprecated("Use packRegistry()")]] [[nodiscard]] PackRegistry* packs() const
+		{
+			return packRegistry();
 		}
 
 		static void setDefault(Engine* engine);
 		static Engine* defaultEngine();
 
 	signals:
-		void skinChanged(const QString& previous, const QString& current);
+		void packChanged(const QString& previous, const QString& current);
 		void accentChanged(const QColor& accent);
 		void colorSchemeChanged();
 		/// Emitted when logical DPI scale applied to QThemeStyle changes (1.0 = 96 DPI).
@@ -128,7 +132,7 @@ namespace qtheme
 		std::shared_ptr<ThemeStore> m_store;
 		std::unique_ptr<PackRegistry> m_packs;
 		QThemeStyle* m_style = nullptr;
-		QString m_currentSkin;
+		QString m_currentPack;
 		ColorScheme m_colorScheme = ColorScheme::Light;
 		QColor m_accent;
 		bool m_accentFollowSystem = true;

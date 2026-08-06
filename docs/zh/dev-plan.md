@@ -31,7 +31,7 @@
 
 ## 3. 明确暂不做
 
-- 为空想集成场景预重构 Host 层  
+- 为空想产品集成预重构应用壳 / 宿主层  
 - 空抽第二主题 Format adapter（含恢复 `.theme.xml`）  
 - 把 Engine 拆成多个公开门面（除非 Interface 继续明显膨胀）
 

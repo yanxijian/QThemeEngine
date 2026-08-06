@@ -4,6 +4,12 @@
 
 namespace qtheme
 {
+	namespace
+	{
+		/// Legacy QSettings key (pre packId rename).
+		constexpr char kLegacySkinId[] = "skinId";
+	} // namespace
+
 	QString colorSchemeToString(ColorScheme scheme)
 	{
 		switch (scheme)
@@ -49,7 +55,7 @@ namespace qtheme
 			return false;
 		}
 		settings->beginGroup(QLatin1String(SettingsKeys::kGroup));
-		settings->setValue(QLatin1String(SettingsKeys::kSkinId), prefs.skinId);
+		settings->setValue(QLatin1String(SettingsKeys::kPackId), prefs.packId);
 		settings->setValue(QLatin1String(SettingsKeys::kColorScheme), colorSchemeToString(prefs.colorScheme));
 		settings->setValue(QLatin1String(SettingsKeys::kAccentFollowSystem), prefs.accentFollowSystem);
 		settings->setValue(QLatin1String(SettingsKeys::kAccent), prefs.accent.name(QColor::HexArgb));
@@ -68,14 +74,23 @@ namespace qtheme
 			return false;
 		}
 		settings->beginGroup(QLatin1String(SettingsKeys::kGroup));
-		if (!settings->contains(QLatin1String(SettingsKeys::kSkinId)) && !settings->contains(QLatin1String(SettingsKeys::kColorScheme)))
+		const bool hasPackId = settings->contains(QLatin1String(SettingsKeys::kPackId));
+		const bool hasLegacySkinId = settings->contains(QLatin1String(kLegacySkinId));
+		if (!hasPackId && !hasLegacySkinId && !settings->contains(QLatin1String(SettingsKeys::kColorScheme)))
 		{
 			settings->endGroup();
 			return false;
 		}
 
 		AppearancePrefs prefs;
-		prefs.skinId = settings->value(QLatin1String(SettingsKeys::kSkinId), prefs.skinId).toString();
+		if (hasPackId)
+		{
+			prefs.packId = settings->value(QLatin1String(SettingsKeys::kPackId), prefs.packId).toString();
+		}
+		else if (hasLegacySkinId)
+		{
+			prefs.packId = settings->value(QLatin1String(kLegacySkinId), prefs.packId).toString();
+		}
 		prefs.colorScheme = colorSchemeFromString(
 			settings->value(QLatin1String(SettingsKeys::kColorScheme), colorSchemeToString(prefs.colorScheme)).toString(),
 			prefs.colorScheme);

@@ -11,11 +11,11 @@
 QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
 
 1. **禁用 QSS**（`QWidget::setStyleSheet` / `QApplication::setStyleSheet` 不作为主题通道）。  
-2. 用 **主题表（Token → Control Role）** 描述颜色、字体、度量（边距、间距、圆角、默认高度等）。  
+2. 用 **主题表（Token → Control Role）** 描述颜色与度量（边距、间距、圆角、默认高度等）。  
 3. 用自定义 **`QThemeStyle`（QStyle）** 绘制并度量 **Qt 自带控件**，在能力上**替代 QSS**。  
 4. 自绘控件可通过同一 **ThemeStore** 查表绘制（支线，非主证明路径）。
 
-**一句话**：主题包装进 Store；Style 查表画原生控件；换肤换数据，不换 QSS 字符串。
+**一句话**：主题包装进 Store；Style 查表画原生控件；换 Pack 换数据，不换 QSS 字符串。
 
 ---
 
@@ -41,7 +41,7 @@ QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
                              │ PackRegistry
                              ▼
                     ┌─────────────────┐
-                    │   ThemeStore    │  group + role → Color / Font / Metric
+                    │   ThemeStore    │  group + role → Color / Metric
                     └────────┬────────┘
            ┌─────────────────┼─────────────────┐
            ▼                 ▼                 ▼
@@ -60,16 +60,16 @@ QThemeEngine 是面向 **Qt Widgets** 的工业化主题运行时：
 | 模块 | 职责 | 非职责 |
 |------|------|--------|
 | **PackRegistry** | 解析 / 注册 JSON Pack，materialize 为 Store | 不接触 QPainter |
-| **ThemeStore** | 查询与换肤原子替换；Token 已展开 | 不实现 CE_* |
+| **ThemeStore** | 查询与换 Pack 原子替换；Token 已展开 | 不实现 CE_* |
 | **QThemeStyle** | `draw*` / `pixelMetric` / `sizeFromContents` / `subElementRect`… | 不读盘解析主题文件 |
-| **Engine** | 加载肤、`apply`、信号、DPI 策略入口 | 不承载业务窗口 |
+| **Engine** | 加载 Pack、`apply`、信号、DPI 策略入口 | 不承载业务窗口 |
 | **qtheme::api** | 薄门面，供自绘 | 不替代 QStyle |
 
 ### 3.2 推荐命名空间与头文件
 
 - C++：`namespace qtheme`  
-- Include：`#include <qtheme/engine.hpp>` 等  
-- Qt 动态属性（自绘）：`qtheme.class`（常量 `qtheme::kClassProperty`）
+- Include：`#include <qtheme/engine.hpp>` 等（`theme_style.hpp` / `pack_registry.hpp`；旧名 `style.hpp` / `pack.hpp` 为薄转发）  
+- Qt 动态属性（自绘）：`qtheme.themeClass`（常量 `qtheme::kThemeClassProperty`）
 
 ---
 
@@ -102,24 +102,28 @@ PM_ButtonMargin                      →  metric("button", "padding")
 
 ### 4.3 亮 / 暗 / 高对比度（Fluent 主题族）
 
-同一 Role 名；多套 **Theme Pack**（`fluent.light` / `fluent.dark` / `fluent.hc`）。`Engine::switchSkin` / `setColorScheme` 替换 Store 并刷新 Style。
+同一 Role 名；多套 **Theme Pack**（`fluent.light` / `fluent.dark` / `fluent.hc`）。`Engine::switchPack` / `setColorScheme` 替换 Store 并刷新 Style。
 
-历史别名：`light` → `fluent.light`，`dark` → `fluent.dark`。
+历史别名（`switchPack` 解析）：`light` → `fluent.light`，`dark` → `fluent.dark`，`hc` / `highcontrast` → `fluent.hc`。示例优先 `kPackFluentDark` / `fluent.dark`。
 
 ### 4.4 Theme Pack 契约
 
 Pack 是可注册的主题数据单元（内置 qrc 或用户文件），加载后展开为 `ThemeStore`。
 
-**JSON 是内置 Fluent Pack 的唯一数据源**（`resources/themes/fluent/*.json` → qrc）。C++ 侧只做加载 / 注册 / merge，**禁止**再维护一套 `fluentLight()` / `fluentDark()` / `fluentHighContrast()` 全量 Token 双轨。
+**资源路径**：磁盘目录 `resources/themes/` 与 qrc 前缀 `:/theme/` 映射到 Pack id（勿与 API 名混淆；目录本身不叫 packs）。
+
+**JSON 是内置 Fluent Pack 的唯一数据源**（`resources/themes/fluent/*.json` → qrc）。C++ 侧只做加载 / 注册 / merge，**禁止**再维护一套全量 Token 双轨。
 
 | 字段 | 说明 |
 |------|------|
 | `id` | 唯一 id，如 `fluent.light`、`user.brand` |
-| `base` | 可选；先加载基包再 merge 覆盖（用户派生 Pack） |
-| `colors` | `group → role → #RRGGBB(AA)` |
+| `base` | 可选；对应 `ThemePackInfo::baseId`；先加载基包再 merge 覆盖（用户派生 Pack） |
+| `displayName` | 可选；对应 `ThemePackInfo::displayName`（UI 展示名） |
+| `sharedMetrics` | 可选；qrc/文件路径，加载共享度量 JSON 并 merge 进本 Pack overlay |
+| `colors` | `group → role → #RRGGBB(AA)`（ThemeStore 仅颜色 + 度量，无 fonts） |
 | `metrics` | `group → role → int`（逻辑像素） |
 
-**稳定语义 Token（跨皮同名，与 JSON/`ThemeStore` 一致）**：`palette.window` / `base` / `text` / `accent` / `accent.text` / `stroke` / `highlight` / `canvas` / `surface` …  
+**稳定语义 Token（跨 Pack 同名，与 JSON/`ThemeStore` 一致）**：`palette.window` / `base` / `text` / `accent` / `accent.text` / `stroke` / `highlight` / `canvas` / `surface` …  
 **控件 Role**：`button.*` / `edit.*` / `check.*` / `tab.*` / `scroll.*` / `menu.*` / `toolbar.*` / `combo.*` / `spin.*` / `slider.*` / `progress.*` / `groupbox.*` / `tooltip.*` / `header.*` / `view.*`  
 **扩展度量**：`ribbon.*`（Ribbon 壳用；逻辑像素，宿主侧用 `api::scaledMetric`）  
 **度量 Role**：逻辑像素；`QThemeStyle` 统一 × `dpiScale`（Engine 按主屏 `logicalDotsPerInch/96` 更新）；`api::scaledMetric` 供自绘壳同步同一比例。`Engine::dpiScaleChanged` 在比例变化时发出。
@@ -149,7 +153,7 @@ setAccent(QColor | System)
 |------|------|
 | A. Token 覆写 | merge 局部 colors/metrics 到当前 Store |
 | B. 派生 Pack | JSON `base` + overrides，`registerPack` |
-| C. 完整 Pack | 与内置同级 `registerPack` + `switchSkin` |
+| C. 完整 Pack | 与内置同级 `registerPack` + `switchPack` |
 
 禁止用 QSS 作为自定义通道。
 
@@ -157,10 +161,11 @@ setAccent(QColor | System)
 
 ```text
 registerPack(path|qrc) → bool
-switchSkin(id)
+switchPack(id)
 setAccent(QColor) / setAccentFollowSystem(bool)
 setColorScheme(ColorScheme)
-currentSkin() / colorScheme() / accent()
+currentPack() / colorScheme() / accent()
+packRegistry()
 ```
 
 ---
@@ -177,19 +182,19 @@ currentSkin() / colorScheme() / accent()
 
 ---
 
-## 6. 换肤时序
+## 6. 换 Pack 时序
 
 ```text
-switchSkin(name)
+switchPack(name)
   → 解析并构建新 ThemeStore（失败则保持旧 Store）
   → 原子替换
   → 更新 QThemeStyle 持有的 Store 指针 / 版本号
   → standardPalette + polish
-  → emit skinChanged
+  → emit packChanged
   → 顶层窗口 update
 ```
 
-缓存（刷子、图标着色）必须绑定 **Store 世代（generation）**，换肤后失效。
+缓存（刷子、图标着色）必须绑定 **Store 世代（generation）**，换 Pack 后失效。
 
 批量改 Token 时用 `ThemeStore::beginUpdate()` / `endUpdate()`，只 bump 一次 generation（Accent 补丁、JSON overlay 加载已按此批量）。
 
@@ -225,7 +230,7 @@ engine.addPackSearchPath(packDir); // *.theme.json 扩展包
 engine.scanPackSearchPaths();
 ```
 
-偏好键位于 `qtheme` 组：`skinId` / `colorScheme` / `accent` / `accentFollowSystem` / `followOsHighContrast` / `packSearchPaths` / `extraPackFiles`。
+偏好键位于 `qtheme` 组：`packId`（加载时若缺则回退旧键 `skinId`；保存只写 `packId`） / `colorScheme` / `accent` / `accentFollowSystem` / `followOsHighContrast` / `packSearchPaths` / `extraPackFiles`。
 
 ---
 
@@ -238,7 +243,7 @@ engine.scanPackSearchPaths();
 | **M2** | Button / Edit / Check / Combo / Spin / Menu / Tab / Header / ToolBar | **已交付**（含状态页验收） |
 | **M3** | Slider / Progress / GroupBox / ToolTip + DPI | **已交付**：度量 × `dpiScale`（96DPI=1.0） |
 | **M4** | ItemView 选中/hover/交替行 | **已交付**：`view.*` + PE_PanelItemView* / CE_ItemViewItem |
-| **M5** | 皮肤包、扩展、持久化 | **已交付**：QSettings 偏好、Pack 搜索目录、CMake Config 安装 |
+| **M5** | Pack、扩展、持久化 | **已交付**：QSettings 偏好、Pack 搜索目录、CMake Config 安装 |
 | **M6** | 控件覆盖加深 | **已交付**：◐ 度量补齐；TextEdit / Frame / Splitter / Dock / Status / Dial / Calendar / CommandLink |
 
 > 曾编号 **M1**（`.theme.xml` Format）已取消：JSON Pack 为唯一格式，XML stub 已删除。
@@ -249,7 +254,7 @@ engine.scanPackSearchPaths();
 
 - 主题商城 / 在线运营  
 - Qt Quick Controls 主题（另案）  
-- 用 QSS 生成器「兼容旧皮肤」作为主路径  
+- 用 QSS 生成器「兼容旧 Pack」作为主路径  
 - 恢复或并行维护 `.theme.xml` Format / `theme::` 加载器  
 - 第一天 100% 像素复刻所有 CE_*  
 

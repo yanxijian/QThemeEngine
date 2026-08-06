@@ -27,8 +27,8 @@ namespace qtheme
 		/// ThemeStore metric multiplied by dpiScale(); for owner-drawn chrome (e.g. Ribbon).
 		[[nodiscard]] QTE_EXPORT int scaledMetric(const QString& group, const QString& role, int def = 0);
 
-		QTE_EXPORT QString className(const QObject* obj);
-		QTE_EXPORT void setClassName(QObject* obj, const QString& name);
+		QTE_EXPORT QString themeClass(const QObject* obj);
+		QTE_EXPORT void setThemeClass(QObject* obj, const QString& name);
 
 		QTE_EXPORT QString roleWithState(const QString& baseRole, const QStyleOption* option);
 	} // namespace api

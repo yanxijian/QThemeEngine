@@ -1,6 +1,6 @@
 ﻿#include "qtheme/store.hpp"
 
-#include "qtheme/pack.hpp"
+#include "qtheme/pack_registry.hpp"
 
 namespace qtheme
 {
@@ -165,14 +165,14 @@ namespace qtheme
 		return reg.materialize(packId, out, nullptr);
 	}
 
-	ThemeStore ThemeStore::seedLight()
+	ThemeStore ThemeStore::loadFluentLight()
 	{
 		ThemeStore s;
 		(void)loadBuiltinPack(QString::fromUtf8(kPackFluentLight), &s);
 		return s;
 	}
 
-	ThemeStore ThemeStore::seedDark()
+	ThemeStore ThemeStore::loadFluentDark()
 	{
 		ThemeStore s;
 		(void)loadBuiltinPack(QString::fromUtf8(kPackFluentDark), &s);

@@ -1,7 +1,7 @@
 ﻿#include "qtheme/engine.hpp"
 
 #include "qtheme/accent.hpp"
-#include "qtheme/pack.hpp"
+#include "qtheme/pack_registry.hpp"
 #include "qtheme/settings.hpp"
 #include "qtheme/types.hpp"
 
@@ -59,7 +59,7 @@ namespace qtheme
 		m_followOsHighContrast = true;
 		m_accent = AccentResolver::systemAccent();
 		(void)rebuildStore(QString::fromUtf8(kPackFluentLight), true);
-		m_currentSkin = QString::fromUtf8(kPackFluentLight);
+		m_currentPack = QString::fromUtf8(kPackFluentLight);
 		m_colorScheme = ColorScheme::Light;
 	}
 
@@ -139,7 +139,7 @@ namespace qtheme
 		if (m_colorScheme == ColorScheme::System)
 		{
 			const QString packId = packIdForScheme(ColorScheme::System);
-			if (forcePackReload || packId != m_currentSkin)
+			if (forcePackReload || packId != m_currentPack)
 			{
 				if (applyPack(packId, ColorScheme::System, true))
 				{
@@ -300,7 +300,7 @@ namespace qtheme
 		if (m_colorScheme == ColorScheme::System)
 		{
 			(void)rebuildStore(packIdForScheme(ColorScheme::System), true);
-			m_currentSkin = packIdForScheme(ColorScheme::System);
+			m_currentPack = packIdForScheme(ColorScheme::System);
 		}
 
 		if (!m_style)
@@ -323,7 +323,7 @@ namespace qtheme
 
 	bool Engine::applyPack(const QString& packId, ColorScheme scheme, bool force)
 	{
-		if (!force && packId == m_currentSkin && scheme == m_colorScheme && m_inited)
+		if (!force && packId == m_currentPack && scheme == m_colorScheme && m_inited)
 		{
 			return true;
 		}
@@ -333,15 +333,15 @@ namespace qtheme
 			return false;
 		}
 
-		const QString previousSkin = m_currentSkin;
+		const QString previousPack = m_currentPack;
 		const ColorScheme previousScheme = m_colorScheme;
-		m_currentSkin = packId;
+		m_currentPack = packId;
 		m_colorScheme = scheme;
 
 		refreshUi();
-		if (previousSkin != m_currentSkin)
+		if (previousPack != m_currentPack)
 		{
-			emit skinChanged(previousSkin, m_currentSkin);
+			emit packChanged(previousPack, m_currentPack);
 		}
 		if (previousScheme != m_colorScheme)
 		{
@@ -351,7 +351,7 @@ namespace qtheme
 		return true;
 	}
 
-	bool Engine::switchSkin(const QString& name, bool force)
+	bool Engine::switchPack(const QString& name, bool force)
 	{
 		QString resolved = name;
 		if (name == QLatin1String("light"))
@@ -481,7 +481,7 @@ namespace qtheme
 	AppearancePrefs Engine::appearancePrefs() const
 	{
 		AppearancePrefs prefs;
-		prefs.skinId = m_currentSkin;
+		prefs.packId = m_currentPack;
 		prefs.colorScheme = m_colorScheme;
 		prefs.accentFollowSystem = m_accentFollowSystem;
 		prefs.accent = m_accent;
@@ -522,7 +522,7 @@ namespace qtheme
 		}
 		else
 		{
-			ok = applyPack(prefs.skinId.isEmpty() ? packIdForScheme(prefs.colorScheme) : prefs.skinId, prefs.colorScheme, true);
+			ok = applyPack(prefs.packId.isEmpty() ? packIdForScheme(prefs.colorScheme) : prefs.packId, prefs.colorScheme, true);
 		}
 
 		m_loadingPreferences = false;

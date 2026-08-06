@@ -13,7 +13,7 @@ Qt Widgets 工业化主题运行时：用 **ThemeStore + 自定义 `QThemeStyle`
 - **ThemeStore**：`group` / `role` → 颜色与度量；Fluent Pack（light / dark / hc）为 SSOT（`*.theme.json`）
 - **系统联动**：Accent / ColorScheme、偏好持久化（QSettings）、Pack 搜索目录
 - **产品集成**：`find_package(QThemeEngine)` → `QThemeEngine::engine`
-- **画廊 Demo**：`examples/native_controls` Fluent 控件画廊，可切换皮肤与 Accent
+- **画廊 Demo**：`examples/native_controls` Fluent 控件画廊，可切换 Pack 与 Accent
 
 ## 要求
 
@@ -36,7 +36,7 @@ qtheme::Engine engine;
 engine.apply(&app);
 engine.loadPreferences();
 engine.setAutoSavePreferences(true);
-engine.switchSkin(QStringLiteral("dark"));
+engine.switchPack(QString::fromUtf8(qtheme::kPackFluentDark));
 ```
 
 约定：对本引擎主题化的 UI **不要**再混用 `setStyleSheet`。颜色字面量为 `#RRGGBB` / `#RRGGBBAA`（非 Qt `#AARRGGBB`）。

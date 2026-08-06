@@ -8,15 +8,15 @@
 #include <QShowEvent>
 #include <QStyleOption>
 
-namespace qtheme
+namespace qtheme::demo
 {
 	DemoButton::DemoButton(QWidget* parent)
 		: QWidget(parent)
 	{
-		api::setClassName(this, QStringLiteral("DemoButton"));
+		api::setThemeClass(this, QStringLiteral("DemoButton"));
 		setMouseTracking(true);
 		setAttribute(Qt::WA_Hover, true);
-		ensureSkinConnection();
+		ensurePackConnection();
 	}
 
 	void DemoButton::setText(const QString& text)
@@ -30,28 +30,28 @@ namespace qtheme
 		return m_text;
 	}
 
-	void DemoButton::ensureSkinConnection()
+	void DemoButton::ensurePackConnection()
 	{
-		if (m_skinConnected)
+		if (m_packConnected)
 		{
 			return;
 		}
 		if (auto* eng = api::engine())
 		{
 			connect(
-				eng, &Engine::skinChanged, this,
+				eng, &Engine::packChanged, this,
 				[this](const QString&, const QString&)
 				{
 					update();
 				},
 				Qt::QueuedConnection);
-			m_skinConnected = true;
+			m_packConnected = true;
 		}
 	}
 
 	void DemoButton::showEvent(QShowEvent* event)
 	{
-		ensureSkinConnection();
+		ensurePackConnection();
 		QWidget::showEvent(event);
 	}
 
@@ -98,7 +98,7 @@ namespace qtheme
 			opt.state &= ~QStyle::State_Enabled;
 		}
 
-		const QString cls = api::className(this);
+		const QString cls = api::themeClass(this);
 		const QColor bg = api::color(cls, api::roleWithState(QStringLiteral("background"), &opt));
 		const QColor fg = api::color(cls, api::roleWithState(QStringLiteral("text"), &opt));
 		const QColor border = api::color(cls, QStringLiteral("border"));
@@ -114,4 +114,4 @@ namespace qtheme
 		p.setPen(fg.isValid() ? fg : palette().buttonText().color());
 		p.drawText(rect(), Qt::AlignCenter, m_text);
 	}
-} // namespace qtheme
+} // namespace qtheme::demo

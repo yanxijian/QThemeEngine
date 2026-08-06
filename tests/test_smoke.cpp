@@ -1,10 +1,10 @@
 ﻿#include "qtheme/accent.hpp"
 #include "qtheme/color_util.hpp"
 #include "qtheme/engine.hpp"
-#include "qtheme/pack.hpp"
+#include "qtheme/pack_registry.hpp"
 #include "qtheme/settings.hpp"
 #include "qtheme/store.hpp"
-#include "qtheme/style.hpp"
+#include "qtheme/theme_style.hpp"
 #include "qtheme/types.hpp"
 
 #include <QApplication>
@@ -55,7 +55,7 @@ private slots:
 	void style_fluentFocusRingAndCheckFocusRect();
 	void accent_patchUpdatesHighlight();
 	void accent_systemHighContrastApi();
-	void engine_switchFluentSkins();
+	void engine_switchFluentPacks();
 	void engine_userPackKeepsColorScheme();
 	void engine_setColorSchemeSystemPreserved();
 	void settings_appearancePrefsRoundTrip();
@@ -107,8 +107,8 @@ void ThemeSmokeTest::store_fluentLightHasRequiredTokens()
 
 void ThemeSmokeTest::store_fluentDarkDiffersFromLight()
 {
-	const auto light = qtheme::ThemeStore::seedLight();
-	const auto dark = qtheme::ThemeStore::seedDark();
+	const auto light = qtheme::ThemeStore::loadFluentLight();
+	const auto dark = qtheme::ThemeStore::loadFluentDark();
 	const auto lb = light.color(QStringLiteral("button"), QStringLiteral("bg"));
 	const auto db = dark.color(QStringLiteral("button"), QStringLiteral("bg"));
 	QVERIFY(lb.ok && db.ok);
@@ -442,7 +442,7 @@ void ThemeSmokeTest::style_fluentFocusRingAndCheckFocusRect()
 
 void ThemeSmokeTest::accent_patchUpdatesHighlight()
 {
-	qtheme::ThemeStore store = qtheme::ThemeStore::seedLight();
+	qtheme::ThemeStore store = qtheme::ThemeStore::loadFluentLight();
 	const auto g0 = store.generation();
 	const QColor accent(QStringLiteral("#AA00AA"));
 	qtheme::AccentResolver::applyAccentPatch(&store, accent);
@@ -467,14 +467,14 @@ void ThemeSmokeTest::accent_systemHighContrastApi()
 	QVERIFY(true);
 }
 
-void ThemeSmokeTest::engine_switchFluentSkins()
+void ThemeSmokeTest::engine_switchFluentPacks()
 {
 	qtheme::Engine engine;
-	QVERIFY(engine.switchSkin(QStringLiteral("fluent.dark")));
-	QCOMPARE(engine.currentSkin(), QString::fromUtf8(qtheme::kPackFluentDark));
+	QVERIFY(engine.switchPack(QStringLiteral("fluent.dark")));
+	QCOMPARE(engine.currentPack(), QString::fromUtf8(qtheme::kPackFluentDark));
 	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
-	QVERIFY(engine.switchSkin(QStringLiteral("fluent.hc")));
-	QCOMPARE(engine.currentSkin(), QString::fromUtf8(qtheme::kPackFluentHc));
+	QVERIFY(engine.switchPack(QStringLiteral("fluent.hc")));
+	QCOMPARE(engine.currentPack(), QString::fromUtf8(qtheme::kPackFluentHc));
 	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::HighContrast));
 	QVERIFY(engine.setAccent(QColor(QStringLiteral("#112233"))));
 	QCOMPARE(engine.accent(), QColor(QStringLiteral("#112233")));
@@ -486,8 +486,8 @@ void ThemeSmokeTest::engine_userPackKeepsColorScheme()
 	qtheme::Engine engine;
 	QVERIFY(engine.setColorScheme(qtheme::ColorScheme::Dark));
 	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
-	QVERIFY(engine.switchSkin(QStringLiteral("user.sample")));
-	QCOMPARE(engine.currentSkin(), QStringLiteral("user.sample"));
+	QVERIFY(engine.switchPack(QStringLiteral("user.sample")));
+	QCOMPARE(engine.currentPack(), QStringLiteral("user.sample"));
 	// Derived/user packs must not clobber the prior ColorScheme intent.
 	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
 }
@@ -517,7 +517,7 @@ void ThemeSmokeTest::settings_appearancePrefsRoundTrip()
 	QSettings settings(ini, QSettings::IniFormat);
 
 	qtheme::AppearancePrefs prefs;
-	prefs.skinId = QString::fromUtf8(qtheme::kPackFluentDark);
+	prefs.packId = QString::fromUtf8(qtheme::kPackFluentDark);
 	prefs.colorScheme = qtheme::ColorScheme::Dark;
 	prefs.accentFollowSystem = false;
 	prefs.accent = QColor(QStringLiteral("#AABBCC"));
@@ -528,7 +528,7 @@ void ThemeSmokeTest::settings_appearancePrefsRoundTrip()
 
 	qtheme::AppearancePrefs loaded;
 	QVERIFY(qtheme::loadAppearancePrefs(&settings, &loaded));
-	QCOMPARE(loaded.skinId, prefs.skinId);
+	QCOMPARE(loaded.packId, prefs.packId);
 	QCOMPARE(static_cast<int>(loaded.colorScheme), static_cast<int>(prefs.colorScheme));
 	QCOMPARE(loaded.accentFollowSystem, false);
 	QCOMPARE(loaded.accent, prefs.accent);
@@ -538,7 +538,7 @@ void ThemeSmokeTest::settings_appearancePrefsRoundTrip()
 
 	qtheme::Engine engine;
 	QVERIFY(engine.applyAppearancePrefs(loaded));
-	QCOMPARE(engine.currentSkin(), QString::fromUtf8(qtheme::kPackFluentDark));
+	QCOMPARE(engine.currentPack(), QString::fromUtf8(qtheme::kPackFluentDark));
 	QCOMPARE(static_cast<int>(engine.colorScheme()), static_cast<int>(qtheme::ColorScheme::Dark));
 	QCOMPARE(engine.accent(), QColor(QStringLiteral("#AABBCC")));
 	QVERIFY(!engine.accentFollowsSystem());

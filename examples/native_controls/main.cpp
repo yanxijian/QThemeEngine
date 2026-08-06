@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 	};
 	syncSchemeActions();
 	QObject::connect(&engine, &qtheme::Engine::colorSchemeChanged, &window, syncSchemeActions);
-	QObject::connect(&engine, &qtheme::Engine::skinChanged, &window,
+	QObject::connect(&engine, &qtheme::Engine::packChanged, &window,
 					 [&](const QString&, const QString&)
 					 {
 						 syncSchemeActions();
@@ -125,7 +125,7 @@ int main(int argc, char** argv)
 	QObject::connect(actUser, &QAction::triggered, &engine,
 					 [&engine]
 					 {
-						 engine.switchSkin(QStringLiteral("user.sample"));
+						 engine.switchPack(QStringLiteral("user.sample"));
 					 });
 	QObject::connect(actAccentSys, &QAction::triggered, &engine,
 					 [&engine]
@@ -177,25 +177,25 @@ int main(int argc, char** argv)
 	}
 
 	auto* tabs = new QTabWidget(&window);
-	tabs->addTab(gallery::pageButtons(tabs), QStringLiteral("Buttons"));
-	tabs->addTab(gallery::pageInput(tabs), QStringLiteral("Input"));
-	tabs->addTab(gallery::pageStates(tabs), QStringLiteral("States"));
-	tabs->addTab(gallery::pageDisplay(tabs), QStringLiteral("Display"));
-	tabs->addTab(gallery::pageContainers(tabs), QStringLiteral("Containers"));
-	tabs->addTab(gallery::pageMdi(tabs), QStringLiteral("MDI"));
-	tabs->addTab(gallery::pageItemViews(tabs), QStringLiteral("Item Views"));
-	tabs->addTab(gallery::pageNavigation(tabs), QStringLiteral("Tabs / Nav"));
-	tabs->addTab(gallery::pageDialogs(tabs), QStringLiteral("Dialogs"));
-	tabs->addTab(gallery::pageOwnerDraw(tabs), QStringLiteral("Owner-draw"));
-	tabs->addTab(gallery::pageCoverage(tabs), QStringLiteral("Coverage"));
+	tabs->addTab(gallery::tabButtons(tabs), QStringLiteral("Buttons"));
+	tabs->addTab(gallery::tabInput(tabs), QStringLiteral("Input"));
+	tabs->addTab(gallery::tabStates(tabs), QStringLiteral("States"));
+	tabs->addTab(gallery::tabDisplay(tabs), QStringLiteral("Display"));
+	tabs->addTab(gallery::tabContainers(tabs), QStringLiteral("Containers"));
+	tabs->addTab(gallery::tabMdi(tabs), QStringLiteral("MDI"));
+	tabs->addTab(gallery::tabItemViews(tabs), QStringLiteral("Item Views"));
+	tabs->addTab(gallery::tabNavigation(tabs), QStringLiteral("Tabs / Nav"));
+	tabs->addTab(gallery::tabDialogs(tabs), QStringLiteral("Dialogs"));
+	tabs->addTab(gallery::tabOwnerDraw(tabs), QStringLiteral("Owner-draw"));
+	tabs->addTab(gallery::tabCoverage(tabs), QStringLiteral("Coverage"));
 	window.setCentralWidget(tabs);
 
 	auto* permanent = new QLabel(QStringLiteral("Fluent"), &window);
 	window.statusBar()->addPermanentWidget(permanent);
 
 	QString checkReport;
-	const bool checkOk = gallery::verifyGallerySession(&app, &window, &checkReport);
-	window.statusBar()->showMessage(QStringLiteral("Skin: %1 | %2").arg(engine.currentSkin(), checkReport));
+	const bool checkOk = gallery::verifyGalleryCoverage(&app, &window, &checkReport);
+	window.statusBar()->showMessage(QStringLiteral("Pack: %1 | %2").arg(engine.currentPack(), checkReport));
 	if (!checkOk)
 	{
 		qWarning("gallery self-check failed: %s", qPrintable(checkReport));
@@ -210,14 +210,14 @@ int main(int argc, char** argv)
 	auto syncStatus = [&](const QString&)
 	{
 		QString report;
-		const bool ok = gallery::verifyGallerySession(&app, &window, &report);
+		const bool ok = gallery::verifyGalleryCoverage(&app, &window, &report);
 		Q_UNUSED(ok);
 		window.statusBar()->showMessage(
-			QStringLiteral("Skin: %1 | accent: %2 | %3").arg(engine.currentSkin(), engine.accent().name(), report));
-		permanent->setText(engine.currentSkin());
+			QStringLiteral("Pack: %1 | accent: %2 | %3").arg(engine.currentPack(), engine.accent().name(), report));
+		permanent->setText(engine.currentPack());
 	};
 
-	QObject::connect(&engine, &qtheme::Engine::skinChanged, &window,
+	QObject::connect(&engine, &qtheme::Engine::packChanged, &window,
 					 [&](const QString&, const QString& cur)
 					 {
 						 syncStatus(cur);
@@ -225,7 +225,7 @@ int main(int argc, char** argv)
 	QObject::connect(&engine, &qtheme::Engine::accentChanged, &window,
 					 [&](const QColor&)
 					 {
-						 syncStatus(engine.currentSkin());
+						 syncStatus(engine.currentPack());
 					 });
 
 	window.resize(1100, 720);

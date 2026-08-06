@@ -1,4 +1,4 @@
-﻿#include "qtheme/pack.hpp"
+﻿#include "qtheme/pack_registry.hpp"
 
 #include "qtheme/color_util.hpp"
 
@@ -287,7 +287,7 @@ namespace qtheme
 		{
 			if (err)
 			{
-				*err = Error::SkinNotFound;
+				*err = Error::PackNotFound;
 			}
 			return false;
 		}

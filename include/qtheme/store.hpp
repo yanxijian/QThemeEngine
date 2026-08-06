@@ -45,9 +45,10 @@ namespace qtheme
 		/// Load built-in Fluent pack from JSON (qrc). Empty store + false if pack missing.
 		[[nodiscard]] static bool loadBuiltinPack(const QString& packId, ThemeStore* out);
 
-		/// Compatibility helpers (JSON-backed).
-		[[nodiscard]] static ThemeStore seedLight();
-		[[nodiscard]] static ThemeStore seedDark();
+		/// Load built-in Fluent light / dark packs (JSON-backed).
+		[[nodiscard]] static ThemeStore loadFluentLight();
+		[[nodiscard]] static ThemeStore loadFluentDark();
+
 
 	private:
 		void markDirty();

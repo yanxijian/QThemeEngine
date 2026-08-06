@@ -111,7 +111,7 @@
 
 namespace gallery
 {
-	QWidget* pageOwnerDraw(QWidget* parent)
+	QWidget* tabOwnerDraw(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);
@@ -119,7 +119,7 @@ namespace gallery
 													"qtheme::api (not QStyle)."),
 									 root));
 
-		auto* drawn = new qtheme::DemoButton(root);
+		auto* drawn = new qtheme::demo::DemoButton(root);
 		drawn->setText(QStringLiteral("Owner-draw DemoButton"));
 		drawn->setMinimumHeight(40);
 		layout->addWidget(drawn);
@@ -132,7 +132,7 @@ namespace gallery
 		return detail::wrapScroll(root, parent);
 	}
 
-	QWidget* pageCoverage(QWidget* parent)
+	QWidget* tabCoverage(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);
@@ -153,7 +153,7 @@ namespace gallery
 									  "<li>Accent: System 或自定义取色</li>"
 									  "</ul>"
 									  "<h4>启动自检</h4>"
-									  "<p><code>gallery::verifyGallerySession</code>：无 stylesheet、QThemeStyle、"
+									  "<p><code>gallery::verifyGalleryCoverage</code>：无 stylesheet、QThemeStyle、"
 									  "必需 Fluent Token、T0 代表控件。命令行：<code>--self-check</code>。</p>");
 #if defined(QTE_HAS_OPENGLWIDGETS)
 		html += QStringLiteral("<p>已链接 OpenGLWidgets（QOpenGLWidget / QRhiWidget）。</p>");

@@ -13,10 +13,10 @@ class QSettings;
 
 namespace qtheme
 {
-	/// Serializable appearance preferences (skin / scheme / accent / pack paths).
+	/// Serializable appearance preferences (pack / scheme / accent / pack paths).
 	struct AppearancePrefs
 	{
-		QString skinId = QString::fromUtf8(kPackFluentLight);
+		QString packId = QString::fromUtf8(kPackFluentLight);
 		ColorScheme colorScheme = ColorScheme::Light;
 		bool accentFollowSystem = true;
 		QColor accent = QColor(QStringLiteral("#0078D4"));
@@ -28,7 +28,7 @@ namespace qtheme
 	namespace SettingsKeys
 	{
 		inline constexpr char kGroup[] = "qtheme";
-		inline constexpr char kSkinId[] = "skinId";
+		inline constexpr char kPackId[] = "packId";
 		inline constexpr char kColorScheme[] = "colorScheme";
 		inline constexpr char kAccentFollowSystem[] = "accentFollowSystem";
 		inline constexpr char kAccent[] = "accent";

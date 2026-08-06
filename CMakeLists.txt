@@ -55,9 +55,9 @@ set(QTE_ENGINE_SOURCES
   resources/theme.qrc
   include/qtheme/types.hpp
   include/qtheme/store.hpp
-  include/qtheme/pack.hpp
+  include/qtheme/pack_registry.hpp
   include/qtheme/accent.hpp
-  include/qtheme/style.hpp
+  include/qtheme/theme_style.hpp
   include/qtheme/engine.hpp
   include/qtheme/settings.hpp
   include/qtheme/api.hpp
@@ -114,11 +114,11 @@ if(QTE_BUILD_EXAMPLES)
   add_executable(qte_demo
     examples/native_controls/main.cpp
     examples/native_controls/gallery_internal.cpp
-    examples/native_controls/gallery_pages_basic.cpp
-    examples/native_controls/gallery_pages_shell.cpp
-    examples/native_controls/gallery_pages_views.cpp
-    examples/native_controls/gallery_pages_misc.cpp
-    examples/native_controls/gallery_session.cpp
+    examples/native_controls/gallery_tabs_basic.cpp
+    examples/native_controls/gallery_tabs_shell.cpp
+    examples/native_controls/gallery_tabs_views.cpp
+    examples/native_controls/gallery_tabs_misc.cpp
+    examples/native_controls/gallery_coverage.cpp
     examples/native_controls/gallery.hpp
     examples/native_controls/gallery_internal.hpp
   )

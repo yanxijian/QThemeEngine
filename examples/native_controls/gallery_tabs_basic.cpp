@@ -111,7 +111,7 @@
 
 namespace gallery
 {
-	QWidget* pageButtons(QWidget* parent)
+	QWidget* tabButtons(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);
@@ -190,7 +190,7 @@ namespace gallery
 		return detail::wrapScroll(root, parent);
 	}
 
-	QWidget* pageInput(QWidget* parent)
+	QWidget* tabInput(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* form = new QFormLayout(root);
@@ -267,7 +267,7 @@ namespace gallery
 		return detail::wrapScroll(root, parent);
 	}
 
-	QWidget* pageStates(QWidget* parent)
+	QWidget* tabStates(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);
@@ -383,7 +383,7 @@ namespace gallery
 		return detail::wrapScroll(root, parent);
 	}
 
-	QWidget* pageDisplay(QWidget* parent)
+	QWidget* tabDisplay(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);

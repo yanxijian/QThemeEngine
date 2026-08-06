@@ -111,7 +111,7 @@
 
 namespace gallery
 {
-	QWidget* pageItemViews(QWidget* parent)
+	QWidget* tabItemViews(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);
@@ -210,11 +210,11 @@ namespace gallery
 		return detail::wrapScroll(root, parent);
 	}
 
-	QWidget* pageNavigation(QWidget* parent)
+	QWidget* tabNavigation(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);
-		layout->addWidget(new QLabel(QStringLiteral("Shell chrome (QMainWindow / QMenuBar / QMenu / QToolBar / QStatusBar / "
+		layout->addWidget(new QLabel(QStringLiteral("Window chrome (QMainWindow / QMenuBar / QMenu / QToolBar / QStatusBar / "
 													"QWidgetAction) lives on the main window. Right-click for QMenu. "
 													"Hover controls for QToolTip."),
 									 root));
@@ -295,7 +295,7 @@ namespace gallery
 		return detail::wrapScroll(root, parent);
 	}
 
-	QWidget* pageDialogs(QWidget* parent)
+	QWidget* tabDialogs(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);

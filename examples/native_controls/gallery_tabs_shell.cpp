@@ -111,7 +111,7 @@
 
 namespace gallery
 {
-	QWidget* pageContainers(QWidget* parent)
+	QWidget* tabContainers(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);
@@ -144,9 +144,9 @@ namespace gallery
 		{
 			auto* box = detail::makeGroup(QStringLiteral("QStackedWidget + switcher"), root);
 			auto* stack = new QStackedWidget(box);
-			stack->addWidget(new QLabel(QStringLiteral("Stack page 0"), stack));
-			stack->addWidget(new QLabel(QStringLiteral("Stack page 1"), stack));
-			stack->addWidget(new QLabel(QStringLiteral("Stack page 2"), stack));
+			stack->addWidget(new QLabel(QStringLiteral("Stack pane 0"), stack));
+			stack->addWidget(new QLabel(QStringLiteral("Stack pane 1"), stack));
+			stack->addWidget(new QLabel(QStringLiteral("Stack pane 2"), stack));
 			auto* switcher = new QComboBox(box);
 			switcher->addItems({QStringLiteral("Page 0"), QStringLiteral("Page 1"), QStringLiteral("Page 2")});
 			QObject::connect(switcher, QOverload<int>::of(&QComboBox::currentIndexChanged), stack, &QStackedWidget::setCurrentIndex);
@@ -214,7 +214,7 @@ namespace gallery
 		return detail::wrapScroll(root, parent);
 	}
 
-	QWidget* pageMdi(QWidget* parent)
+	QWidget* tabMdi(QWidget* parent)
 	{
 		auto* root = new QWidget;
 		auto* layout = new QVBoxLayout(root);

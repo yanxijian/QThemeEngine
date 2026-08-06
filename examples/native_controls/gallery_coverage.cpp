@@ -133,7 +133,7 @@ namespace gallery
 		window->addDockWidget(Qt::RightDockWidgetArea, right);
 	}
 
-	bool verifyGallerySession(QApplication* app, QWidget* root, QString* report)
+	bool verifyGalleryCoverage(QApplication* app, QWidget* root, QString* report)
 	{
 		QStringList problems;
 		QStringList ok;
@@ -176,7 +176,7 @@ namespace gallery
 					{
 						ok << QStringLiteral("required Fluent tokens");
 					}
-					ok << QStringLiteral("skin=%1").arg(eng->currentSkin());
+					ok << QStringLiteral("pack=%1").arg(eng->currentPack());
 				}
 			}
 			else

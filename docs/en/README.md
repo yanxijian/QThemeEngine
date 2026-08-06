@@ -36,7 +36,7 @@ qtheme::Engine engine;
 engine.apply(&app);
 engine.loadPreferences();
 engine.setAutoSavePreferences(true);
-engine.switchSkin(QStringLiteral("dark"));
+engine.switchPack(QString::fromUtf8(qtheme::kPackFluentDark));
 ```
 
 Do not mix `setStyleSheet` on UI themed by this engine. Color literals are `#RRGGBB` / `#RRGGBBAA` (not Qt `#AARRGGBB`).
