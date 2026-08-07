@@ -6,7 +6,7 @@ namespace qtheme
 {
 	namespace
 	{
-		/// Legacy QSettings key (pre packId rename).
+		/// Alternate prefs key read when packId is absent.
 		constexpr char kLegacySkinId[] = "skinId";
 	} // namespace
 
