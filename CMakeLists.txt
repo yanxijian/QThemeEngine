@@ -14,6 +14,7 @@ set(CMAKE_AUTORCC ON)
 
 if(MSVC)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+  add_compile_options(/MP)
 endif()
 
 option(QTE_BUILD_SHARED "Build qte_engine as a shared library" ON)
