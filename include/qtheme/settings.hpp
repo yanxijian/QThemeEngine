@@ -4,15 +4,33 @@
 #include "types.hpp"
 
 #include <QColor>
+#include <QCoreApplication>
+#include <QDir>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <QStringView>
 #include <qtheme/qtheme_export.hpp>
 
-class QSettings;
-
 namespace qtheme
 {
+	/// INI under `<appDir>/config/<applicationName>.ini` (not the Windows registry).
+	[[nodiscard]] inline QSettings makeAppIniSettings(const QString& fileBaseName = {})
+	{
+		QString base = fileBaseName;
+		if (base.isEmpty())
+		{
+			base = QCoreApplication::applicationName();
+		}
+		if (base.isEmpty())
+		{
+			base = QStringLiteral("qtheme");
+		}
+		const QString dir = QDir(QCoreApplication::applicationDirPath()).filePath(QStringLiteral("config"));
+		QDir().mkpath(dir);
+		return QSettings(QDir(dir).filePath(base + QStringLiteral(".ini")), QSettings::IniFormat);
+	}
+
 	/// Serializable appearance preferences (pack / scheme / accent / pack paths).
 	struct AppearancePrefs
 	{

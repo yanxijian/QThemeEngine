@@ -535,7 +535,7 @@ namespace qtheme
 		{
 			return saveAppearancePrefs(settings, appearancePrefs());
 		}
-		QSettings local;
+		QSettings local = makeAppIniSettings();
 		return saveAppearancePrefs(&local, appearancePrefs());
 	}
 
@@ -549,7 +549,7 @@ namespace qtheme
 		}
 		else
 		{
-			QSettings local;
+			QSettings local = makeAppIniSettings();
 			ok = loadAppearancePrefs(&local, &prefs);
 		}
 		if (!ok)

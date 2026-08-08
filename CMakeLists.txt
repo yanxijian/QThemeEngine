@@ -100,7 +100,8 @@ set_target_properties(qte_engine PROPERTIES
   VISIBILITY_INLINES_HIDDEN ON
 )
 
-if(QTE_BUILD_WIDGETS)
+# Gallery sources include demobutton.hpp; build demowidgets whenever examples are on.
+if(QTE_BUILD_WIDGETS OR QTE_BUILD_EXAMPLES)
   add_library(qte_demowidgets STATIC
     widgets/demobutton.cpp
     widgets/demobutton.hpp
@@ -123,10 +124,7 @@ if(QTE_BUILD_EXAMPLES)
     examples/native_controls/gallery.hpp
     examples/native_controls/gallery_internal.hpp
   )
-  target_link_libraries(qte_demo PRIVATE qte_engine)
-  if(TARGET qte_demowidgets)
-    target_link_libraries(qte_demo PRIVATE qte_demowidgets)
-  endif()
+  target_link_libraries(qte_demo PRIVATE qte_engine qte_demowidgets)
   if(TARGET Qt6::OpenGLWidgets)
     target_link_libraries(qte_demo PRIVATE Qt6::OpenGLWidgets)
     target_compile_definitions(qte_demo PRIVATE QTE_HAS_OPENGLWIDGETS=1)
