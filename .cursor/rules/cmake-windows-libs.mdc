@@ -1,0 +1,29 @@
+---
+description: Link Windows system libraries in CMake, never via #pragma comment(lib).
+globs: "**/{CMakeLists.txt,*.cmake,*.h,hpp,hxx,hh,c,cc,cpp,cxx,mm}"
+alwaysApply: true
+---
+
+# Windows 系统库链接
+
+禁止在源码里用 `#pragma comment(lib, "foo.lib")`（以及 `#pragma comment(linker, ...)` 塞依赖库）把系统库拉进链接。这只对 MSVC 生效，CMake / Ninja / 其他生成器看不到依赖，clang-cl、跨平台和静态分析都会漏。
+
+## 正确做法
+
+在对应目标的 `CMakeLists.txt` 里 `target_link_libraries`：
+
+```cmake
+if(WIN32)
+  target_link_libraries(the_target PRIVATE dwmapi)
+endif()
+```
+
+- 用 CMake 导入名（`dwmapi`、`user32`、`gdi32`），不要写 `dwmapi.lib`。
+- 实现用到的库用 **PRIVATE**；只有安装头里的内联代码也需要该库时才 `PUBLIC`。
+- 头文件仍可 `#include <dwmapi.h>` / `<windows.h>`；只把**链接**放到 CMake。
+
+## 反例
+
+```cpp
+#pragma comment(lib, "dwmapi.lib")  // 禁止
+```

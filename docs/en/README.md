@@ -23,6 +23,8 @@ Industrial Qt Widgets theming runtime: **ThemeStore + custom `QThemeStyle`**, re
 | Toolchain | CMake 3.21+, Ninja; MSVC x64 (`vcvars`) on Windows |
 | Optional | `clang-format` 20 for local format checks |
 
+Link Windows system libraries with `target_link_libraries` in `CMakeLists.txt`, not `#pragma comment(lib, …)`. See `.cursor/rules/cmake-windows-libs.mdc`.
+
 ## Quick start (Windows)
 
 Minimal usage:

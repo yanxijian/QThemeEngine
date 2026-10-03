@@ -23,6 +23,8 @@ Qt Widgets 工业化主题运行时：用 **ThemeStore + 自定义 `QThemeStyle`
 | 工具链 | CMake 3.21+、Ninja；Windows 上 MSVC x64（`vcvars`） |
 | 可选 | `clang-format` 20（本地格式检查） |
 
+系统库只在 `CMakeLists.txt` 里 `target_link_libraries`，不要用 `#pragma comment(lib, …)`。规范：`.cursor/rules/cmake-windows-libs.mdc`。
+
 ## 快速开始（Windows）
 
 最小用法：
