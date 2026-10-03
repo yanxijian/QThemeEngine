@@ -17,10 +17,10 @@ if(MSVC)
   add_compile_options(/MP)
   # Emit PDBs in Release too: WER crash dumps symbolicate against our
   # binaries when PDBs sit beside them (see e.g. Volition's
-  # scripts/analyze_crash.py). /Zi keeps Release optimization unchanged;
-  # /DEBUG:FULL only adds symbols.
+  # scripts/analyze_crash.py). /Zi keeps compiler Release optimization;
+  # /DEBUG:FULL emits a linker PDB and would otherwise disable /OPT:REF/ICF.
   add_compile_options("$<$<CONFIG:Release>:/Zi>")
-  add_link_options("$<$<CONFIG:Release>:/DEBUG:FULL>")
+  add_link_options("$<$<CONFIG:Release>:/DEBUG:FULL;/OPT:REF;/OPT:ICF>")
 endif()
 
 option(QTE_BUILD_SHARED "Build qte_engine as a shared library" ON)

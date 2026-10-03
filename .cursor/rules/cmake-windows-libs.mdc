@@ -1,6 +1,6 @@
 ---
 description: Link Windows system libraries in CMake, never via #pragma comment(lib).
-globs: "**/{CMakeLists.txt,*.cmake,*.h,hpp,hxx,hh,c,cc,cpp,cxx,mm}"
+globs: "**/{CMakeLists.txt,*.cmake,*.h,*.hpp,*.hxx,*.hh,*.c,*.cc,*.cpp,*.cxx,*.mm}"
 alwaysApply: true
 ---
 
