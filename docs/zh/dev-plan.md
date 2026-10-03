@@ -2,7 +2,7 @@
 
 > **English**：[../en/dev-plan.md](../en/dev-plan.md)  
 > **地位**：近中期投入与架构姿态的备忘；**不**替代 [architecture.md](architecture.md)。  
-> **更新**：2026-07-25（Style 绘制路径按控件族加深落地）
+> **更新**：2026-10-04（对照代码核实后的择机项）
 
 ---
 
@@ -26,6 +26,18 @@
 | Worth exploring | Format 从 ThemeStore 剥离 | 待讨论 |
 
 内部布局备忘：`StyleCtx` + `style_paint_util`；族文件含 edit / check / focus / button / menu / itemview / tab_header / progress / chrome / complex；`style.cpp` 负责分发与 polish / palette / metrics。
+
+---
+
+## 2.1 择机改进（已对照代码核实，以后再做）
+
+| 项 | 核实 | 拟做 |
+|----|------|------|
+| 自绘控件共用绘制入口 | `qtheme::api` 已能读 Store；`widgets/DemoButton` 仍各自 `paintEvent` 拼色/圆角 | 抽出薄 `ThemePainter`（圆角底、边、文字），第三方自绘只调它，不复制 DemoButton |
+| 绘制热路径查表 | `ThemeStore` 是 `QHash<QString,QColor/int>`，`color()` 每次 `group+'/'+role`；`drawControl` 高频 | 在 `StyleCtx` 或 Store 对常用 Role 做 `QColor`/`QPen`/`QBrush` 扁平缓存，pack 换代失效 |
+
+**不收录**：JSON Pack 深度递归发生在 materialize，不在每帧 `drawControl`；不要把 Pack 树遍历误当成绘制瓶颈。
+
 
 ---
 
