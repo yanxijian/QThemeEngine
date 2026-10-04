@@ -34,7 +34,7 @@
 | 项 | 核实 | 拟做 |
 |----|------|------|
 | 自绘控件共用绘制入口 | `qtheme::api` 已能读 Store；`widgets/DemoButton` 仍各自 `paintEvent` 拼色/圆角 | 抽出薄 `ThemePainter`（圆角底、边、文字），第三方自绘只调它，不复制 DemoButton |
-| 绘制热路径查表 | `ThemeStore` 是 `QHash<QString,QColor/int>`，`color()` 每次 `group+'/'+role`；`drawControl` 高频 | 在 `StyleCtx` 或 Store 对常用 Role 做 `QColor`/`QPen`/`QBrush` 扁平缓存，pack 换代失效 |
+| 绘制热路径查表 | **已落地（2026-10-04）**：`ColorLookupCache` 挂在 `QThemeStyle`，按 store generation 失效 | 可选：再扁成枚举索引 / 缓存 `QBrush` |
 
 **不收录**：JSON Pack 深度递归发生在 materialize，不在每帧 `drawControl`；不要把 Pack 树遍历误当成绘制瓶颈。
 

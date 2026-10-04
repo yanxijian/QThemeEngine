@@ -1,4 +1,5 @@
 ﻿#include "qtheme/theme_style.hpp"
+#include "style/style_color_cache.hpp"
 #include "style/style_ctx.hpp"
 #include "style/style_families.hpp"
 #include "style/style_paint_util.hpp"
@@ -47,22 +48,29 @@ namespace qtheme
 			widget->setWindowFlag(Qt::NoDropShadowWindowHint, true);
 		}
 
-		[[nodiscard]] style_detail::StyleCtx makeCtx(const ThemeStore* store, qreal dpiScale)
+		[[nodiscard]] style_detail::StyleCtx makeCtx(const ThemeStore* store, qreal dpiScale, style_detail::ColorLookupCache* cache)
 		{
-			return style_detail::StyleCtx{store, dpiScale};
+			return style_detail::StyleCtx{store, dpiScale, cache};
 		}
 	} // namespace
 
 	QThemeStyle::QThemeStyle(std::shared_ptr<ThemeStore> store, QStyle* base)
 		: QProxyStyle(base ? base : makeFusionBase())
 		, m_store(std::move(store))
+		, m_colorCache(std::make_unique<style_detail::ColorLookupCache>())
 	{
 		setObjectName(QStringLiteral("QThemeStyle"));
 	}
 
+	QThemeStyle::~QThemeStyle() = default;
+
 	void QThemeStyle::setStore(std::shared_ptr<ThemeStore> store)
 	{
 		m_store = std::move(store);
+		if (m_colorCache)
+		{
+			m_colorCache->clear();
+		}
 	}
 
 	void QThemeStyle::setDpiScale(qreal scale)
@@ -182,22 +190,22 @@ namespace qtheme
 
 	QColor QThemeStyle::roleColor(const QString& group, const QString& role, const QColor& fallback) const
 	{
-		return makeCtx(m_store.get(), m_dpiScale).roleColor(group, role, fallback);
+		return makeCtx(m_store.get(), m_dpiScale, m_colorCache.get()).roleColor(group, role, fallback);
 	}
 
 	int QThemeStyle::scaleMetric(int logicalPx) const
 	{
-		return makeCtx(m_store.get(), m_dpiScale).scaleMetric(logicalPx);
+		return makeCtx(m_store.get(), m_dpiScale, m_colorCache.get()).scaleMetric(logicalPx);
 	}
 
 	int QThemeStyle::roleMetric(const QString& group, const QString& role, int fallback) const
 	{
-		return makeCtx(m_store.get(), m_dpiScale).roleMetric(group, role, fallback);
+		return makeCtx(m_store.get(), m_dpiScale, m_colorCache.get()).roleMetric(group, role, fallback);
 	}
 
 	void QThemeStyle::focusStrokeColors(const QColor& ambient, QColor* outer, QColor* inner) const
 	{
-		makeCtx(m_store.get(), m_dpiScale).focusStrokeColors(ambient, outer, inner);
+		makeCtx(m_store.get(), m_dpiScale, m_colorCache.get()).focusStrokeColors(ambient, outer, inner);
 	}
 
 	QPalette QThemeStyle::standardPalette() const
@@ -573,7 +581,7 @@ namespace qtheme
 			QProxyStyle::drawPrimitive(element, option, painter, widget);
 			return;
 		}
-		const auto ctx = makeCtx(m_store.get(), m_dpiScale);
+		const auto ctx = makeCtx(m_store.get(), m_dpiScale, m_colorCache.get());
 		if (style_detail::tryEditPrimitive(ctx, element, option, painter, widget)
 			|| style_detail::tryCheckPrimitive(ctx, element, option, painter, widget)
 			|| style_detail::tryMenuPrimitive(ctx, element, option, painter, widget)
@@ -590,7 +598,7 @@ namespace qtheme
 
 	void QThemeStyle::drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
 	{
-		const auto ctx = makeCtx(m_store.get(), m_dpiScale);
+		const auto ctx = makeCtx(m_store.get(), m_dpiScale, m_colorCache.get());
 		if (style_detail::tryButtonControl(ctx, element, option, painter, widget, this)
 			|| style_detail::tryTabHeaderControl(ctx, element, option, painter, widget, this)
 			|| style_detail::tryMenuControl(ctx, element, option, painter, widget, this)
@@ -607,7 +615,7 @@ namespace qtheme
 	void QThemeStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex* option, QPainter* painter,
 										 const QWidget* widget) const
 	{
-		const auto ctx = makeCtx(m_store.get(), m_dpiScale);
+		const auto ctx = makeCtx(m_store.get(), m_dpiScale, m_colorCache.get());
 		if (style_detail::tryComplexControl(ctx, control, option, painter, widget, this))
 		{
 			return;

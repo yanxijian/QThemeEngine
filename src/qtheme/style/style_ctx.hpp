@@ -2,6 +2,7 @@
 #define __QTHEME_ENGINE_STYLE_CTX_H__
 
 #include "qtheme/store.hpp"
+#include "style/style_color_cache.hpp"
 
 #include <QColor>
 #include <QString>
@@ -13,6 +14,7 @@ namespace qtheme::style_detail
 	{
 		const ThemeStore* store = nullptr;
 		qreal dpiScale = 1.0;
+		ColorLookupCache* cache = nullptr;
 
 		[[nodiscard]] QColor roleColor(const QString& group, const QString& role, const QColor& fallback) const;
 		[[nodiscard]] int scaleMetric(int logicalPx) const;

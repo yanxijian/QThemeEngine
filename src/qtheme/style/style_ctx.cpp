@@ -12,8 +12,22 @@ namespace qtheme::style_detail
 		{
 			return fallback;
 		}
+		if (cache)
+		{
+			cache->ensure(store);
+			QColor hit;
+			if (cache->tryColor(group, role, &hit))
+			{
+				return hit;
+			}
+		}
 		const ColorValue cv = store->color(group, role, fallback);
-		return cv.ok ? cv.value : fallback;
+		const QColor out = cv.ok ? cv.value : fallback;
+		if (cache)
+		{
+			cache->putColor(group, role, out);
+		}
+		return out;
 	}
 
 	int StyleCtx::scaleMetric(int logicalPx) const
@@ -31,9 +45,23 @@ namespace qtheme::style_detail
 		{
 			return scaleMetric(fallback);
 		}
+		if (cache)
+		{
+			cache->ensure(store);
+			int hit = 0;
+			if (cache->tryMetric(group, role, &hit))
+			{
+				return scaleMetric(hit);
+			}
+		}
 		bool ok = false;
 		const int v = store->metric(group, role, fallback, &ok);
-		return scaleMetric(ok ? v : fallback);
+		const int logical = ok ? v : fallback;
+		if (cache)
+		{
+			cache->putMetric(group, role, logical);
+		}
+		return scaleMetric(logical);
 	}
 
 	void StyleCtx::focusStrokeColors(const QColor& ambient, QColor* outer, QColor* inner) const

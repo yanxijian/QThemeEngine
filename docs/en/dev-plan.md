@@ -30,7 +30,7 @@ Internals: `StyleCtx` + paint util; family files for edit / check / focus / butt
 | Item | Fact | Later |
 |------|------|-------|
 | Shared painter for owner-draw | `qtheme::api` reads the store; `DemoButton` still hand-paints | Thin `ThemePainter` (fill / stroke / label) so third-party widgets do not copy DemoButton |
-| Hot-path lookup | `ThemeStore` is `QHash<QString,…>`; `color()` concatenates `group/role` on every call | Flatten hot `QColor`/`QPen`/`QBrush` into `StyleCtx`, invalidate on pack generation |
+| Hot-path lookup | **Done (2026-10-04)**: `ColorLookupCache` on `QThemeStyle`, invalidated on store generation | Optional: enum-indexed / `QBrush` cache |
 
 Pack JSON recursion is materialize-time, not per `drawControl`.
 

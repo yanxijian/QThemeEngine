@@ -10,12 +10,18 @@
 
 namespace qtheme
 {
+	namespace style_detail
+	{
+		class ColorLookupCache;
+	}
+
 	/// Theme-table-driven style (Fluent-inspired metrics/drawing via ThemeStore).
 	class QTE_EXPORT QThemeStyle final : public QProxyStyle
 	{
 		Q_OBJECT
 	public:
 		explicit QThemeStyle(std::shared_ptr<ThemeStore> store, QStyle* base = nullptr);
+		~QThemeStyle() override;
 
 		void setStore(std::shared_ptr<ThemeStore> store);
 		[[nodiscard]] std::shared_ptr<ThemeStore> store() const
@@ -56,6 +62,8 @@ namespace qtheme
 
 		std::shared_ptr<ThemeStore> m_store;
 		qreal m_dpiScale = 1.0;
+		/// Hot-path ThemeStore lookups during drawControl / drawPrimitive.
+		mutable std::unique_ptr<style_detail::ColorLookupCache> m_colorCache;
 	};
 } // namespace qtheme
 
