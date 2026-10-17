@@ -31,6 +31,7 @@
 #include <QStyleOptionFocusRect>
 #include <QStyleOptionFrame>
 #include <QStyleOptionMenuItem>
+#include <QStyleOptionProgressBar>
 #include <QTemporaryDir>
 #include <QTextDocument>
 #include <QtTest>
@@ -65,6 +66,8 @@ private slots:
 	void style_m6MetricsFromPack();
 	void style_textEditFrameAndStatusMetrics();
 	void style_textEditFrameLightDiffersFromDark();
+	void style_missingTokenFallbackNotCached();
+	void style_busyProgressDrawsChunk();
 };
 
 void ThemeSmokeTest::colorLiteral_rrggbbaa()
@@ -675,6 +678,43 @@ void ThemeSmokeTest::style_textEditFrameAndStatusMetrics()
 	style.polish(&bar);
 	QCOMPARE(bar.minimumHeight(), 48);
 	QCOMPARE(bar.contentsMargins().left(), 8);
+}
+
+void ThemeSmokeTest::style_busyProgressDrawsChunk()
+{
+	// min == max means busy/indeterminate. The style must not paint an empty
+	// groove: delegate to the base style so the animated chunk appears.
+	auto store = std::make_shared<qtheme::ThemeStore>();
+	QVERIFY(qtheme::ThemeStore::loadBuiltinPack(QString::fromUtf8(qtheme::kPackFluentLight), store.get()));
+	qtheme::QThemeStyle style(store);
+
+	QImage img(120, 24, QImage::Format_ARGB32_Premultiplied);
+	img.fill(QColor(255, 0, 255));
+	QStyleOptionProgressBar option;
+	option.rect = QRect(0, 0, 120, 24);
+	option.minimum = 0;
+	option.maximum = 0;
+	option.progress = 0;
+	option.state = QStyle::State_Enabled | QStyle::State_Horizontal;
+	{
+		QPainter painter(&img);
+		style.drawControl(QStyle::CE_ProgressBarContents, &option, &painter, nullptr);
+	}
+	const QColor center = img.pixelColor(60, 12);
+	QVERIFY2(center != QColor(255, 0, 255), "busy progress bar did not paint any chunk");
+}
+
+void ThemeSmokeTest::style_missingTokenFallbackNotCached()
+{
+	// Empty store: button/height is missing, so QThemeStyle must use the
+	// per-call fallback (contentsSize.height()). A cache that stores the
+	// fallback would return the first widget's height for the second one.
+	auto store = std::make_shared<qtheme::ThemeStore>();
+	qtheme::QThemeStyle style(store);
+	QStyleOptionButton option;
+	const int first = style.sizeFromContents(QStyle::CT_PushButton, &option, QSize(100, 20), nullptr).height();
+	const int second = style.sizeFromContents(QStyle::CT_PushButton, &option, QSize(100, 80), nullptr).height();
+	QVERIFY2(first != second, "missing-token fallback must not be cached across widgets");
 }
 
 void ThemeSmokeTest::style_textEditFrameLightDiffersFromDark()

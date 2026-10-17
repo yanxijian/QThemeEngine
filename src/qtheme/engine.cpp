@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QColor>
 #include <QCoreApplication>
+#include <QEvent>
 #include <QGuiApplication>
 #include <QPalette>
 #include <QScreen>
@@ -192,19 +193,52 @@ namespace qtheme
 		{
 			m_style->setStore(m_store);
 		}
-		if (auto* app = qobject_cast<QApplication*>(QCoreApplication::instance()))
+		auto* app = qobject_cast<QApplication*>(QCoreApplication::instance());
+		if (!app)
 		{
-			if (m_style)
+			return;
+		}
+		if (m_style)
+		{
+			app->setPalette(m_style->standardPalette());
+		}
+		publishWindowChromeProperties(app, m_store.get());
+
+		// QApplication::setStyle() is a no-op when the pointer is unchanged, so
+		// switching packs would otherwise keep stale sizeHints (HC radius,
+		// button/statusbar heights) until restart. Repolish explicitly; the
+		// first apply() is already polished by setStyle().
+		if (m_style && m_inited)
+		{
+			const QWidgetList all = app->allWidgets();
+			for (QWidget* w : all)
 			{
-				app->setPalette(m_style->standardPalette());
-			}
-			publishWindowChromeProperties(app, m_store.get());
-			for (QWidget* w : app->topLevelWidgets())
-			{
-				if (w)
+				if (w && w->windowType() != Qt::Desktop && !w->testAttribute(Qt::WA_SetStyle) && w->style() == m_style)
 				{
+					m_style->unpolish(w);
+					m_style->polish(w);
+				}
+			}
+			for (QWidget* w : all)
+			{
+				// Mirrors Qt's own setStyle(): widgets with an explicitly
+				// assigned style keep their own polish/geometry contract.
+				if (w && w->windowType() != Qt::Desktop && !w->testAttribute(Qt::WA_SetStyle))
+				{
+					QEvent styleChange(QEvent::StyleChange);
+					QCoreApplication::sendEvent(w, &styleChange);
+					w->updateGeometry();
 					w->update();
 				}
+			}
+			return;
+		}
+
+		for (QWidget* w : app->topLevelWidgets())
+		{
+			if (w)
+			{
+				w->update();
 			}
 		}
 	}
@@ -299,8 +333,11 @@ namespace qtheme
 
 		if (m_colorScheme == ColorScheme::System)
 		{
-			(void)rebuildStore(packIdForScheme(ColorScheme::System), true);
-			m_currentPack = packIdForScheme(ColorScheme::System);
+			const QString systemPack = packIdForScheme(ColorScheme::System);
+			if (rebuildStore(systemPack, true))
+			{
+				m_currentPack = systemPack;
+			}
 		}
 
 		if (!m_style)
@@ -317,8 +354,8 @@ namespace qtheme
 		app->setPalette(m_style->standardPalette());
 		publishWindowChromeProperties(app, m_store.get());
 		setDefault(this);
-		m_inited = true;
 		refreshUi();
+		m_inited = true;
 	}
 
 	bool Engine::applyPack(const QString& packId, ColorScheme scheme, bool force)

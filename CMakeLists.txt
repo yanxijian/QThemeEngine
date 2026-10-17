@@ -97,6 +97,12 @@ target_include_directories(qte_engine
 
 target_link_libraries(qte_engine PUBLIC Qt6::Widgets)
 
+# generate_export_header assumes a DLL unless the consumer defines this.
+# PUBLIC so both the archive itself and its consumers see empty QTE_EXPORT.
+if(NOT QTE_BUILD_SHARED)
+  target_compile_definitions(qte_engine PUBLIC QTE_STATIC_DEFINE)
+endif()
+
 set_target_properties(qte_engine PROPERTIES
   EXPORT_NAME engine
   OUTPUT_NAME qte_engine
@@ -227,7 +233,7 @@ if(QTE_INSTALL)
   write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/QThemeEngineConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
+    COMPATIBILITY SameMinorVersion
   )
 
   install(FILES

@@ -29,6 +29,12 @@ namespace qtheme::style_detail
 			{
 				if (prog->minimum == prog->maximum || prog->progress < prog->minimum)
 				{
+					// Indeterminate/busy: QProxyStyle/Fusion paints the animated
+					// chunk. Returning without drawing left an empty groove.
+					if (style)
+					{
+						style->QProxyStyle::drawControl(element, option, painter, widget);
+					}
 					return true;
 				}
 				const bool enabled = prog->state & QStyle::State_Enabled;

@@ -23,7 +23,10 @@ namespace qtheme::style_detail
 		}
 		const ColorValue cv = store->color(group, role, fallback);
 		const QColor out = cv.ok ? cv.value : fallback;
-		if (cache)
+		// Cache only a real token: caching the caller's fallback would let the
+		// first widget that misses a key pin its per-widget fallback for later
+		// widgets (sizeFromContents passes sz.height()).
+		if (cache && cv.ok)
 		{
 			cache->putColor(group, role, out);
 		}
@@ -57,7 +60,7 @@ namespace qtheme::style_detail
 		bool ok = false;
 		const int v = store->metric(group, role, fallback, &ok);
 		const int logical = ok ? v : fallback;
-		if (cache)
+		if (cache && ok)
 		{
 			cache->putMetric(group, role, logical);
 		}
