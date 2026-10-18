@@ -1,0 +1,39 @@
+# Repository rules that do not need a compiler: encoding, line endings,
+# forbidden patterns, column width and documentation links.
+#
+# Runs on every push on purpose - documentation changes must be checked too,
+# which is exactly why ci.yml has a paths allowlist and this one does not.
+#
+# The last step compares the vendored checker with upstream RepoRules, so a
+# stale copy fails CI instead of drifting silently. Refresh it with:
+#   python repo_rules.py sync --root <this repo> --hook
+
+name: hygiene
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hygiene-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repo-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check repository rules
+        run: python3 scripts/repo_rules.py check --config repo-rules.json
+      - uses: actions/checkout@v4
+        with:
+          repository: yanxijian/RepoRules
+          path: .repo-rules
+      - name: Check vendored checker is current
+        run: python3 .repo-rules/repo_rules.py sync --root . --hook --check
