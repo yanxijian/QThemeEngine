@@ -1,6 +1,6 @@
 # QThemeEngine
 
-[English](README.en.md) · **简体中文**
+**简体中文** · [English](README.en.md)
 
 [![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
