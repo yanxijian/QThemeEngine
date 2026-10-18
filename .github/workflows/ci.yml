@@ -3,7 +3,23 @@ name: CI
 on:
   push:
     branches: [main, master]
+    # Documentation-only commits must not start the Qt build. See
+    # RepoRules docs/ci-scheduling.md for the pattern and its tradeoffs.
+    paths: &build_inputs
+      - "include/**"
+      - "src/**"
+      - "widgets/**"
+      - "resources/**"
+      - "cmake/**"
+      - "examples/**"
+      - "tests/**"
+      - "scripts/**"
+      - "CMakeLists.txt"
+      - ".clang-format"
+      - ".clang-format-ignore"
+      - ".github/workflows/ci.yml"
   pull_request:
+    paths: *build_inputs
   workflow_dispatch:
 
 concurrency:
