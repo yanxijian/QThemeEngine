@@ -525,6 +525,8 @@ class Checker:
             return
         for path in files:
             rel = rel_path(self.config.root, path)
+            if self.config.is_skipped(rel):
+                continue
             if not any(match_glob(rel, pattern) for pattern in self.config.markdown_globs):
                 continue
             text = path.read_bytes().decode("utf-8-sig", errors="replace")
