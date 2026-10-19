@@ -2,6 +2,8 @@
 
 **简体中文** · [English](README.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
+<!-- translated-from: README.md sha256:13fd31e47b24 -->
+
 [![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
