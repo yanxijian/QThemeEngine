@@ -1,5 +1,7 @@
 # QThemeEngine development plan
 
+<!-- translated-from: docs/zh/dev-plan.md sha256:fd18ad8a6f07 -->
+
 > **中文主文档**：[../zh/dev-plan.md](../zh/dev-plan.md)  
 > Status: near/mid-term investment notes — does **not** replace [architecture.md](architecture.md).  
 > Updated: 2026-10-04 (deferred items verified against tree)

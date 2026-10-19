@@ -1,5 +1,7 @@
 # CI (GitHub Actions)
 
+<!-- translated-from: docs/zh/ci.md sha256:b5393d3c5fd8 -->
+
 > **中文**：[../zh/ci.md](../zh/ci.md)
 
 Workflow: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)

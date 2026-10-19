@@ -208,6 +208,28 @@
       ],
       "switch_line": true,
       "stale": "warning"
+    },
+    "translations": {
+      "pairs": [
+        [
+          "docs/zh/architecture.md",
+          "docs/en/architecture.md"
+        ],
+        [
+          "docs/zh/ci.md",
+          "docs/en/ci.md"
+        ],
+        [
+          "docs/zh/dev-plan.md",
+          "docs/en/dev-plan.md"
+        ],
+        [
+          "docs/zh/qt-widgets-inventory.md",
+          "docs/en/qt-widgets-inventory.md"
+        ]
+      ],
+      "marker": "translated-from:",
+      "stale": "warning"
     }
   },
   "gitattributes": {

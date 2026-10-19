@@ -1,5 +1,7 @@
 # Qt Widgets Inventory (Theming Reference)
 
+<!-- translated-from: docs/zh/qt-widgets-inventory.md sha256:8067bd3676e2 -->
+
 > **Canonical document (Chinese)**：[../zh/qt-widgets-inventory.md](../zh/qt-widgets-inventory.md)
 
 Inventory of Qt 6 Widgets (and adjacent modules) for **QThemeEngine** coverage planning.

@@ -1,5 +1,7 @@
 # QThemeEngine Architecture
 
+<!-- translated-from: docs/zh/architecture.md sha256:f40350d2552e -->
+
 > **中文主文档**：[../zh/architecture.md](../zh/architecture.md)
 
 ## Goal
