@@ -235,5 +235,8 @@
   "gitattributes": {
     "path": ".gitattributes",
     "required_patterns": []
+  },
+  "comments": {
+    "english": true
   }
 }
