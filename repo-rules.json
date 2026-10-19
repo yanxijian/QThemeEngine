@@ -186,23 +186,28 @@
   "required_files": [
     "LICENSE",
     "README.md",
-    "README.en.md",
     "repo-rules.json",
     "scripts/repo_rules.py",
     ".githooks/pre-commit",
-    ".github/workflows/hygiene.yml"
+    ".github/workflows/hygiene.yml",
+    "README.zh-CN.md",
+    "README.ja.md",
+    "README.ko.md"
   ],
   "markdown": {
     "globs": [
       "*.md"
     ],
     "check_links": true,
-    "bilingual_pairs": [
-      [
-        "README.md",
-        "README.en.md"
-      ]
-    ]
+    "languages": {
+      "default": "README.md",
+      "variants": [
+        "README.zh-CN.md",
+        "README.ja.md",
+        "README.ko.md"
+      ],
+      "switch_line": true
+    }
   },
   "gitattributes": {
     "path": ".gitattributes",
