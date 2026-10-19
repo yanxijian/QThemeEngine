@@ -229,7 +229,20 @@
         ]
       ],
       "marker": "translated-from:",
-      "stale": "warning"
+      "stale": "warning",
+      "cover": [
+        {
+          "from": "docs/zh",
+          "to": "docs/en",
+          "ignore": [
+            "coverage-matrix.md",
+            "fluent-mux-audit.md",
+            "theme-engine-spec.md"
+          ],
+          "missing": "error"
+        }
+      ],
+      "untracked": true
     }
   },
   "gitattributes": {
