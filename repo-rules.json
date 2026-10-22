@@ -267,5 +267,9 @@
       "actions/workflows/",
       "img.shields.io/badge/License"
     ]
+  },
+  "about": {
+    "description": "Qt Widgets theming runtime: ThemeStore + QThemeStyle instead of QSS | Qt Widgets 主题运行时：ThemeStore + QThemeStyle，替代 QSS",
+    "order": "en-zh"
   }
 }
