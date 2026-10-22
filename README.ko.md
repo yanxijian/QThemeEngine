@@ -2,10 +2,14 @@
 
 **한국어** · [English](README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
-<!-- translated-from: README.md sha256:13fd31e47b24 -->
-
 [![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Qt](https://img.shields.io/badge/Qt-6.8%2B-green.svg)](https://www.qt.io/)
+[![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+<!-- translated-from: README.md sha256:f87638758811 -->
+
 
 업무용 Qt Widgets 테마 런타임: **ThemeStore + 자체 `QThemeStyle`** 로 **QSS를 대체**합니다(스타일시트를 생성하지는 않습니다).
 

@@ -2,10 +2,14 @@
 
 **简体中文** · [English](README.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-<!-- translated-from: README.md sha256:13fd31e47b24 -->
-
 [![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Qt](https://img.shields.io/badge/Qt-6.8%2B-green.svg)](https://www.qt.io/)
+[![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+<!-- translated-from: README.md sha256:f87638758811 -->
+
 
 Qt Widgets 工业化主题运行时：用 **ThemeStore + 自定义 `QThemeStyle`** 驱动原生控件绘制与度量，**替代 QSS**（不是生成 StyleSheet）。
 

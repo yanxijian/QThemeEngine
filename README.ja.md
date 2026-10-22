@@ -2,10 +2,14 @@
 
 **日本語** · [English](README.md) · [简体中文](README.zh-CN.md) · [한국어](README.ko.md)
 
-<!-- translated-from: README.md sha256:13fd31e47b24 -->
-
 [![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Qt](https://img.shields.io/badge/Qt-6.8%2B-green.svg)](https://www.qt.io/)
+[![CI](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml/badge.svg)](https://github.com/yanxijian/QThemeEngine/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+<!-- translated-from: README.md sha256:f87638758811 -->
+
 
 業務用 Qt Widgets 向けのテーマランタイム：**ThemeStore + 独自の `QThemeStyle`** で **QSS を置き換えます**（スタイルシートを生成するわけではありません）。
 
