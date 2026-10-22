@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check repository rules
         run: python3 scripts/repo_rules.py check --config repo-rules.json
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: yanxijian/RepoRules
           path: .repo-rules
